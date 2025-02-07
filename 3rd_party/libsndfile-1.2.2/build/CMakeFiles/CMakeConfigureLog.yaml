@@ -1,0 +1,1781 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:38 (project)"
+    message: |
+      The system is: Linux - 6.8.0-52-generic - x86_64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:38 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /usr/bin/cc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is GNU, found in:
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/3.30.2/CompilerIdC/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:38 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /usr/bin/c++ 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is GNU, found in:
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/3.30.2/CompilerIdCXX/a.out
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:38 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-NOsBJY"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-NOsBJY"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-NOsBJY'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_4d4bb
+        [1/2] /usr/bin/cc   -v -o CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -c /home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/cc
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 10.5.0-1ubuntu1~22.04' --with-bugurl=file:///usr/share/doc/gcc-10/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-10 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-mutex
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 10.5.0 (Ubuntu 10.5.0-1ubuntu1~22.04) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64'
+         /usr/lib/gcc/x86_64-linux-gnu/10/cc1 -quiet -v -imultiarch x86_64-linux-gnu /home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccnXL74E.s
+        GNU C17 (Ubuntu 10.5.0-1ubuntu1~22.04) version 10.5.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 10.5.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/10/include-fixed"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/10/../../../../x86_64-linux-gnu/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/lib/gcc/x86_64-linux-gnu/10/include
+         /usr/local/include
+         /usr/include/x86_64-linux-gnu
+         /usr/include
+        End of search list.
+        GNU C17 (Ubuntu 10.5.0-1ubuntu1~22.04) version 10.5.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 10.5.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        Compiler executable checksum: 8e18376ed9531e97684a16007edfeb8b
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64'
+         as -v --64 -o CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o /tmp/ccnXL74E.s
+        GNU assembler version 2.38 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64'
+        [2/2] : && /usr/bin/cc  -v -Wl,-v  -rdynamic CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -o cmTC_4d4bb   && :
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/cc
+        COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 10.5.0-1ubuntu1~22.04' --with-bugurl=file:///usr/share/doc/gcc-10/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-10 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-mutex
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 10.5.0 (Ubuntu 10.5.0-1ubuntu1~22.04) 
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_4d4bb' '-mtune=generic' '-march=x86-64'
+         /usr/lib/gcc/x86_64-linux-gnu/10/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/ccTUhmwj.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_4d4bb /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/10/../../.. -v CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o
+        collect2 version 10.5.0
+        /usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/ccTUhmwj.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_4d4bb /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/10/../../.. -v CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o
+        GNU ld (GNU Binutils for Ubuntu) 2.38
+        COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_4d4bb' '-mtune=generic' '-march=x86-64'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:182 (message)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:38 (project)"
+    message: |
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/lib/gcc/x86_64-linux-gnu/10/include]
+          add: [/usr/local/include]
+          add: [/usr/include/x86_64-linux-gnu]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/10/include] ==> [/usr/lib/gcc/x86_64-linux-gnu/10/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/lib/gcc/x86_64-linux-gnu/10/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:38 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
+        ignore line: [Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-NOsBJY']
+        ignore line: []
+        ignore line: [Run Build Command(s): /usr/bin/ninja -v cmTC_4d4bb]
+        ignore line: [[1/2] /usr/bin/cc   -v -o CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -c /home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/cc]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 10.5.0-1ubuntu1~22.04' --with-bugurl=file:///usr/share/doc/gcc-10/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-10 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-mutex]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 10.5.0 (Ubuntu 10.5.0-1ubuntu1~22.04) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64']
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/10/cc1 -quiet -v -imultiarch x86_64-linux-gnu /home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccnXL74E.s]
+        ignore line: [GNU C17 (Ubuntu 10.5.0-1ubuntu1~22.04) version 10.5.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 10.5.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/10/include-fixed"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/10/../../../../x86_64-linux-gnu/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/10/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/include/x86_64-linux-gnu]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [GNU C17 (Ubuntu 10.5.0-1ubuntu1~22.04) version 10.5.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 10.5.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [Compiler executable checksum: 8e18376ed9531e97684a16007edfeb8b]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64']
+        ignore line: [ as -v --64 -o CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o /tmp/ccnXL74E.s]
+        ignore line: [GNU assembler version 2.38 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64']
+        ignore line: [[2/2] : && /usr/bin/cc  -v -Wl -v  -rdynamic CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -o cmTC_4d4bb   && :]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/cc]
+        ignore line: [COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 10.5.0-1ubuntu1~22.04' --with-bugurl=file:///usr/share/doc/gcc-10/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-10 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-mutex]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 10.5.0 (Ubuntu 10.5.0-1ubuntu1~22.04) ]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_4d4bb' '-mtune=generic' '-march=x86-64']
+        link line: [ /usr/lib/gcc/x86_64-linux-gnu/10/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/ccTUhmwj.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_4d4bb /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/10/../../.. -v CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccTUhmwj.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-export-dynamic] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-znow] ==> ignore
+          arg [-zrelro] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_4d4bb] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/10] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/10]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib]
+          arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+          arg [-L/lib/../lib] ==> dir [/lib/../lib]
+          arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+          arg [-L/usr/lib/../lib] ==> dir [/usr/lib/../lib]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/10/../../..] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../..]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [-lgcc] ==> lib [gcc]
+          arg [--push-state] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [--pop-state] ==> ignore
+          arg [-lc] ==> lib [c]
+          arg [-lgcc] ==> lib [gcc]
+          arg [--push-state] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [--pop-state] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o]
+        ignore line: [collect2 version 10.5.0]
+        ignore line: [/usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/ccTUhmwj.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_4d4bb /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/10/../../.. -v CMakeFiles/cmTC_4d4bb.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o]
+        linker tool for 'C': /usr/bin/ld
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o] ==> [/usr/lib/x86_64-linux-gnu/Scrt1.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o] ==> [/usr/lib/x86_64-linux-gnu/crti.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o] ==> [/usr/lib/x86_64-linux-gnu/crtn.o]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/10] ==> [/usr/lib/gcc/x86_64-linux-gnu/10]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib] ==> [/usr/lib]
+        collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+        collapse library dir [/lib/../lib] ==> [/lib]
+        collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/../lib] ==> [/usr/lib]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../..] ==> [/usr/lib]
+        implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+        implicit objs: [/usr/lib/x86_64-linux-gnu/Scrt1.o;/usr/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o;/usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o;/usr/lib/x86_64-linux-gnu/crtn.o]
+        implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/10;/usr/lib/x86_64-linux-gnu;/usr/lib;/lib/x86_64-linux-gnu;/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:38 (project)"
+    message: |
+      Running the C compiler's linker: "/usr/bin/ld" "-v"
+      GNU ld (GNU Binutils for Ubuntu) 2.38
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:38 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-8ukY4b"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-8ukY4b"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-8ukY4b'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_4cbe1
+        [1/2] /usr/bin/c++   -v -o CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -c /home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/c++
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 10.5.0-1ubuntu1~22.04' --with-bugurl=file:///usr/share/doc/gcc-10/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-10 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-mutex
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 10.5.0 (Ubuntu 10.5.0-1ubuntu1~22.04) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+         /usr/lib/gcc/x86_64-linux-gnu/10/cc1plus -quiet -v -imultiarch x86_64-linux-gnu -D_GNU_SOURCE /home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpbase CMakeCXXCompilerABI.cpp -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccNFQa7M.s
+        GNU C++14 (Ubuntu 10.5.0-1ubuntu1~22.04) version 10.5.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 10.5.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring duplicate directory "/usr/include/x86_64-linux-gnu/c++/10"
+        ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/10/include-fixed"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/10/../../../../x86_64-linux-gnu/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/include/c++/10
+         /usr/include/x86_64-linux-gnu/c++/10
+         /usr/include/c++/10/backward
+         /usr/lib/gcc/x86_64-linux-gnu/10/include
+         /usr/local/include
+         /usr/include/x86_64-linux-gnu
+         /usr/include
+        End of search list.
+        GNU C++14 (Ubuntu 10.5.0-1ubuntu1~22.04) version 10.5.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 10.5.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        Compiler executable checksum: bccc5c3c4127648f55ffc3b3d0e2e766
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+         as -v --64 -o CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccNFQa7M.s
+        GNU assembler version 2.38 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+        [2/2] : && /usr/bin/c++  -v -Wl,-v  -rdynamic CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_4cbe1   && :
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/c++
+        COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 10.5.0-1ubuntu1~22.04' --with-bugurl=file:///usr/share/doc/gcc-10/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-10 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-mutex
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 10.5.0 (Ubuntu 10.5.0-1ubuntu1~22.04) 
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_4cbe1' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+         /usr/lib/gcc/x86_64-linux-gnu/10/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/cc4kjYzR.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_4cbe1 /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/10/../../.. -v CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o
+        collect2 version 10.5.0
+        /usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/cc4kjYzR.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_4cbe1 /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/10/../../.. -v CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o
+        GNU ld (GNU Binutils for Ubuntu) 2.38
+        COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_4cbe1' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:182 (message)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:38 (project)"
+    message: |
+      Parsed CXX implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/include/c++/10]
+          add: [/usr/include/x86_64-linux-gnu/c++/10]
+          add: [/usr/include/c++/10/backward]
+          add: [/usr/lib/gcc/x86_64-linux-gnu/10/include]
+          add: [/usr/local/include]
+          add: [/usr/include/x86_64-linux-gnu]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/include/c++/10] ==> [/usr/include/c++/10]
+        collapse include dir [/usr/include/x86_64-linux-gnu/c++/10] ==> [/usr/include/x86_64-linux-gnu/c++/10]
+        collapse include dir [/usr/include/c++/10/backward] ==> [/usr/include/c++/10/backward]
+        collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/10/include] ==> [/usr/lib/gcc/x86_64-linux-gnu/10/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/include/c++/10;/usr/include/x86_64-linux-gnu/c++/10;/usr/include/c++/10/backward;/usr/lib/gcc/x86_64-linux-gnu/10/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:38 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
+        ignore line: [Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-8ukY4b']
+        ignore line: []
+        ignore line: [Run Build Command(s): /usr/bin/ninja -v cmTC_4cbe1]
+        ignore line: [[1/2] /usr/bin/c++   -v -o CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -c /home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/c++]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 10.5.0-1ubuntu1~22.04' --with-bugurl=file:///usr/share/doc/gcc-10/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-10 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-mutex]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 10.5.0 (Ubuntu 10.5.0-1ubuntu1~22.04) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64']
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/10/cc1plus -quiet -v -imultiarch x86_64-linux-gnu -D_GNU_SOURCE /home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpbase CMakeCXXCompilerABI.cpp -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccNFQa7M.s]
+        ignore line: [GNU C++14 (Ubuntu 10.5.0-1ubuntu1~22.04) version 10.5.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 10.5.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring duplicate directory "/usr/include/x86_64-linux-gnu/c++/10"]
+        ignore line: [ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/10/include-fixed"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/10/../../../../x86_64-linux-gnu/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/include/c++/10]
+        ignore line: [ /usr/include/x86_64-linux-gnu/c++/10]
+        ignore line: [ /usr/include/c++/10/backward]
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/10/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/include/x86_64-linux-gnu]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [GNU C++14 (Ubuntu 10.5.0-1ubuntu1~22.04) version 10.5.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 10.5.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [Compiler executable checksum: bccc5c3c4127648f55ffc3b3d0e2e766]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64']
+        ignore line: [ as -v --64 -o CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccNFQa7M.s]
+        ignore line: [GNU assembler version 2.38 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64']
+        ignore line: [[2/2] : && /usr/bin/c++  -v -Wl -v  -rdynamic CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_4cbe1   && :]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/c++]
+        ignore line: [COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 10.5.0-1ubuntu1~22.04' --with-bugurl=file:///usr/share/doc/gcc-10/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-10 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-mutex]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 10.5.0 (Ubuntu 10.5.0-1ubuntu1~22.04) ]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/10/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/10/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_4cbe1' '-shared-libgcc' '-mtune=generic' '-march=x86-64']
+        link line: [ /usr/lib/gcc/x86_64-linux-gnu/10/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/cc4kjYzR.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_4cbe1 /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/10/../../.. -v CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/cc4kjYzR.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-export-dynamic] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-znow] ==> ignore
+          arg [-zrelro] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_4cbe1] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/10] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/10]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib]
+          arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+          arg [-L/lib/../lib] ==> dir [/lib/../lib]
+          arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+          arg [-L/usr/lib/../lib] ==> dir [/usr/lib/../lib]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/10/../../..] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../..]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [-lstdc++] ==> lib [stdc++]
+          arg [-lm] ==> lib [m]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o]
+        ignore line: [collect2 version 10.5.0]
+        ignore line: [/usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/cc4kjYzR.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_4cbe1 /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/10 -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/10/../../.. -v CMakeFiles/cmTC_4cbe1.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o]
+        linker tool for 'CXX': /usr/bin/ld
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/Scrt1.o] ==> [/usr/lib/x86_64-linux-gnu/Scrt1.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crti.o] ==> [/usr/lib/x86_64-linux-gnu/crti.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu/crtn.o] ==> [/usr/lib/x86_64-linux-gnu/crtn.o]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/10] ==> [/usr/lib/gcc/x86_64-linux-gnu/10]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../../../lib] ==> [/usr/lib]
+        collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+        collapse library dir [/lib/../lib] ==> [/lib]
+        collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/../lib] ==> [/usr/lib]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/10/../../..] ==> [/usr/lib]
+        implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+        implicit objs: [/usr/lib/x86_64-linux-gnu/Scrt1.o;/usr/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/10/crtbeginS.o;/usr/lib/gcc/x86_64-linux-gnu/10/crtendS.o;/usr/lib/x86_64-linux-gnu/crtn.o]
+        implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/10;/usr/lib/x86_64-linux-gnu;/usr/lib;/lib/x86_64-linux-gnu;/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:38 (project)"
+    message: |
+      Running the CXX compiler's linker: "/usr/bin/ld" "-v"
+      GNU ld (GNU Binutils for Ubuntu) 2.38
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/TestLargeFiles.cmake:22 (check_include_file)"
+      - "cmake/SndFileChecks.cmake:13 (test_large_files)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for sys/types.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-ZXXaEk"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-ZXXaEk"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SYS_TYPES_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-ZXXaEk'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_78d89
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_78d89.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-ZXXaEk/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_78d89.dir/CheckIncludeFile.c.o -o cmTC_78d89   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/TestLargeFiles.cmake:23 (check_include_file)"
+      - "cmake/SndFileChecks.cmake:13 (test_large_files)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for stdint.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-RNiSA9"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-RNiSA9"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_STDINT_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-RNiSA9'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_defbe
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_defbe.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-RNiSA9/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_defbe.dir/CheckIncludeFile.c.o -o cmTC_defbe   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/TestLargeFiles.cmake:24 (check_include_file)"
+      - "cmake/SndFileChecks.cmake:13 (test_large_files)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for stddef.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-DRWiFD"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-DRWiFD"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_STDDEF_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-DRWiFD'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_a7276
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_a7276.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-DRWiFD/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_a7276.dir/CheckIncludeFile.c.o -o cmTC_a7276   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:147 (try_compile)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:272 (__check_type_size_impl)"
+      - "cmake/TestLargeFiles.cmake:28 (check_type_size)"
+      - "cmake/SndFileChecks.cmake:13 (test_large_files)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Check size of off_t"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-HPXGa6"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-HPXGa6"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SIZEOF_OFF_T"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-HPXGa6'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_cd18c
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_cd18c.dir/SIZEOF_OFF_T.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-HPXGa6/SIZEOF_OFF_T.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_cd18c.dir/SIZEOF_OFF_T.c.o -o cmTC_cd18c   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:63 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for byteswap.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-goCpAl"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-goCpAl"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_BYTESWAP_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-goCpAl'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_265a2
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_265a2.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-goCpAl/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_265a2.dir/CheckIncludeFile.c.o -o cmTC_265a2   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:64 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for dlfcn.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-7tj1q2"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-7tj1q2"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_DLFCN_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-7tj1q2'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_c273b
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_c273b.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-7tj1q2/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_c273b.dir/CheckIncludeFile.c.o -o cmTC_c273b   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:65 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for direct.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-9JeByO"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-9JeByO"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_DIRECT_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-9JeByO'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_c4f37
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_c4f37.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-9JeByO/CheckIncludeFile.c
+        FAILED: CMakeFiles/cmTC_c4f37.dir/CheckIncludeFile.c.o 
+        /usr/bin/cc    -o CMakeFiles/cmTC_c4f37.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-9JeByO/CheckIncludeFile.c
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-9JeByO/CheckIncludeFile.c:1:10: fatal error: direct.h: No such file or directory
+            1 | #include <direct.h>
+              |          ^~~~~~~~~~
+        compilation terminated.
+        ninja: build stopped: subcommand failed.
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:66 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for endian.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-TA560W"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-TA560W"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_ENDIAN_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-TA560W'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_b93b6
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_b93b6.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-TA560W/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_b93b6.dir/CheckIncludeFile.c.o -o cmTC_b93b6   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:67 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for inttypes.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-zGBBN5"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-zGBBN5"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_INTTYPES_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-zGBBN5'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_1990c
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_1990c.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-zGBBN5/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_1990c.dir/CheckIncludeFile.c.o -o cmTC_1990c   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:68 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for io.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-FM2wxv"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-FM2wxv"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_IO_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-FM2wxv'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_2a064
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_2a064.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-FM2wxv/CheckIncludeFile.c
+        FAILED: CMakeFiles/cmTC_2a064.dir/CheckIncludeFile.c.o 
+        /usr/bin/cc    -o CMakeFiles/cmTC_2a064.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-FM2wxv/CheckIncludeFile.c
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-FM2wxv/CheckIncludeFile.c:1:10: fatal error: io.h: No such file or directory
+            1 | #include <io.h>
+              |          ^~~~~~
+        compilation terminated.
+        ninja: build stopped: subcommand failed.
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:70 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for sys/time.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-eFSuTk"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-eFSuTk"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SYS_TIME_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-eFSuTk'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_60a17
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_60a17.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-eFSuTk/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_60a17.dir/CheckIncludeFile.c.o -o cmTC_60a17   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:72 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for unistd.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-8mX1ql"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-8mX1ql"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_UNISTD_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-8mX1ql'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_53a57
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_53a57.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-8mX1ql/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_53a57.dir/CheckIncludeFile.c.o -o cmTC_53a57   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:73 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for immintrin.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-pmKNBI"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-pmKNBI"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_IMMINTRIN_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-pmKNBI'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_59f87
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_59f87.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-pmKNBI/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_59f87.dir/CheckIncludeFile.c.o -o cmTC_59f87   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:74 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for stdbool.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-XEXcUX"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-XEXcUX"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_STDBOOL_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-XEXcUX'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_74f1d
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_74f1d.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-XEXcUX/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_74f1d.dir/CheckIncludeFile.c.o -o cmTC_74f1d   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/CheckCPUArch.cmake:6 (try_compile)"
+      - "cmake/CheckCPUArch.cmake:22 (_CHECK_CPU_ARCH)"
+      - "cmake/SndFileChecks.cmake:76 (check_cpu_arch_x86)"
+      - "CMakeLists.txt:95 (include)"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_CPU_IS_X86"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_20985
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_20985.dir/CheckCPUArch.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp/CheckCPUArch.c
+        FAILED: CMakeFiles/cmTC_20985.dir/CheckCPUArch.c.o 
+        /usr/bin/cc    -o CMakeFiles/cmTC_20985.dir/CheckCPUArch.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp/CheckCPUArch.c
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp/CheckCPUArch.c: In function ‘main’:
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp/CheckCPUArch.c:5:5: error: ‘fail’ undeclared (first use in this function)
+            5 |     fail
+              |     ^~~~
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp/CheckCPUArch.c:5:5: note: each undeclared identifier is reported only once for each function it appears in
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp/CheckCPUArch.c:5:9: error: expected ‘;’ before ‘}’ token
+            5 |     fail
+              |         ^
+              |         ;
+            6 | #endif
+            7 | }
+              | ~        
+        ninja: build stopped: subcommand failed.
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/CheckCPUArch.cmake:6 (try_compile)"
+      - "cmake/CheckCPUArch.cmake:18 (_CHECK_CPU_ARCH)"
+      - "cmake/SndFileChecks.cmake:77 (check_cpu_arch_x64)"
+      - "CMakeLists.txt:95 (include)"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_CPU_IS_X64"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_d92ed
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_d92ed.dir/CheckCPUArch.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp/CheckCPUArch.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_d92ed.dir/CheckCPUArch.c.o -o cmTC_d92ed   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:90 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for locale.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-IqpIok"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-IqpIok"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_LOCALE_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-IqpIok'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_c0b69
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_c0b69.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-IqpIok/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_c0b69.dir/CheckIncludeFile.c.o -o cmTC_c0b69   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake/SndFileChecks.cmake:91 (check_include_file)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for sys/wait.h"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-3HRCrz"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-3HRCrz"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SYS_WAIT_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-3HRCrz'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_baa9a
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_baa9a.dir/CheckIncludeFile.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-3HRCrz/CheckIncludeFile.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_baa9a.dir/CheckIncludeFile.c.o -o cmTC_baa9a   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:147 (try_compile)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:272 (__check_type_size_impl)"
+      - "cmake/SndFileChecks.cmake:94 (check_type_size)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Check size of int64_t"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-uREbpg"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-uREbpg"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SIZEOF_INT64_T"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-uREbpg'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_99ba0
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_99ba0.dir/SIZEOF_INT64_T.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-uREbpg/SIZEOF_INT64_T.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_99ba0.dir/SIZEOF_INT64_T.c.o -o cmTC_99ba0   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:147 (try_compile)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:272 (__check_type_size_impl)"
+      - "cmake/SndFileChecks.cmake:95 (check_type_size)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Check size of long"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-zGQych"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-zGQych"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SIZEOF_LONG"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-zGQych'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_4e8de
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_4e8de.dir/SIZEOF_LONG.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-zGQych/SIZEOF_LONG.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_4e8de.dir/SIZEOF_LONG.c.o -o cmTC_4e8de   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:147 (try_compile)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:272 (__check_type_size_impl)"
+      - "cmake/SndFileChecks.cmake:96 (check_type_size)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Check size of long long"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-xCysrf"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-xCysrf"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SIZEOF_LONG_LONG"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-xCysrf'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_a8d66
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_a8d66.dir/SIZEOF_LONG_LONG.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-xCysrf/SIZEOF_LONG_LONG.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_a8d66.dir/SIZEOF_LONG_LONG.c.o -o cmTC_a8d66   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:147 (try_compile)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:272 (__check_type_size_impl)"
+      - "cmake/SndFileChecks.cmake:97 (check_type_size)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Check size of ssize_t"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-4BStKm"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-4BStKm"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SIZEOF_SSIZE_T"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-4BStKm'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_91d69
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_91d69.dir/SIZEOF_SSIZE_T.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-4BStKm/SIZEOF_SSIZE_T.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_91d69.dir/SIZEOF_SSIZE_T.c.o -o cmTC_91d69   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:147 (try_compile)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckTypeSize.cmake:272 (__check_type_size_impl)"
+      - "cmake/SndFileChecks.cmake:98 (check_type_size)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Check size of wchar_t"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-4ANz3A"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-4ANz3A"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SIZEOF_WCHAR_T"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-4ANz3A'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_75504
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_75504.dir/SIZEOF_WCHAR_T.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-4ANz3A/SIZEOF_WCHAR_T.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_75504.dir/SIZEOF_WCHAR_T.c.o -o cmTC_75504   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckLibraryExists.cmake:69 (try_compile)"
+      - "cmake/SndFileChecks.cmake:118 (check_library_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for floor in m"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-paKUOJ"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-paKUOJ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "LIBM_REQUIRED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-paKUOJ'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_84a21
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=floor -o CMakeFiles/cmTC_84a21.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-paKUOJ/CheckFunctionExists.c
+        <command-line>: warning: conflicting types for built-in function ‘floor’; expected ‘double(double)’ [-Wbuiltin-declaration-mismatch]
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-paKUOJ/CheckFunctionExists.c:7:3: note: in expansion of macro ‘CHECK_FUNCTION_EXISTS’
+            7 |   CHECK_FUNCTION_EXISTS(void);
+              |   ^~~~~~~~~~~~~~~~~~~~~
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-paKUOJ/CheckFunctionExists.c:1:1: note: ‘floor’ is declared in header ‘<math.h>’
+          +++ |+#include <math.h>
+            1 | #ifdef CHECK_FUNCTION_EXISTS
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=floor -rdynamic CMakeFiles/cmTC_84a21.dir/CheckFunctionExists.c.o -o cmTC_84a21  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckLibraryExists.cmake:69 (try_compile)"
+      - "cmake/SndFileChecks.cmake:124 (check_library_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for sqlite3_close in sqlite3"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-1uESRS"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-1uESRS"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SQLITE3"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-1uESRS'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_f7007
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=sqlite3_close -o CMakeFiles/cmTC_f7007.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-1uESRS/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=sqlite3_close -rdynamic CMakeFiles/cmTC_f7007.dir/CheckFunctionExists.c.o -o cmTC_f7007  -lsqlite3  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:126 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for fstat"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-nbv4Zs"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-nbv4Zs"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_FSTAT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-nbv4Zs'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_0d371
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=fstat -o CMakeFiles/cmTC_0d371.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-nbv4Zs/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=fstat -rdynamic CMakeFiles/cmTC_0d371.dir/CheckFunctionExists.c.o -o cmTC_0d371  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:127 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for fstat64"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-WFO1Mg"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-WFO1Mg"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_FSTAT64"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-WFO1Mg'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_6d3a8
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=fstat64 -o CMakeFiles/cmTC_6d3a8.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-WFO1Mg/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=fstat64 -rdynamic CMakeFiles/cmTC_6d3a8.dir/CheckFunctionExists.c.o -o cmTC_6d3a8  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:128 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for gettimeofday"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-yp9zCx"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-yp9zCx"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_GETTIMEOFDAY"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-yp9zCx'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_d657c
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=gettimeofday -o CMakeFiles/cmTC_d657c.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-yp9zCx/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=gettimeofday -rdynamic CMakeFiles/cmTC_d657c.dir/CheckFunctionExists.c.o -o cmTC_d657c  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:129 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for gmtime"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-z6YbxN"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-z6YbxN"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_GMTIME"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-z6YbxN'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_12300
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=gmtime -o CMakeFiles/cmTC_12300.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-z6YbxN/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=gmtime -rdynamic CMakeFiles/cmTC_12300.dir/CheckFunctionExists.c.o -o cmTC_12300  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:130 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for gmtime_r"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-XcAz3w"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-XcAz3w"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_GMTIME_R"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-XcAz3w'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_d9c4d
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=gmtime_r -o CMakeFiles/cmTC_d9c4d.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-XcAz3w/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=gmtime_r -rdynamic CMakeFiles/cmTC_d9c4d.dir/CheckFunctionExists.c.o -o cmTC_d9c4d  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:131 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for localtime"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Oevw0M"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Oevw0M"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_LOCALTIME"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Oevw0M'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_d0093
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=localtime -o CMakeFiles/cmTC_d0093.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Oevw0M/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=localtime -rdynamic CMakeFiles/cmTC_d0093.dir/CheckFunctionExists.c.o -o cmTC_d0093  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:132 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for localtime_r"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-ehgqGq"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-ehgqGq"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_LOCALTIME_R"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-ehgqGq'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_b9c78
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=localtime_r -o CMakeFiles/cmTC_b9c78.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-ehgqGq/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=localtime_r -rdynamic CMakeFiles/cmTC_b9c78.dir/CheckFunctionExists.c.o -o cmTC_b9c78  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:133 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for lseek"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-cWxXLS"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-cWxXLS"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_LSEEK"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-cWxXLS'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_877ec
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=lseek -o CMakeFiles/cmTC_877ec.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-cWxXLS/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=lseek -rdynamic CMakeFiles/cmTC_877ec.dir/CheckFunctionExists.c.o -o cmTC_877ec  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:134 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for open"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-cFiMCu"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-cFiMCu"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_OPEN"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-cFiMCu'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_eb434
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=open -o CMakeFiles/cmTC_eb434.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-cFiMCu/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=open -rdynamic CMakeFiles/cmTC_eb434.dir/CheckFunctionExists.c.o -o cmTC_eb434  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:135 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for read"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-5OOKXZ"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-5OOKXZ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_READ"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-5OOKXZ'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_639c1
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=read -o CMakeFiles/cmTC_639c1.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-5OOKXZ/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=read -rdynamic CMakeFiles/cmTC_639c1.dir/CheckFunctionExists.c.o -o cmTC_639c1  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:136 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for write"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-7xj0Al"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-7xj0Al"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_WRITE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-7xj0Al'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_9db96
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=write -o CMakeFiles/cmTC_9db96.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-7xj0Al/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=write -rdynamic CMakeFiles/cmTC_9db96.dir/CheckFunctionExists.c.o -o cmTC_9db96  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:137 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for lrint"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-GXRXr4"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-GXRXr4"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_LRINT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-GXRXr4'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_992f1
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=lrint -o CMakeFiles/cmTC_992f1.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-GXRXr4/CheckFunctionExists.c
+        <command-line>: warning: conflicting types for built-in function ‘lrint’; expected ‘long int(double)’ [-Wbuiltin-declaration-mismatch]
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-GXRXr4/CheckFunctionExists.c:7:3: note: in expansion of macro ‘CHECK_FUNCTION_EXISTS’
+            7 |   CHECK_FUNCTION_EXISTS(void);
+              |   ^~~~~~~~~~~~~~~~~~~~~
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-GXRXr4/CheckFunctionExists.c:1:1: note: ‘lrint’ is declared in header ‘<math.h>’
+          +++ |+#include <math.h>
+            1 | #ifdef CHECK_FUNCTION_EXISTS
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=lrint -rdynamic CMakeFiles/cmTC_992f1.dir/CheckFunctionExists.c.o -o cmTC_992f1  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:138 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for lrintf"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-h3iA1Y"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-h3iA1Y"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_LRINTF"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-h3iA1Y'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_876e8
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=lrintf -o CMakeFiles/cmTC_876e8.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-h3iA1Y/CheckFunctionExists.c
+        <command-line>: warning: conflicting types for built-in function ‘lrintf’; expected ‘long int(float)’ [-Wbuiltin-declaration-mismatch]
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-h3iA1Y/CheckFunctionExists.c:7:3: note: in expansion of macro ‘CHECK_FUNCTION_EXISTS’
+            7 |   CHECK_FUNCTION_EXISTS(void);
+              |   ^~~~~~~~~~~~~~~~~~~~~
+        /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-h3iA1Y/CheckFunctionExists.c:1:1: note: ‘lrintf’ is declared in header ‘<math.h>’
+          +++ |+#include <math.h>
+            1 | #ifdef CHECK_FUNCTION_EXISTS
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=lrintf -rdynamic CMakeFiles/cmTC_876e8.dir/CheckFunctionExists.c.o -o cmTC_876e8  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:141 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for ftruncate"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-afk6xQ"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-afk6xQ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_FTRUNCATE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-afk6xQ'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_0a4ca
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=ftruncate -o CMakeFiles/cmTC_0a4ca.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-afk6xQ/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=ftruncate -rdynamic CMakeFiles/cmTC_0a4ca.dir/CheckFunctionExists.c.o -o cmTC_0a4ca  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:142 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for fsync"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-eNPnMg"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-eNPnMg"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_FSYNC"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-eNPnMg'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_d82d4
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=fsync -o CMakeFiles/cmTC_d82d4.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-eNPnMg/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=fsync -rdynamic CMakeFiles/cmTC_d82d4.dir/CheckFunctionExists.c.o -o cmTC_d82d4  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:146 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for pipe"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-avYkDJ"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-avYkDJ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_PIPE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-avYkDJ'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_16465
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pipe -o CMakeFiles/cmTC_16465.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-avYkDJ/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=pipe -rdynamic CMakeFiles/cmTC_16465.dir/CheckFunctionExists.c.o -o cmTC_16465  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:147 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for setlocale"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-V11Tbk"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-V11Tbk"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_SETLOCALE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-V11Tbk'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_c99ee
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=setlocale -o CMakeFiles/cmTC_c99ee.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-V11Tbk/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=setlocale -rdynamic CMakeFiles/cmTC_c99ee.dir/CheckFunctionExists.c.o -o cmTC_c99ee  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "cmake/SndFileChecks.cmake:148 (check_function_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for waitpid"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-BCCv9c"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-BCCv9c"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_WAITPID"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-BCCv9c'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_0079f
+        [1/2] /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=waitpid -o CMakeFiles/cmTC_0079f.dir/CheckFunctionExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-BCCv9c/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=waitpid -rdynamic CMakeFiles/cmTC_0079f.dir/CheckFunctionExists.c.o -o cmTC_0079f  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckSymbolExists.cmake:154 (try_compile)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckSymbolExists.cmake:66 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "cmake/SndFileChecks.cmake:169 (check_symbol_exists)"
+      - "CMakeLists.txt:95 (include)"
+    checks:
+      - "Looking for S_IRGRP"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Xy6WDo"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Xy6WDo"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_DECL_S_IRGRP"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Xy6WDo'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_4a326
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_4a326.dir/CheckSymbolExists.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Xy6WDo/CheckSymbolExists.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_4a326.dir/CheckSymbolExists.c.o -o cmTC_4a326  -lm && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/TestInline.cmake:6 (try_compile)"
+      - "cmake/SndFileChecks.cmake:198 (test_inline)"
+      - "CMakeLists.txt:95 (include)"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "HAVE_INLINE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_dd8d7
+        [1/2] /usr/bin/cc    -o CMakeFiles/cmTC_dd8d7.dir/TestInline.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/TestInline.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_dd8d7.dir/TestInline.c.o -o cmTC_dd8d7   && :
+        
+      exitCode: 0
+  -
+    kind: "try_run-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceRuns.cmake:93 (try_run)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCSourceRuns.cmake:52 (cmake_check_source_runs)"
+      - "cmake/ClipMode.cmake:26 (check_c_source_runs)"
+      - "cmake/SndFileChecks.cmake:199 (clip_mode)"
+      - "CMakeLists.txt:95 (include)"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Dqxq2s"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Dqxq2s"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "CPU_CLIPS_POSITIVE_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Dqxq2s'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_8e491
+        [1/2] /usr/bin/cc -DCPU_CLIPS_POSITIVE   -o CMakeFiles/cmTC_8e491.dir/src.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-Dqxq2s/src.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_8e491.dir/src.c.o -o cmTC_8e491  -lm && :
+        
+      exitCode: 0
+    runResult:
+      variable: "CPU_CLIPS_POSITIVE_EXITCODE"
+      cached: true
+      stdout: |
+      stderr: |
+      exitCode: 1
+  -
+    kind: "try_run-v1"
+    backtrace:
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceRuns.cmake:93 (try_run)"
+      - "/home/curio/anaconda3/envs/py310/lib/python3.10/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCSourceRuns.cmake:52 (cmake_check_source_runs)"
+      - "cmake/ClipMode.cmake:51 (check_c_source_runs)"
+      - "cmake/SndFileChecks.cmake:199 (clip_mode)"
+      - "CMakeLists.txt:95 (include)"
+    directories:
+      source: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-22CGlK"
+      binary: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-22CGlK"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/cmake"
+    buildResult:
+      variable: "CPU_CLIPS_NEGATIVE_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-22CGlK'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_1143a
+        [1/2] /usr/bin/cc -DCPU_CLIPS_NEGATIVE   -o CMakeFiles/cmTC_1143a.dir/src.c.o -c /home/curio/mini-omni2-pipeline-onnxruntime/pipeline/3rd_party/libsndfile-1.2.2/build/CMakeFiles/CMakeScratch/TryCompile-22CGlK/src.c
+        [2/2] : && /usr/bin/cc  -rdynamic CMakeFiles/cmTC_1143a.dir/src.c.o -o cmTC_1143a  -lm && :
+        
+      exitCode: 0
+    runResult:
+      variable: "CPU_CLIPS_NEGATIVE_EXITCODE"
+      cached: true
+      stdout: |
+      stderr: |
+      exitCode: 1
+...
