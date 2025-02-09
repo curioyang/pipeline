@@ -40,7 +40,9 @@ include_directories(${ROSA_PATH}
 
 FILE(GLOB SRCS ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 
-add_library(wav2wav STATIC ${SRCS})
+add_library(wav2wav STATIC ${SRCS}
+        src/audio.cpp
+        src/utils.cpp)
 target_link_libraries(wav2wav onnxruntime SndFile::sndfile fftw3 cnpy)
 
 add_executable(demo ${CMAKE_SOURCE_DIR}/demo/demo.cpp)

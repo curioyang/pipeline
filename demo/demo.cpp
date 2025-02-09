@@ -26,7 +26,7 @@ int main(int argc, const char* argv[]) {
 
     // 处理音频输入
     auto [mel, length] = load_audio("../data/output1.wav");
-//    auto input_ids = generate_input_ids(whisper, mel, length);
+    auto input_ids = generate_input_ids(whisper, mel, length);
 //
 //    // 执行生成
 //    auto result = generate_AA(mel, input_ids, adapter, wte, lit_gpt);
