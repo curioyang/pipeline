@@ -4,33 +4,40 @@
 #include "audio.h"
 #include "utils.h"
 
-void pad_or_trim(std::vector<float> &audio, int length, int axis) {
+void pad_or_trim(std::vector<float>& audio, int length, int axis)
+{
     // cpp中默认是vector, axis在这里没有作用
-    if (audio.size() > length) {
+    if (audio.size() > length)
+    {
         // TODO: numpy.take(indices = range(length), axis=axis)
         audio.resize(length);
         throw std::runtime_error("Audio is too long, need do more process");
-    } else if (audio.size() < length) {
+    }
+    else if (audio.size() < length)
+    {
         int num_padding = length - audio.size();
         audio.insert(audio.end(), num_padding, 0.0f);
     }
 }
 
-std::vector<double> hann_window(int window_length, bool periodic) {
+std::vector<double> hann_window(int window_length, bool periodic)
+{
     int N = window_length;
-    if (periodic) {
+    if (periodic)
+    {
         N = window_length + 1; // 如果是周期性窗口，窗口长度加1
     }
     auto double_PI = 2 * M_PI;
     std::vector<double> window(window_length);
-    for (int n = 0; n < window_length; ++n) {
+    for (int n = 0; n < window_length; ++n)
+    {
         // TODO: RVV 优化  (计算量有限,收益可能不明显)
         float normalized_n = static_cast<float>(n) / (N - 1.0f);
         window[n] = 0.5 - 0.5 * std::cos(double_PI * normalized_n);
         // 或者使用等效的公式：
-//         window[n] = pow(sin(M_PI * normalized_n), 2);
+        //         window[n] = pow(sin(M_PI * normalized_n), 2);
     }
-//    writeFloatVectorToFile(window, "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/data/window.txt");
+    //    writeFloatVectorToFile(window, "/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/data/window.txt");
     return window;
 }
 
@@ -109,8 +116,9 @@ std::vector<double> hann_window(int window_length, bool periodic) {
 //
 //     return X;
 // }
-template<class T>
-std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix) {
+template <class T>
+std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
+{
     // 获取原矩阵的行数和列数
     size_t rows = matrix.size();
     if (rows == 0) return {}; // 如果原矩阵为空，直接返回空矩阵
@@ -120,8 +128,10 @@ std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
     std::vector<std::vector<T>> transposed(cols, std::vector<T>(rows));
 
     // 对于每个元素进行转置操作
-    for (size_t i = 0; i < rows; ++i) {
-        for (size_t j = 0; j < cols; ++j) {
+    for (size_t i = 0; i < rows; ++i)
+    {
+        for (size_t j = 0; j < cols; ++j)
+        {
             transposed[j][i] = matrix[i][j];
         }
     }
@@ -130,7 +140,8 @@ std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
 }
 
 
-std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float> &audio, int n_mels, int padding) {
+std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
+{
     auto window = hann_window(N_FFT);
     // auto stft_result = stft2(audio, N_FFT, HOP_LENGTH, window);
     auto stft_result = librosa::Feature::stft(audio, N_FFT, HOP_LENGTH, "hann", true, "reflect");
@@ -139,9 +150,11 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float> &audio, i
 
     // mag.. = stft[..., :-1].abs() ** 2
     std::vector<std::vector<float>> magnitudes(stft_result.size(), std::vector<float>(stft_result[0].size() - 1, 0));
-    for (int i = 0; i < stft_result.size(); ++i) {
-        for (int j = 0; j < stft_result[0].size() - 1; ++j) {
-            magnitudes[i][j] = (float) std::norm(stft_result[i][j]);
+    for (int i = 0; i < stft_result.size(); ++i)
+    {
+        for (int j = 0; j < stft_result[0].size() - 1; ++j)
+        {
+            magnitudes[i][j] = (float)std::norm(stft_result[i][j]);
         }
     }
 
@@ -156,8 +169,10 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float> &audio, i
     std::vector<std::vector<float>> mel_filter_80(mel_filters_info.shape[0],
                                                   std::vector<float>(mel_filters_info.shape[1], 0));
     auto filter_data_pointer = mel_filters_info.data<float>();
-    for (int i = 0; i < mel_filters_info.shape[0]; ++i) {
-        for (int j = 0; j < mel_filters_info.shape[1]; ++j) {
+    for (int i = 0; i < mel_filters_info.shape[0]; ++i)
+    {
+        for (int j = 0; j < mel_filters_info.shape[1]; ++j)
+        {
             mel_filter_80[i][j] = filter_data_pointer[i * mel_filters_info.shape[1] + j];
         }
     }
@@ -167,38 +182,39 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float> &audio, i
     //log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)
     auto mel_spec = matmul(mel_filter_80, magnitudes);
     float max_mel_spec = -INFINITY;
-    for (int i = 0; i < mel_spec.size(); ++i) {
-        for (int j = 0; j < mel_spec[0].size(); ++j) {
-
+    for (int i = 0; i < mel_spec.size(); ++i)
+    {
+        for (int j = 0; j < mel_spec[0].size(); ++j)
+        {
             mel_spec[i][j] = std::log10(std::max(1e-10f, mel_spec[i][j]));
-            if (mel_spec[i][j] > max_mel_spec) {
+            if (mel_spec[i][j] > max_mel_spec)
+            {
                 max_mel_spec = mel_spec[i][j];
             }
         }
     }
 
-    for (int i = 0; i < mel_spec.size(); ++i) {
-        for (int j = 0; j < mel_spec[0].size(); ++j) {
+    for (int i = 0; i < mel_spec.size(); ++i)
+    {
+        for (int j = 0; j < mel_spec[0].size(); ++j)
+        {
             mel_spec[i][j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
         }
     }
     return mel_spec;
 }
 
-std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string &path, int sr) {
+std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& path, int sr)
+{
     SF_INFO sf_info;
-    SNDFILE *file = sf_open(path.c_str(), SFM_READ, &sf_info);
+    SNDFILE* file = sf_open(path.c_str(), SFM_READ, &sf_info);
     std::vector<float> audio(sf_info.frames * sf_info.channels);
     size_t frame_count = sf_readf_float(file, audio.data(), audio.size());
     sf_close(file);
+
     auto duration_ms = frame_count / sr * 1000.0f;
-    // 实现音频预处理（标准化、预加重、分帧等）
     pad_or_trim(audio);
     auto mel = log_mel_spectrogram(audio);
 
-
-    // 生成Mel频谱（需要实现FFT和Mel滤波器组）
-    // 返回Mel频谱和长度信息
-//    return {mel_spectrogram, length};
-    return {mel, duration_ms/20 + 1};
+    return {mel, duration_ms / 20 + 1};
 }

@@ -55,7 +55,7 @@ std::vector<std::vector<int64_t>> generate_input_ids(ONNXModel& model, std::vect
 {
     std::vector<size_t> mel_shape = {1, mel.size(), mel[0].size()};
 
-    model.onForward({{"mel", mel_shape, mel}})
+    model.onForward({{"mel", mel_shape, mel}});
 
     std::vector<std::vector<int64_t>> input_ids(8);
     for (int i = 0; i < 7; ++i)
