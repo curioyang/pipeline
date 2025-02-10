@@ -30,6 +30,16 @@ constexpr int _image = audio_vocabsize + 5;
 constexpr int _eoimage = audio_vocabsize + 6;
 
 
+struct GenerationResult {
+    std::vector<int> audio_tokens;
+    std::vector<int> text_tokens;
+};
+template<class T>
+struct tensor_info {
+    std::vector<T> data;
+    std::vector<long> shape;
+};
+
 class RuntimeManager {
 public:
     explicit RuntimeManager(const char *name) {
@@ -85,8 +95,7 @@ public:
     }
 
     template<class T>
-    auto get_result_vector(std::vector<Value> &data, int idx) {
-        std::vector<long> result_shape;
+    tensor_info<T> get_result_vector(std::vector<Value> &data, int idx) {
         auto &it = data[idx];
         auto t = it.GetTensorTypeAndShapeInfo().GetElementType();
 
@@ -94,7 +103,7 @@ public:
         auto s = it.GetTensorTypeAndShapeInfo().GetShape();
         auto k = std::accumulate(s.begin(), s.end(), 1, std::multiplies<>());
         std::vector<T> result(data_tmp, data_tmp + k);
-        return make_tuple(result, s);
+        return {.data=result, .shape=s};
     }
 
     std::shared_ptr<RuntimeManager> runtime_manager_;
@@ -105,23 +114,25 @@ private:
     std::vector<const char *> input_names_, output_names_;
 };
 
-struct GenerationResult {
-    std::vector<int> audio_tokens;
-    std::vector<int> text_tokens;
-};
+
+std::tuple<std::vector<long>, int, tensor_info<float>, tensor_info<float>>
+next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_info<long> &input_pos_tensor,
+                tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step, float temperature,
+                int top_k, float top_p);
+
+tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs);
 
 template<typename T>
-static Value Input(const std::vector<int> &shape, const std::shared_ptr<RuntimeManager> &rtmgr) {
-    std::vector<int64_t> shape_int64(shape.begin(), shape.end());
-    return Value::CreateTensor<T>(rtmgr->allocator(), shape_int64.data(), shape_int64.size());
+static Value Input(const std::vector<long> &shape, const std::shared_ptr<RuntimeManager> &rtmgr) {
+    return Value::CreateTensor<T>(rtmgr->allocator(), shape.data(), shape.size());
 }
 
 /*GenerationResult*/void A1_A2(std::vector<std::vector<float>> &audio_feature,
-                       std::vector<std::vector<int64_t>> &input_ids,
-                       int length,
-                       ONNXModel &adapter,
-                       ONNXModel &wte,
-                       ONNXModel &gpt/*, Tokenizer& tokenizer*/);
+                               std::vector<std::vector<int64_t>> &input_ids,
+                               int length,
+                               ONNXModel &adapter,
+                               ONNXModel &wte,
+                               ONNXModel &gpt/*, Tokenizer& tokenizer*/);
 
 
 //std::pair<std::vector<float>, int> load_audio(const std::string& path);
@@ -135,4 +146,4 @@ generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int l
 #include <algorithm>
 #include <random>
 
-//int sample(const float* logits, int size, float temp, int top_k, float top_p);
+int sample(tensor_info<float> &logits, float temperature, int top_k, float top_p);

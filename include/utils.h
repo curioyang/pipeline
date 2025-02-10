@@ -33,6 +33,13 @@ std::vector<float> reflectPad(const std::vector<float>& input, size_t padFront, 
 template <class T>
 std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix);
 
+template<class T>
+std::vector<std::pair<T, int> > topK(const std::vector<T> &arr, size_t k);
+
+template<class T>
+std::vector<T> softmax(std::vector<T>& x);
+
+
 //typedef struct {
 //    int start;
 //    int end;
