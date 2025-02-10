@@ -212,7 +212,7 @@ std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& pa
     size_t frame_count = sf_readf_float(file, audio.data(), audio.size());
     sf_close(file);
 
-    auto duration_ms = frame_count / sr * 1000.0f;
+    auto duration_ms = (float)frame_count / sr * 1000.0f;
     pad_or_trim(audio);
     auto mel = log_mel_spectrogram(audio);
 
