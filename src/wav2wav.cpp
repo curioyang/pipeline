@@ -284,7 +284,7 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
                                int length,
                                ONNXModel &adapter,
                                ONNXModel &wte,
-                               ONNXModel &gpt) {
+                               ONNXModel &gpt/*, tokenizer*/) {
     auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, wte, gpt,
                                       2048,
                                       0.9,
@@ -301,7 +301,6 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
             std::cout << j << " ";
         std::cout << std::endl;
     }
-//    return {tokenlist, tokenlist};
 //    tokenlist = tokenlist[-1]
 //    if text_vocabsize in tokenlist:
 //    tokenlist = tokenlist[: tokenlist.index(text_vocabsize)]
