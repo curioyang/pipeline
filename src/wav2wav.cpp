@@ -109,7 +109,7 @@ int sample(tensor_info<float> &logits, float temperature, int top_k, float top_p
 //    return dist(gen);
 }
 
-std::tuple<std::vector<long>, int, tensor_info<float>, tensor_info<float>>
+std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
 next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_info<long> &input_pos_tensor,
                 tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step,
                 float temperature, int top_k, float top_p) {
@@ -142,7 +142,7 @@ next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_in
     auto next_ks = gpt.get_result_vector<float>(gpt_output, 2);
     auto next_vs = gpt.get_result_vector<float>(gpt_output, 3);
 
-    std::vector<long> next_audio_tokens;
+    std::vector<int> next_audio_tokens;
     for (int i = 0; i < logits_a.shape[0]; i++) {
         std::vector<float> logits_a_i_data(
                 std::vector<float>(logits_a.data.data() + i * logits_a.shape[2] * logits_a.shape[3],
@@ -157,7 +157,7 @@ next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_in
 }
 
 
-std::vector<std::vector<long>>
+std::vector<std::vector<int>>
 generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vector<long>> &input_ids,
             ONNXModel &adapter, ONNXModel &wte, ONNXModel &gpt,
             int max_returned_tokens = 2048,
@@ -171,7 +171,7 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
             bool include_prompt = true,
             bool generate_text = false) {
     auto T = input_ids[0].size();
-    std::vector<std::vector<long>> outputs(8);
+    std::vector<std::vector<int>> outputs(8);
 
     // adapter
     std::vector<long> audio_shape = {1, (int) audio_feature.size(), (int) audio_feature[0].size()};
@@ -248,7 +248,7 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
         auto input_embs_loop_tensor = wte.get_result_vector<float>(wte_output_loop, 0);
 
         tensor_info<long> input_pos_loop_tensor{.data=input_pos, .shape={(long) input_pos.size()}};
-        std::tuple<std::vector<long>, int, tensor_info<float>, tensor_info<float>>
+        std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
                 (tokens_A, token_T, past_ks_, past_vs_) = next_token_A1T2(gpt,
                                                                           input_embs_loop_tensor,
                                                                           input_pos_loop_tensor,
