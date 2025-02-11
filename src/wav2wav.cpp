@@ -248,8 +248,8 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
         auto input_embs_loop_tensor = wte.get_result_vector<float>(wte_output_loop, 0);
 
         tensor_info<long> input_pos_loop_tensor{.data=input_pos, .shape={(long) input_pos.size()}};
-        std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
-                (tokens_A, token_T, past_ks_, past_vs_) = next_token_A1T2(gpt,
+//        std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
+        auto [_tokens_A, _token_T, _past_ks_, _past_vs_] = next_token_A1T2(gpt,
                                                                           input_embs_loop_tensor,
                                                                           input_pos_loop_tensor,
                                                                           past_ks_,
@@ -262,9 +262,14 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
 //        past_vs_tensor = past_vs_;
 //        tokens_A = tokens_A_loop;
 //        token_T = token_T_loop;
+        tokens_A = _tokens_A;
+        token_T = _token_T;
+        past_ks_ = _past_ks_;
+        past_vs_ = _past_vs_;
+
         if (text_end)
             token_T = pad_id_t;
-        if ((int) tokens_A[-1] == eos_id_a)
+        if ((int) tokens_A[tokens_A.size()-1] == eos_id_a)
             break;
         if (token_T == eos_id_t)
             text_end = true;
@@ -274,6 +279,14 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
         }
         outputs[7].emplace_back(token_T);
         input_pos[0] += 1;
+
+        for (int i = 0; i < 8; i++)
+        {
+            std::cout << "output: [" << i << "] ";
+            for (auto t : outputs[i])
+                std::cout << t << " ";
+            std::cout<<std::endl;
+        }
     }
 
     return outputs;
