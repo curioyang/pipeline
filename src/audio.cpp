@@ -2,6 +2,7 @@
 // Created by curio on 2025/2/9.
 //
 #include "audio.h"
+#include "wav2wav.h"
 #include "utils.h"
 
 void pad_or_trim(std::vector<float>& audio, int length, int axis)
@@ -204,6 +205,16 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
     return mel_spec;
 }
 
+#if VAD_ENABLE
+std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr)
+{
+    size_t frame_count = audio.size();
+    auto duration_ms = (float)frame_count / sr * 1000.0f;
+    pad_or_trim(audio);
+    auto mel = log_mel_spectrogram(audio);
+    return {mel, duration_ms / 20 + 1};
+}
+#else
 std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& path, int sr)
 {
     SF_INFO sf_info;
@@ -218,3 +229,4 @@ std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& pa
 
     return {mel, duration_ms / 20 + 1};
 }
+#endif
