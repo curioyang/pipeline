@@ -45,7 +45,7 @@ int main(int argc, const char* argv[])
     vad.reset(new OnnxVadIterator(vad_model));
     vad->process(input_wav);
 
-    // 1.a get_speech_timestamps
+    // get_speech_timestamps
     auto stamps = vad->get_speech_timestamps();
     assert(!stamps.empty());
     for (int i = 0; i < stamps.size(); i++)

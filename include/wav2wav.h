@@ -316,7 +316,7 @@ protected:
 public:
     // Construction
     VadIterator(int Sample_rate = 16000, int windows_frame_size = 32,
-        float Threshold = 0.5, int min_silence_duration_ms = 0,
+        float Threshold = 0.5, int min_silence_duration_ms = 500,
         int speech_pad_ms = 32, int min_speech_duration_ms = 32,
         float max_speech_duration_s = std::numeric_limits<float>::infinity())
     {
@@ -534,7 +534,7 @@ public:
     // Construction
     OnnxVadIterator(const std::string ModelPath,
         int Sample_rate = 16000, int windows_frame_size = 32,
-        float Threshold = 0.5, int min_silence_duration_ms = 0,
+        float Threshold = 0.5, int min_silence_duration_ms = 500,
         int speech_pad_ms = 32, int min_speech_duration_ms = 32,
         float max_speech_duration_s = std::numeric_limits<float>::infinity()): VadIterator(Sample_rate, windows_frame_size,
         Threshold, min_silence_duration_ms, speech_pad_ms, min_speech_duration_ms, max_speech_duration_s)
