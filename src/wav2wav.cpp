@@ -279,12 +279,14 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
     return outputs;
 }
 
-/*GenerationResult*/void A1_A2(std::vector<std::vector<float>> &audio_feature,
+std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
                                std::vector<std::vector<int64_t>> &input_ids,
                                int length,
                                ONNXModel &adapter,
                                ONNXModel &wte,
-                               ONNXModel &gpt/*, tokenizer*/) {
+                               ONNXModel &gpt,
+                               std::unique_ptr<tokenizers::Tokenizer>& tokenizer) {
+#if 1
     auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, wte, gpt,
                                       2048,
                                       0.9,
@@ -301,10 +303,27 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
             std::cout << j << " ";
         std::cout << std::endl;
     }
-//    tokenlist = tokenlist[-1]
-//    if text_vocabsize in tokenlist:
-//    tokenlist = tokenlist[: tokenlist.index(text_vocabsize)]
-//    return text_tokenizer.decode(torch.tensor(tokenlist)).strip()
+#else
+    std::vector<std::vector<int>> tokenizer_list = {
+        {4097, 1425, 3450, 1953, 580, 3950, 1739, 1091, 1387, 1387, 3121, 1537, 1769, 1722, 3331, 499, 2483, 2382, 581, 3395, 705, 3403, 1109, 3325, 3230, 1210, 3989, 3069, 2816, 3507, 2170, 1349, 3340, 153, 3634, 1785, 2833, 3794, 2170, 1349, 3340, 153, 3598, 201, 1415, 957, 2049, 2998, 1841, 899, 1057, 1425, 3981, 4096, 4097, 4097, 4097, 4097, 4097},
+        {4097, 4097, 2031, 3919, 1534, 1678, 2323, 2149, 1011, 2000, 3130, 3384, 3352, 3363, 3256, 665, 766, 2128, 3130, 86, 1994, 3044, 766, 2730, 1321, 3026, 2833, 4017, 1873, 1558, 1983, 2576, 2543, 468, 1742, 368, 1469, 1465, 2168, 1823, 2543, 3611, 1742, 2632, 3214, 3553, 2911, 178, 3457, 1290, 2095, 31, 1190, 2426, 4096, 4097, 4097, 4097, 4097},
+        {4097, 4097, 4097, 2825, 436, 2699, 4000, 848, 2755, 560, 3622, 3010, 2763, 559, 3140, 2499, 3431, 212, 1895, 866, 1308, 2488, 1768, 1805, 405, 1337, 115, 2114, 3985, 351, 486, 1561, 3523, 668, 2244, 2222, 3144, 1516, 2806, 1436, 443, 2699, 2624, 3783, 1091, 2822, 986, 2466, 3262, 3738, 3421, 1459, 2570, 1479, 3909, 4096, 4097, 4097, 4097},
+        {4097, 4097, 4097, 4097, 2111, 960, 3847, 556, 2189, 1819, 147, 528, 351, 3694, 94, 1628, 2701, 1378, 678, 734, 1332, 3823, 1978, 1061, 3846, 98, 1121, 2919, 506, 1271, 3491, 149, 2617, 1763, 2414, 487, 3796, 2228, 885, 3237, 1557, 858, 1893, 3872, 3796, 1104, 2093, 3088, 3867, 2098, 3127, 3117, 3561, 4068, 2569, 1532, 4096, 4097, 4097},
+        {4097, 4097, 4097, 4097, 4097, 1144, 3396, 774, 976, 468, 3552, 3130, 3861, 1154, 2481, 3849, 1843, 3673, 3741, 1504, 2983, 667, 765, 1583, 580, 1139, 899, 863, 1960, 169, 582, 774, 3130, 1766, 1294, 927, 2585, 1666, 3620, 3129, 3186, 1766, 3474, 927, 2585, 2543, 28, 1885, 2693, 3517, 1084, 840, 2602, 707, 3397, 2112, 2609, 4096, 4097},
+        {4097, 4097, 4097, 4097, 4097, 4097, 4085, 3320, 902, 3268, 2271, 2706, 1546, 1114, 4056, 2683, 729, 3330, 770, 1451, 1367, 2422, 3714, 663, 802, 1602, 3306, 2690, 550, 1911, 3866, 2501, 1221, 1012, 1246, 2455, 809, 1076, 1655, 139, 182, 3417, 2182, 2378, 674, 1434, 2357, 1709, 3218, 2641, 3246, 4071, 2230, 2581, 2929, 114, 585, 3602, 4096},
+        {4097, 4097, 4097, 4097, 4097, 4097, 4097, 3204, 4074, 3326, 2321, 2944, 1826, 1331, 3742, 844, 1878, 480, 2589, 3322, 2548, 2752, 1099, 2793, 1218, 317, 1153, 1200, 3539, 2933, 2537, 579, 2338, 3941, 1221, 759, 3000, 3321, 747, 307, 1142, 2415, 3056, 2590, 93, 527, 3496, 1471, 2446, 601, 408, 2707, 1790, 224, 3875, 229, 1291, 3945, 1855},
+        {40, 1513, 944, 614, 264, 829, 11, 714, 358, 2776, 1588, 311, 1492, 498, 448, 894, 4755, 476, 4755, 498, 614, 0, 151936, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937}
+    };
+#endif
+    auto vec = tokenizer_list.back();
+    size_t size = vec.size();
+    auto it = std::find(vec.begin(), vec.end(), text_vocabsize);
+    if (it != vec.end()) {
+        size = std::distance(vec.begin(), it) + 1;
+    }
+    vec.resize(size);
+    auto text = tokenizer->Decode(vec);
+    return strip(text);
 }
 
 //{
@@ -392,4 +411,29 @@ generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int l
     return {audio_feature, input_ids};
 }
 
+std::string load_bytes_from_file(const std::string& path) {
+  std::ifstream fs(path, std::ios::in | std::ios::binary);
+  if (fs.fail()) {
+    std::cerr << "Cannot open " << path << std::endl;
+    exit(1);
+  }
+  std::string data;
+  fs.seekg(0, std::ios::end);
+  size_t size = static_cast<size_t>(fs.tellg());
+  fs.seekg(0, std::ios::beg);
+  data.resize(size);
+  fs.read(data.data(), size);
+  return data;
+}
 
+std::string strip(const std::string& str, const std::string& chars) {
+    // 查找第一个不在 chars 中的字符位置
+    size_t start = str.find_first_not_of(chars);
+    if (start == std::string::npos) return "";  // 全为需删除字符时返回空
+
+    // 查找最后一个不在 chars 中的字符位置
+    size_t end = str.find_last_not_of(chars);
+
+    // 截取子字符串（含 start 和 end 的位置）
+    return str.substr(start, end - start + 1);
+}

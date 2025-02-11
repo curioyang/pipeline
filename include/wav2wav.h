@@ -2,6 +2,7 @@
 #include <numeric>
 #include <vector>
 #include <cmath>
+#include <tokenizers_cpp.h>
 
 using namespace Ort;
 
@@ -127,12 +128,13 @@ static Value Input(const std::vector<long> &shape, const std::shared_ptr<Runtime
     return Value::CreateTensor<T>(rtmgr->allocator(), shape.data(), shape.size());
 }
 
-/*GenerationResult*/void A1_A2(std::vector<std::vector<float>> &audio_feature,
+std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
                                std::vector<std::vector<int64_t>> &input_ids,
                                int length,
                                ONNXModel &adapter,
                                ONNXModel &wte,
-                               ONNXModel &gpt/*, Tokenizer& tokenizer*/);
+                               ONNXModel &gpt,
+                               std::unique_ptr<tokenizers::Tokenizer>& tokenizer);
 
 
 //std::pair<std::vector<float>, int> load_audio(const std::string& path);
@@ -147,3 +149,5 @@ generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int l
 #include <random>
 
 int sample(tensor_info<float> &logits, float temperature, int top_k, float top_p);
+std::string load_bytes_from_file(const std::string &path);
+std::string strip(const std::string &str, const std::string &chars = " \t\n\v\f\r");

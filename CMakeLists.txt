@@ -34,6 +34,11 @@ set(CNPY_PATH ${CMAKE_SOURCE_DIR}/3rd_party/libcnpy)
 link_directories(${CNPY_PATH}/lib)
 include_directories(${CNPY_PATH}/include)
 
+# tokenizers-cpp
+set(TOKENIZER_PATH ${CMAKE_SOURCE_DIR}/3rd_party/tokenizers-cpp)
+link_directories(${TOKENIZER_PATH}/lib)
+include_directories(${TOKENIZER_PATH}/include)
+
 include_directories(${ROSA_PATH}
                     ${ONNXRUNTIME_PATH}/include
                     ${CMAKE_SOURCE_DIR}/include)
@@ -43,7 +48,7 @@ FILE(GLOB SRCS ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 add_library(wav2wav STATIC ${SRCS}
         src/audio.cpp
         src/utils.cpp)
-target_link_libraries(wav2wav onnxruntime SndFile::sndfile fftw3 cnpy)
+target_link_libraries(wav2wav onnxruntime SndFile::sndfile fftw3 cnpy tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
 
 add_executable(demo ${CMAKE_SOURCE_DIR}/demo/demo.cpp)
 target_link_libraries(demo wav2wav)
