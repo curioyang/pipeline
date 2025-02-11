@@ -280,13 +280,13 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
         outputs[7].emplace_back(token_T);
         input_pos[0] += 1;
 
-        for (int i = 0; i < 8; i++)
-        {
-            std::cout << "output: [" << i << "] ";
-            for (auto t : outputs[i])
-                std::cout << t << " ";
-            std::cout<<std::endl;
-        }
+        // for (int i = 0; i < 8; i++)
+        // {
+        //     std::cout << "output: [" << i << "] ";
+        //     for (auto t : outputs[i])
+        //         std::cout << t << " ";
+        //     std::cout<<std::endl;
+        // }
     }
 
     return outputs;
@@ -311,11 +311,7 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
                                       padded_text_vocabsize,
                                       true,
                                       false);
-    for (auto &i: tokenizer_list) {
-        for (auto &j: i)
-            std::cout << j << " ";
-        std::cout << std::endl;
-    }
+
 #else
     std::vector<std::vector<int>> tokenizer_list = {
         {4097, 1425, 3450, 1953, 580, 3950, 1739, 1091, 1387, 1387, 3121, 1537, 1769, 1722, 3331, 499, 2483, 2382, 581, 3395, 705, 3403, 1109, 3325, 3230, 1210, 3989, 3069, 2816, 3507, 2170, 1349, 3340, 153, 3634, 1785, 2833, 3794, 2170, 1349, 3340, 153, 3598, 201, 1415, 957, 2049, 2998, 1841, 899, 1057, 1425, 3981, 4096, 4097, 4097, 4097, 4097, 4097},
