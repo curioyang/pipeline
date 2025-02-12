@@ -310,19 +310,21 @@ int countElementsBetweenHashes(const std::vector<int> &lst) {
     }
 }
 
-std::vector<std::vector<int>> reconstruct_tensors(std::vector<int> &flatten_snac) {
+std::vector<std::vector<long>> reconstruct_tensors(std::vector<int> &flatten_snac) {
     auto size_in_two_hash = countElementsBetweenHashes(flatten_snac);
-    std::vector<std::vector<int>> snac_output(3);
+    if(size_in_two_hash != 7)
+        throw std::runtime_error("elem between hash not 7");
+    std::vector<std::vector<long>> snac_output(3);
     for (int i = 0; i < flatten_snac.size();) {
-        snac_output[1].emplace_back(flatten_snac[i + 1]);
+        snac_output[0].emplace_back((long)flatten_snac[i + 1]);
 
-        snac_output[2].emplace_back(flatten_snac[i + 2]);
-        snac_output[2].emplace_back(flatten_snac[i + 5]);
+        snac_output[1].emplace_back((long)flatten_snac[i + 2]);
+        snac_output[1].emplace_back((long)flatten_snac[i + 5]);
 
-        snac_output[3].emplace_back(flatten_snac[i + 3]);
-        snac_output[3].emplace_back(flatten_snac[i + 4]);
-        snac_output[3].emplace_back(flatten_snac[i + 6]);
-        snac_output[3].emplace_back(flatten_snac[i + 7]);
+        snac_output[2].emplace_back((long)flatten_snac[i + 3]);
+        snac_output[2].emplace_back((long)flatten_snac[i + 4]);
+        snac_output[2].emplace_back((long)flatten_snac[i + 6]);
+        snac_output[2].emplace_back((long)flatten_snac[i + 7]);
 
         i += 8;
     }
@@ -332,7 +334,7 @@ std::vector<std::vector<int>> reconstruct_tensors(std::vector<int> &flatten_snac
 std::vector<int> reconscruct_snac(std::vector<std::vector<int>> &src_snac) {
     std::vector<std::vector<int>> src_snac_(7);
     for (int i = 0; i < 7; i++) {
-        src_snac_[i] = std::vector<int>(src_snac[i].begin() + i, src_snac[i].end());
+        src_snac_[i] = std::vector<int>(src_snac[i].begin() + i+1, src_snac[i].end());
     }
     std::vector<int> snac_output;
     size_t last_size = src_snac_[src_snac_.size() - 1].size();
@@ -386,10 +388,10 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
     auto audio = reconstruct_tensors(audio_list);
 
     // process 3 audio into 1 for single dynamic axis.
-    std::vector<int> audio_(audio[0].begin(), audio[0].end());
+    std::vector<long> audio_(audio[0].begin(), audio[0].end());
     audio_.insert(audio_.end(), audio[1].begin(), audio[1].end());
     audio_.insert(audio_.end(), audio[2].begin(), audio[2].end());
-    tensor_info<int> snac_input_tensor{.data=audio_, .shape ={1, (int) audio_.size()}};
+    tensor_info<long> snac_input_tensor{.data = audio_, .shape = {1, (int)audio_.size()}};
 
     std::vector<Value> inputs;
     auto snac_input = Input<long>(snac_input_tensor.shape, snac.runtime_manager_);

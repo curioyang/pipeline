@@ -553,7 +553,7 @@ generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int l
 
 std::vector<int> reconscruct_snac(std::vector<std::vector<int>> &src_snac);
 
-std::vector<std::vector<int>> reconstruct_tensors(std::vector<int> &flatten_snac);
+std::vector<std::vector<long>> reconstruct_tensors(std::vector<int> &flatten_snac);
 
 #include <algorithm>
 #include <random>
