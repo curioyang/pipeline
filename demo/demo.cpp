@@ -22,11 +22,13 @@ int main(int argc, const char* argv[])
     std::string adapter_model = models_dir + "/adapter/adapter.onnx";
     std::string wte_model = models_dir + "/wte/wte.onnx";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
+    std::string snac_model = models_dir + "/snac/snac.onnx";
 
     ONNXModel whisper(std::make_unique<RuntimeManager>("whisper"), whisper_model);
     ONNXModel adapter(std::make_unique<RuntimeManager>("adapter"), adapter_model);
     ONNXModel wte(std::make_unique<RuntimeManager>("wte"), wte_model );
-    ONNXModel lit_gpt(std::make_unique<RuntimeManager>("lit_gpt"), lit_gpt_model );
+    ONNXModel lit_gpt(std::make_unique<RuntimeManager>("lit_gpt"), lit_gpt_model);
+    ONNXModel snac(std::make_unique<RuntimeManager>("snac"), snac_model);
 
     // Tokenizer
     std::string tokenizer_file = models_dir + "/../checkpoint/tokenizer.json";
@@ -76,7 +78,7 @@ int main(int argc, const char* argv[])
     // auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
 
     // 执行生成
-    // auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, tokenizer);
+    // auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, snac, tokenizer);
     // std::cout << "Generated text: " << text << std::endl;
 #endif
     return 0;

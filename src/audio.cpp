@@ -165,6 +165,7 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
     // Path is python3.12/site-packages/whisper/assets/mel_filters.npz : contains two arrays: mel_80 and mel_128
     // here we need mel_80.
     // TODO: remove libcnpy, use mel_80 directly. use python to convert mel_filters.npz[0] to mel_filters.bin
+
     auto filters = cnpy::npz_load("../data/mel_filters.npz");
     auto mel_filters_info = filters["mel_80"];
     std::vector<std::vector<float>> mel_filter_80(mel_filters_info.shape[0],
@@ -206,28 +207,38 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
 }
 #endif
 
-#if VAD_ENABLE
-std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr)
-{
-    size_t frame_count = audio.size();
-    auto duration_ms = (float)frame_count / sr * 1000.0f;
-    pad_or_trim(audio);
-    auto mel = log_mel_spectrogram(audio);
-    return {mel, duration_ms / 20 + 1};
-}
-#else
-std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& path, int sr)
-{
-    SF_INFO sf_info;
-    SNDFILE* file = sf_open(path.c_str(), SFM_READ, &sf_info);
-    std::vector<float> audio(sf_info.frames * sf_info.channels);
-    size_t frame_count = sf_readf_float(file, audio.data(), audio.size());
-    sf_close(file);
+// #if VAD_ENABLE
+// std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr)
+// {
+//     size_t frame_count = audio.size();
+//     auto duration_ms = (float)frame_count / sr * 1000.0f;
+//     pad_or_trim(audio);
+//     auto mel = log_mel_spectrogram(audio);
+//     return {mel, duration_ms / 20 + 1};
+// }
+// #else
+// std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& path, int sr)
+// {
+//     SF_INFO sf_info;
+//     SNDFILE* file = sf_open(path.c_str(), SFM_READ, &sf_info);
+//     std::vector<float> audio(sf_info.frames * sf_info.channels);
+//     size_t frame_count = sf_readf_float(file, audio.data(), audio.size());
+//     sf_close(file);
 
-    auto duration_ms = (float)frame_count / sr * 1000.0f;
-    pad_or_trim(audio);
-    auto mel = log_mel_spectrogram(audio);
+//     auto duration_ms = (float)frame_count / sr * 1000.0f;
+//     pad_or_trim(audio);
+//     auto mel = log_mel_spectrogram(audio);
 
-    return {mel, duration_ms / 20 + 1};
-}
-#endif
+//     return {mel, duration_ms / 20 + 1};
+// }
+// #endif
+
+// void save_audio(const std::string &path, const std::vector<float> &audio, int sr)
+// {
+//     SF_INFO sf_info;
+//     sf_info.samplerate = sr;
+//     sf_info.channels = 1;
+//     sf_info.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+//     SNDFILE *file = sf_open(path.c_str(), SFM_WRITE, &sf_info);
+//     sf_writef_float(file, audio.data(), audio.size());
+// }

@@ -90,9 +90,13 @@ stft(std::vector<float> &signal, int windowSize, int hopSize, const std::vector<
 std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float> &audio, int n_mels = 80, int padding = 0);
 
 #if VAD_ENABLE
+
 std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr = SAMPLE_RATE);
+
 #else
 std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string &path, int sr = SAMPLE_RATE);
 #endif
+
+void save_audio(const std::string &path, const std::vector<float> &audio, int sr = SAMPLE_RATE);
 
 #endif //WAV2WAV_AUDIO_H
