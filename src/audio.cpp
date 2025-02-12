@@ -140,7 +140,7 @@ std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
     return transposed;
 }
 
-
+#if 0
 std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
 {
     auto window = hann_window(N_FFT);
@@ -204,6 +204,7 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
     }
     return mel_spec;
 }
+#endif
 
 #if VAD_ENABLE
 std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr)

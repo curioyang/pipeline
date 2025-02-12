@@ -5,14 +5,18 @@
 
 #ifndef WAV2WAV_AUDIO_H
 #define WAV2WAV_AUDIO_H
-#include <sndfile.h>
 #include <cassert>
 #include <complex>
-#include "librosa.h"
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <vector>
+
+#if defined(ONNX)
+#include <sndfile.h>
+#include "librosa.h"
 #include "cnpy.h"
+#endif
 
 //               utils
 ///////////////////////////////////////////////////

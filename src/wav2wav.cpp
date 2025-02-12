@@ -109,6 +109,7 @@ int sample(tensor_info<float> &logits, float temperature, int top_k, float top_p
 //    return dist(gen);
 }
 
+#if defined(ONNX)
 std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
 next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_info<long> &input_pos_tensor,
                 tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step,
@@ -434,6 +435,7 @@ std::string load_bytes_from_file(const std::string& path) {
   fs.read(data.data(), size);
   return data;
 }
+#endif
 
 std::string strip(const std::string& str, const std::string& chars) {
     // 查找第一个不在 chars 中的字符位置

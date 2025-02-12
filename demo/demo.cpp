@@ -16,6 +16,7 @@ int main(int argc, const char* argv[])
     std::string models_dir = argv[1];
     std::cout << "models dir is: " << models_dir << std::endl;
 
+#if defined(ONNX)
     std::string vad_model = models_dir + "/vad/silero_vad.onnx";
     std::string whisper_model = models_dir + "/whisper/whisper.onnx";
     std::string adapter_model = models_dir + "/adapter/adapter.onnx";
@@ -31,6 +32,13 @@ int main(int argc, const char* argv[])
     std::string tokenizer_file = models_dir + "/../checkpoint/tokenizer.json";
     auto blob = load_bytes_from_file(tokenizer_file);
     auto tokenizer = tokenizers::Tokenizer::FromBlobJSON(blob);
+#else
+    std::string vad_model = models_dir + "/vad/vad_calib60_v7167122.kmodel";
+    // std::string whisper_model = models_dir + "/whisper/whisper.onnx";
+    // std::string adapter_model = models_dir + "/adapter/adapter.onnx";
+    // std::string wte_model = models_dir + "/wte/wte.onnx";
+    // std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
+#endif
 
     // 处理音频输入
 #if VAD_ENABLE
@@ -42,7 +50,11 @@ int main(int argc, const char* argv[])
     }
 
     std::unique_ptr<VadIterator> vad;
+#if defined(ONNX)
     vad.reset(new OnnxVadIterator(vad_model));
+#else
+    vad.reset(new NncaseVadIterator(vad_model));
+#endif
     vad->process(input_wav);
 
     // get_speech_timestamps
@@ -53,16 +65,19 @@ int main(int argc, const char* argv[])
         std::cout << stamps[i].c_str() << std::endl;
     }
 
-    std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
-    auto [mel, length] = load_audio(audio);
+    // std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
+    // auto [mel, length] = load_audio(audio);
 #else
     auto [mel, length] = load_audio(argv[2]);
 #endif
-    auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
+
+#if defined(ONNX)
+
+    // auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
 
     // 执行生成
-    auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, tokenizer);
-    std::cout << "Generated text: " << text << std::endl;
-
+    // auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, tokenizer);
+    // std::cout << "Generated text: " << text << std::endl;
+#endif
     return 0;
 }

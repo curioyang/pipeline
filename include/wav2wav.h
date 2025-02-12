@@ -1,4 +1,3 @@
-#include <onnxruntime_cxx_api.h>
 #include <numeric>
 #include <vector>
 #include <cmath>
@@ -6,7 +5,16 @@
 #include <iostream>
 #include <tokenizers_cpp.h>
 
+#if defined(ONNX)
+#include <onnxruntime_cxx_api.h>
 using namespace Ort;
+#else
+#include <nncase/runtime/interpreter.h>
+#include <nncase/runtime/runtime_tensor.h>
+#include <nncase/runtime/simple_types.h>
+#include <nncase/runtime/util.h>
+#include <nncase/runtime/runtime_op_utility.h>
+#endif
 
 constexpr int padded_audio_vocab = 4096 + 64;
 
@@ -43,6 +51,7 @@ struct tensor_info {
     std::vector<long> shape;
 };
 
+#if defined(ONNX)
 class RuntimeManager {
 public:
     explicit RuntimeManager(const char *name) {
@@ -116,6 +125,7 @@ private:
     std::vector<AllocatedStringPtr> input_strs_, output_strs_;
     std::vector<const char *> input_names_, output_names_;
 };
+#endif
 
 #define VAD_ENABLE 1
 
@@ -348,6 +358,7 @@ public:
     };
 };
 
+#if defined(ONNX)
 class OnnxVadIterator: public VadIterator
 {
 private:
@@ -542,14 +553,253 @@ public:
         init_model(ModelPath);
     }
 };
+#else
+#define NNCASE_DUMP_BIN 0
+class NncaseVadIterator: public VadIterator
+{
+private:
+    void init_model(const std::string& model_path)
+    {
+        std::ifstream ifs(model_path, std::ios::binary);
+        interpreter_.load_model(ifs).unwrap_or_throw();
+        entry_function_ = interpreter_.entry_function().unwrap_or_throw();
+    };
+
+#if NNCASE_DUMP_BIN
+    void dump_to_bin(const char *file_name, const char *buf, size_t size)
+    {
+        std::ofstream ofs(file_name, std::ios::out | std::ios::binary);
+        ofs.write(buf, size);
+        ofs.close();
+    }
+#endif
+    void predict(const std::vector<float> &data)
+    {
+        // Infer
+        std::vector<nncase::value_t> inputs;
+#if NNCASE_DUMP_BIN
+        static size_t count = 0;
 #endif
 
+        // set input1
+        input.assign(data.begin(), data.end());
+        auto type = entry_function_->parameter_type(0).expect("parameter type out of index");
+        auto ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
+        auto data_type = ts_type->dtype()->typecode();
+        std::vector<size_t> tmp1 { input_node_dims[0], input_node_dims[1]};
+        nncase::dims_t shape1(tmp1.begin(), tmp1.end());
+        auto input_tensor = nncase::runtime::host_runtime_tensor::create(data_type, shape1, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
+        auto input_buffer = input_tensor->buffer().as_host().unwrap_or_throw();
+        auto input_mapped = input_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
+        auto input_ptr = input_mapped.buffer().as_span<float>().data();
+        memcpy(reinterpret_cast<void *>(input_ptr), reinterpret_cast<const void *>(input.data()), input.size() * sizeof(float));
+        input_buffer.sync(nncase::runtime::sync_write_back, true).unwrap_or_throw();
+        inputs.push_back(input_tensor);
+#if NNCASE_DUMP_BIN
+        char file_name[64] = "\0";
+        snprintf(file_name, sizeof(file_name) / sizeof(file_name[0]), "tmp/input_%08lu.bin", count);
+        dump_to_bin(file_name, reinterpret_cast<const char *>(input_ptr), input.size() * sizeof(float));
+#endif
+
+        // set input2
+        type = entry_function_->parameter_type(1).expect("parameter type out of index");
+        ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
+        data_type = ts_type->dtype()->typecode();
+        std::vector<size_t> tmp2 { state_node_dims[0], state_node_dims[1], state_node_dims[2] };
+        nncase::dims_t shape2(tmp2.begin(), tmp2.end());
+        auto state_tensor = nncase::runtime::host_runtime_tensor::create(data_type, shape2, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
+        auto state_buffer = state_tensor->buffer().as_host().unwrap_or_throw();
+        auto state_mapped = state_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
+        auto state_ptr = state_mapped.buffer().as_span<float>().data();
+        memcpy(reinterpret_cast<void *>(state_ptr), reinterpret_cast<const void *>(_state.data()), _state.size() * sizeof(float));
+        state_buffer.sync(nncase::runtime::sync_write_back, true).unwrap_or_throw();
+        inputs.push_back(state_tensor);
+#if NNCASE_DUMP_BIN
+        snprintf(file_name, sizeof(file_name) / sizeof(file_name[0]), "tmp/state_%08lu.bin", count);
+        dump_to_bin(file_name, reinterpret_cast<const char *>(state_ptr), _state.size() * sizeof(float));
+#endif
+
+        // set input3
+        type = entry_function_->parameter_type(2).expect("parameter type out of index");
+        ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
+        data_type = ts_type->dtype()->typecode();
+        std::vector<size_t> tmp3 { 1 };
+        nncase::dims_t shape3(tmp3.begin(), tmp3.end());
+        auto sr_tensor = nncase::runtime::host_runtime_tensor::create(data_type, shape3, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
+        auto sr_buffer = sr_tensor->buffer().as_host().unwrap_or_throw();
+        auto sr_mapped = sr_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
+        auto sr_ptr = sr_mapped.buffer().as_span<int64_t>().data();
+        sr_ptr[0] = sr[0];
+        sr_buffer.sync(nncase::runtime::sync_write_back, true).unwrap_or_throw();
+        inputs.push_back(sr_tensor);
+#if NNCASE_DUMP_BIN
+        snprintf(file_name, sizeof(file_name) / sizeof(file_name[0]), "tmp/sr_%08lu.bin", count);
+        dump_to_bin(file_name, reinterpret_cast<const char *>(sr_ptr), sizeof(int64_t));
+        count++;
+#endif
+
+        // Infer
+        auto outputs = entry_function_->invoke(inputs).unwrap_or_throw().as<nncase::tuple>().unwrap_or_throw();
+
+        // output1
+        auto output = outputs->fields()[0].as<nncase::tensor>().unwrap_or_throw();
+        auto output_buffer = output->buffer().as_host().unwrap_or_throw();
+        auto output_mapped = output_buffer.map(nncase::runtime::map_read).unwrap_or_throw();
+        auto output_span = output_mapped.buffer().as_span<float>();
+        // Output probability & update h,c recursively
+        float speech_prob = output_span.data()[0];
+        // std::cout << "speech_prob = " << speech_prob << std::endl;
+
+        // output2
+        auto stateN_tensor = outputs->fields()[1].as<nncase::tensor>().unwrap_or_throw();
+        auto stateN_buffer = stateN_tensor->buffer().as_host().unwrap_or_throw();
+        auto stateN_mapped = stateN_buffer.map(nncase::runtime::map_read).unwrap_or_throw();
+        auto stateN_span = stateN_mapped.buffer().as_span<float>();
+        float *stateN = stateN_span.data();
+        std::memcpy(_state.data(), stateN, size_state * sizeof(float));
+
+        // Push forward sample index
+        current_sample += window_size_samples;
+
+        // Reset temp_end when > threshold
+        if ((speech_prob >= threshold))
+        {
+#ifdef __DEBUG_SPEECH_PROB___
+            float speech = current_sample - window_size_samples; // minus window_size_samples to get precise start time point.
+            printf("{    start: %.3f s (%.3f) %08d}\n", 1.0 * speech / sample_rate, speech_prob, current_sample- window_size_samples);
+#endif //__DEBUG_SPEECH_PROB___
+            if (temp_end != 0)
+            {
+                temp_end = 0;
+                if (next_start < prev_end)
+                    next_start = current_sample - window_size_samples;
+            }
+            if (triggered == false)
+            {
+                triggered = true;
+
+                current_speech.start = current_sample - window_size_samples;
+            }
+            return;
+        }
+
+        if (
+            (triggered == true)
+            && ((current_sample - current_speech.start) > max_speech_samples)
+            ) {
+            if (prev_end > 0) {
+                current_speech.end = prev_end;
+                speeches.push_back(current_speech);
+                current_speech = timestamp_t();
+
+                // previously reached silence(< neg_thres) and is still not speech(< thres)
+                if (next_start < prev_end)
+                    triggered = false;
+                else{
+                    current_speech.start = next_start;
+                }
+                prev_end = 0;
+                next_start = 0;
+                temp_end = 0;
+
+            }
+            else{
+                current_speech.end = current_sample;
+                speeches.push_back(current_speech);
+                current_speech = timestamp_t();
+                prev_end = 0;
+                next_start = 0;
+                temp_end = 0;
+                triggered = false;
+            }
+            return;
+
+        }
+        if ((speech_prob >= (threshold - 0.15)) && (speech_prob < threshold))
+        {
+            if (triggered) {
+#ifdef __DEBUG_SPEECH_PROB___
+                float speech = current_sample - window_size_samples; // minus window_size_samples to get precise start time point.
+                printf("{ speeking: %.3f s (%.3f) %08d}\n", 1.0 * speech / sample_rate, speech_prob, current_sample - window_size_samples);
+#endif //__DEBUG_SPEECH_PROB___
+            }
+            else {
+#ifdef __DEBUG_SPEECH_PROB___
+                float speech = current_sample - window_size_samples; // minus window_size_samples to get precise start time point.
+                printf("{  silence: %.3f s (%.3f) %08d}\n", 1.0 * speech / sample_rate, speech_prob, current_sample - window_size_samples);
+#endif //__DEBUG_SPEECH_PROB___
+            }
+            return;
+        }
+
+
+        // 4) End
+        if ((speech_prob < (threshold - 0.15)))
+        {
+#ifdef __DEBUG_SPEECH_PROB___
+            float speech = current_sample - window_size_samples - speech_pad_samples; // minus window_size_samples to get precise start time point.
+            printf("{      end: %.3f s (%.3f) %08d}\n", 1.0 * speech / sample_rate, speech_prob, current_sample - window_size_samples);
+#endif //__DEBUG_SPEECH_PROB___
+            if (triggered == true)
+            {
+                if (temp_end == 0)
+                {
+                    temp_end = current_sample;
+                }
+                if (current_sample - temp_end > min_silence_samples_at_max_speech)
+                    prev_end = temp_end;
+                // a. silence < min_slience_samples, continue speaking
+                if ((current_sample - temp_end) < min_silence_samples)
+                {
+
+                }
+                // b. silence >= min_slience_samples, end speaking
+                else
+                {
+                    current_speech.end = temp_end;
+                    if (current_speech.end - current_speech.start > min_speech_samples)
+                    {
+                        speeches.push_back(current_speech);
+                        current_speech = timestamp_t();
+                        prev_end = 0;
+                        next_start = 0;
+                        temp_end = 0;
+                        triggered = false;
+                    }
+                }
+            }
+            else {
+                // may first windows see end state.
+            }
+            return;
+        }
+    };
+
+private:
+    nncase::runtime::interpreter interpreter_;
+    nncase::runtime::runtime_function *entry_function_;
+
+public:
+    // Construction
+    NncaseVadIterator(const std::string ModelPath,
+        int Sample_rate = 16000, int windows_frame_size = 32,
+        float Threshold = 0.5, int min_silence_duration_ms = 500,
+        int speech_pad_ms = 32, int min_speech_duration_ms = 32,
+        float max_speech_duration_s = std::numeric_limits<float>::infinity()): VadIterator(Sample_rate, windows_frame_size,
+        Threshold, min_silence_duration_ms, speech_pad_ms, min_speech_duration_ms, max_speech_duration_s)
+    {
+        init_model(ModelPath);
+    }
+};
+#endif
+#endif
+
+#if defined(ONNX)
 std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
 next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_info<long> &input_pos_tensor,
                 tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step, float temperature,
                 int top_k, float top_p);
 
-tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs);
 
 template<typename T>
 static Value Input(const std::vector<long> &shape, const std::shared_ptr<RuntimeManager> &rtmgr) {
@@ -568,10 +818,11 @@ std::pair<std::vector<std::vector<float>>, std::vector<std::vector<int64_t>>>
 generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int length,
                    int step = 0,
                    int special_token_a = _answer_a, int special_token_t = _answer_t);
-
+#endif
 #include <algorithm>
 #include <random>
 
+tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs);
 int sample(tensor_info<float> &logits, float temperature, int top_k, float top_p);
 std::string load_bytes_from_file(const std::string &path);
 std::string strip(const std::string &str, const std::string &chars = " \t\n\v\f\r");
