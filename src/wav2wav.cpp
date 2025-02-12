@@ -153,7 +153,7 @@ next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_in
         next_audio_tokens.emplace_back(next_a);
     }
     auto next_t = sample(logit_t, temperature, top_k, top_p);
-    return std::tuple(next_audio_tokens, next_t, next_ks, next_vs);
+    return {next_audio_tokens, next_t, next_ks, next_vs};
 }
 
 
@@ -221,8 +221,6 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
                                                                    past_ks_tensor, past_vs_tensor, 1, temperature,
                                                                    top_k,
                                                                    top_p);
-//    past_ks_tensor = past_ks_;
-//    past_vs_tensor = past_vs_;
 
     for (int i = 0; i < 7; i++)
         outputs[i].emplace_back(tokens_A[i]);
@@ -250,18 +248,14 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
         tensor_info<long> input_pos_loop_tensor{.data=input_pos, .shape={(long) input_pos.size()}};
 //        std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
         auto [_tokens_A, _token_T, _past_ks_, _past_vs_] = next_token_A1T2(gpt,
-                                                                          input_embs_loop_tensor,
-                                                                          input_pos_loop_tensor,
-                                                                          past_ks_,
-                                                                          past_vs_,
-                                                                          sub_step,
-                                                                          temperature,
-                                                                          top_k,
-                                                                          top_p);
-//        past_ks_tensor = past_ks_;
-//        past_vs_tensor = past_vs_;
-//        tokens_A = tokens_A_loop;
-//        token_T = token_T_loop;
+                                                                           input_embs_loop_tensor,
+                                                                           input_pos_loop_tensor,
+                                                                           past_ks_,
+                                                                           past_vs_,
+                                                                           sub_step,
+                                                                           temperature,
+                                                                           top_k,
+                                                                           top_p);
         tokens_A = _tokens_A;
         token_T = _token_T;
         past_ks_ = _past_ks_;
@@ -269,7 +263,7 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
 
         if (text_end)
             token_T = pad_id_t;
-        if ((int) tokens_A[tokens_A.size()-1] == eos_id_a)
+        if ((int) tokens_A[tokens_A.size() - 1] == eos_id_a)
             break;
         if (token_T == eos_id_t)
             text_end = true;
@@ -292,13 +286,75 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
     return outputs;
 }
 
+int countElementsBetweenHashes(const std::vector<int> &lst) {
+    try {
+        // Find the index of the first '#'
+        auto first_index = std::find(lst.begin(), lst.end(), hash_flag);
+
+        if (first_index == lst.end()) {
+            throw std::invalid_argument("No '#' found in the list.");
+        }
+
+        // Find the index of the second '#' after the first
+        auto second_index = std::find(first_index + 1, lst.end(), hash_flag);
+
+        if (second_index == lst.end()) {
+            throw std::invalid_argument("Only one '#' found in the list.");
+        }
+
+        // Calculate the number of elements between the two indices
+        return std::distance(first_index, second_index) - 1;
+    } catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return -1; // 返回-1表示发生错误
+    }
+}
+
+std::vector<std::vector<int>> reconstruct_tensors(std::vector<int> &flatten_snac) {
+    auto size_in_two_hash = countElementsBetweenHashes(flatten_snac);
+    std::vector<std::vector<int>> snac_output(3);
+    for (int i = 0; i < flatten_snac.size();) {
+        snac_output[1].emplace_back(flatten_snac[i + 1]);
+
+        snac_output[2].emplace_back(flatten_snac[i + 2]);
+        snac_output[2].emplace_back(flatten_snac[i + 5]);
+
+        snac_output[3].emplace_back(flatten_snac[i + 3]);
+        snac_output[3].emplace_back(flatten_snac[i + 4]);
+        snac_output[3].emplace_back(flatten_snac[i + 6]);
+        snac_output[3].emplace_back(flatten_snac[i + 7]);
+
+        i += 8;
+    }
+    return snac_output;
+}
+
+std::vector<int> reconscruct_snac(std::vector<std::vector<int>> &src_snac) {
+    std::vector<std::vector<int>> src_snac_(7);
+    for (int i = 0; i < 7; i++) {
+        src_snac_[i] = std::vector<int>(src_snac[i].begin() + i, src_snac[i].end());
+    }
+    std::vector<int> snac_output;
+    size_t last_size = src_snac_[src_snac_.size() - 1].size();
+
+
+    for (int i = 0; i < last_size; i++) {
+        snac_output.emplace_back(hash_flag);
+        for (int j = 0; j < 7; j++) {
+            snac_output.emplace_back(src_snac_[j][i]);
+        }
+    }
+    return snac_output;
+}
+
 std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
-                               std::vector<std::vector<int64_t>> &input_ids,
-                               int length,
-                               ONNXModel &adapter,
-                               ONNXModel &wte,
-                               ONNXModel &gpt,
-                               std::unique_ptr<tokenizers::Tokenizer>& tokenizer) {
+                  std::vector<std::vector<int64_t>> &input_ids,
+                  int length,
+                  ONNXModel &adapter,
+                  ONNXModel &wte,
+                  ONNXModel &gpt,
+                  ONNXModel &snac,
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer) {
 #if 1
     auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, wte, gpt,
                                       2048,
@@ -324,6 +380,31 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
         {40, 1513, 944, 614, 264, 829, 11, 714, 358, 2776, 1588, 311, 1492, 498, 448, 894, 4755, 476, 4755, 498, 614, 0, 151936, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937}
     };
 #endif
+
+#if DUMP_WAV
+    auto audio_list = reconscruct_snac(tokenizer_list);
+    auto audio = reconstruct_tensors(audio_list);
+
+    // process 3 audio into 1 for single dynamic axis.
+    std::vector<int> audio_(audio[0].begin(), audio[0].end());
+    audio_.insert(audio_.end(), audio[1].begin(), audio[1].end());
+    audio_.insert(audio_.end(), audio[2].begin(), audio[2].end());
+    tensor_info<int> snac_input_tensor{.data=audio_, .shape ={1, (int) audio_.size()}};
+
+    std::vector<Value> inputs;
+    auto snac_input = Input<long>(snac_input_tensor.shape, snac.runtime_manager_);
+    auto snac_input_ptr = snac_input.GetTensorMutableData<long>();
+    std::memcpy(snac_input_ptr, snac_input_tensor.data.data(), snac_input_tensor.data.size() * sizeof(long));
+    inputs.emplace_back(std::move(snac_input));
+
+    auto snac_output = snac.onForward(inputs);
+
+    auto audio_hat = snac.get_result_vector<float>(snac_output, 0);
+
+    std::string save_path = "../data/output.wav";
+    save_audio(save_path, audio_hat.data, 24000);
+#endif
+
     auto vec = tokenizer_list.back();
     size_t size = vec.size();
     auto it = std::find(vec.begin(), vec.end(), text_vocabsize);
@@ -420,22 +501,22 @@ generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int l
     return {audio_feature, input_ids};
 }
 
-std::string load_bytes_from_file(const std::string& path) {
-  std::ifstream fs(path, std::ios::in | std::ios::binary);
-  if (fs.fail()) {
-    std::cerr << "Cannot open " << path << std::endl;
-    exit(1);
-  }
-  std::string data;
-  fs.seekg(0, std::ios::end);
-  size_t size = static_cast<size_t>(fs.tellg());
-  fs.seekg(0, std::ios::beg);
-  data.resize(size);
-  fs.read(data.data(), size);
-  return data;
+std::string load_bytes_from_file(const std::string &path) {
+    std::ifstream fs(path, std::ios::in | std::ios::binary);
+    if (fs.fail()) {
+        std::cerr << "Cannot open " << path << std::endl;
+        exit(1);
+    }
+    std::string data;
+    fs.seekg(0, std::ios::end);
+    size_t size = static_cast<size_t>(fs.tellg());
+    fs.seekg(0, std::ios::beg);
+    data.resize(size);
+    fs.read(data.data(), size);
+    return data;
 }
 
-std::string strip(const std::string& str, const std::string& chars) {
+std::string strip(const std::string &str, const std::string &chars) {
     // 查找第一个不在 chars 中的字符位置
     size_t start = str.find_first_not_of(chars);
     if (start == std::string::npos) return "";  // 全为需删除字符时返回空
