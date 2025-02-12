@@ -403,6 +403,8 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
 
     auto audio_hat = snac.get_result_vector<float>(snac_output, 0);
 
+    playAudio(audio_hat.data, 24000);
+
     std::string save_path = "../data/output.wav";
     save_audio(save_path, audio_hat.data, 24000);
 #endif
