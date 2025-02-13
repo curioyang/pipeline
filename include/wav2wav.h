@@ -5,6 +5,8 @@
 #include <cstdarg>
 #include <iostream>
 #include <tokenizers_cpp.h>
+#include "timer.h"
+#include "audio_play.h"
 
 using namespace Ort;
 
@@ -51,9 +53,10 @@ struct tensor_info {
 class RuntimeManager {
 public:
     explicit RuntimeManager(const char *name) {
+        name_ = name;
         env_ = std::make_unique<Ort::Env>(ORT_LOGGING_LEVEL_WARNING, name);
         options_ = std::make_unique<Ort::SessionOptions>();
-        options_->SetIntraOpNumThreads(1);
+        options_->SetIntraOpNumThreads(6);
         options_->SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
         allocator_ = std::make_unique<Ort::AllocatorWithDefaultOptions>();
     }
@@ -72,7 +75,12 @@ public:
         return *allocator_;
     }
 
+    [[nodiscard]] std::string name() const {
+        return name_;
+    }
+
 private:
+    std::string name_;
     std::unique_ptr<Ort::Env> env_;
     std::unique_ptr<Ort::SessionOptions> options_;
     std::unique_ptr<Ort::AllocatorWithDefaultOptions> allocator_;
@@ -96,6 +104,7 @@ public:
     }
 
     std::vector<Value> onForward(const std::vector<Value> &inputs) {
+        Timer timer(runtime_manager_->name());
         auto outputs = session_->Run(Ort::RunOptions{nullptr},
                                      input_names_.data(), inputs.data(), inputs.size(),
                                      output_names_.data(), output_names_.size());
@@ -544,7 +553,8 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
                   ONNXModel &wte,
                   ONNXModel &gpt,
                   ONNXModel &snac,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
+                  StreamingAudioPlayer &player);
 
 std::pair<std::vector<std::vector<float>>, std::vector<std::vector<int64_t>>>
 generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int length,

@@ -2,6 +2,8 @@
 #include "wav2wav.h"
 #include "audio.h"
 #include "utils.h"
+#include <thread>
+
 
 
 tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs) {
@@ -356,7 +358,8 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
                   ONNXModel &wte,
                   ONNXModel &gpt,
                   ONNXModel &snac,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer) {
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
+                  StreamingAudioPlayer &player) {
 #if 1
     auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, wte, gpt,
                                       2048,
@@ -403,7 +406,27 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
 
     auto audio_hat = snac.get_result_vector<float>(snac_output, 0);
 
-    playAudio(audio_hat.data, 24000);
+//    playAudio(audio_hat.data, 24000);
+    auto begin = audio_hat.data.begin();
+    int part_size = 1200; //50ms
+    while(1)
+    {
+        auto end = begin + part_size;
+        if(end >= audio_hat.data.end())
+            end = audio_hat.data.end();
+
+        std::vector<float> tmp_data(begin, end);
+        while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        std::cout << "Wrote chunk, available space: "
+                  << player.available() << std::endl;
+        begin = end;
+        if(end == audio_hat.data.end())
+            break;
+    }
+
 
     std::string save_path = "../data/output.wav";
     save_audio(save_path, audio_hat.data, 24000);
