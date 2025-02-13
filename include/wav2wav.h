@@ -767,6 +767,32 @@ public:
         init_model(ModelPath);
     }
 };
+
+class NncaseModel
+{
+public:
+    NncaseModel(const std::string &kmodel_file) {
+        std::ifstream ifs(kmodel_file, std::ios::binary);
+        interpreter_.load_model(ifs).unwrap_or_throw();
+        entry_function_ = interpreter_.entry_function().unwrap_or_throw();
+    }
+
+    ~NncaseModel() {}
+
+    nncase::value_t run(std::vector<nncase::value_t> &inputs) {
+        return entry_function_->invoke(inputs).unwrap_or_throw();
+    }
+
+    const nncase::runtime::runtime_function *entry() {
+        return entry_function_;
+    }
+
+private:
+    nncase::runtime::interpreter interpreter_;
+    nncase::runtime::runtime_function *entry_function_;
+};
+
+
 #endif
 #endif
 
@@ -793,6 +819,11 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
 
 std::pair<std::vector<std::vector<float>>, std::vector<std::vector<int64_t>>>
 generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int length,
+                   int step = 0,
+                   int special_token_a = _answer_a, int special_token_t = _answer_t);
+#else
+std::pair<std::vector<std::vector<float>>, std::vector<std::vector<int64_t>>>
+generate_input_ids(NncaseModel &model, std::vector<std::vector<float>> &mel, int length,
                    int step = 0,
                    int special_token_a = _answer_a, int special_token_t = _answer_t);
 #endif

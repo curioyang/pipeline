@@ -480,13 +480,17 @@ generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int l
     auto [output_data, output_shape] = model.get_result_vector<float>(output, 0);
 
     std::vector<std::vector<float>> audio_feature(length, std::vector<float>(output_shape[2], 0));
+    std::vector<float> tmp(length * output_shape[2], 0.f);
+    size_t idx = 0;
     std::cout << "audio_feature shape: " << audio_feature.size() << " " << audio_feature[0].size() << std::endl;
     for (int i = 0; i < length; ++i) {
         for (int j = 0; j < output_shape[2]; ++j) {
             audio_feature[i][j] = output_data[i * output_shape[2] + j];
+            tmp[idx++] = audio_feature[i][j];
         }
     }
 
+    write_binary_file("audio_feature_onnx.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
     std::vector<std::vector<int64_t>> input_ids(8);
     for (int i = 0; i < 7; ++i) {
         input_ids[i].push_back(_input_a + 152000 + i * 4160);
@@ -518,6 +522,87 @@ std::string load_bytes_from_file(const std::string &path) {
     fs.read(data.data(), size);
     return data;
 }
+#else
+std::pair<std::vector<std::vector<float>>, std::vector<std::vector<long>>>
+generate_input_ids(NncaseModel &model, std::vector<std::vector<float>> &mel, int length,
+                   int step,
+                   int special_token_a, int special_token_t) {
+    std::vector<long> mel_shape = {1, (int) mel.size(), (int) mel[0].size()};
+#if 0
+    auto mel_input = Input<float>(mel_shape, model.runtime_manager_);
+    std::vector<Value> inputs;
+    auto ptr = mel_input.GetTensorMutableData<float>();
+#else
+    std::vector<nncase::value_t> inputs;
+    auto entry = model.entry();
+    auto type = entry->parameter_type(0).expect("parameter type out of index");
+    auto ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
+    auto data_type = ts_type->dtype()->typecode();
+
+    nncase::dims_t shape(mel_shape.begin(), mel_shape.end());
+    auto mel_tensor = nncase::runtime::host_runtime_tensor::create(data_type, shape, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
+    auto mel_buffer = mel_tensor->buffer().as_host().unwrap_or_throw();
+    auto mel_mapped = mel_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
+    auto ptr = mel_mapped.buffer().as_span<float>().data();
+#endif
+
+    for (int i = 0; i < mel.size(); ++i) {
+        for (int j = 0; j < mel[0].size(); ++j) {
+            *ptr++ = mel[i][j];
+        }
+    }
+
+#if 0
+    inputs.emplace_back(std::move(mel_input));
+    auto output = model.onForward(inputs);
+    auto [output_data, output_shape] = model.get_result_vector<float>(output, 0);
+#else
+    mel_buffer.sync(nncase::runtime::sync_write_back, true).unwrap_or_throw();
+    inputs.push_back(mel_tensor);
+    nncase::value_t output;
+    {
+        ScopedTiming st("whisper invoke");
+        output = model.run(inputs);
+    }
+
+    auto af_tensor = output.as<nncase::tensor>().unwrap_or_throw();
+    // auto af_tensor = outputs->fields()[0].as<nncase::tensor>().unwrap_or_throw();
+    auto af_buffer = af_tensor->buffer().as_host().unwrap_or_throw();
+    auto af_mapped = af_buffer.map(nncase::runtime::map_read).unwrap_or_throw();
+    auto output_data = af_mapped.buffer().as_span<float>();
+    auto output_shape = af_tensor->shape();
+    // auto size = std::accumulate(output_shape.begin(), output_shape.end(), 1, std::multiplies<int64_t>());
+#endif
+
+    std::vector<std::vector<float>> audio_feature(length, std::vector<float>(output_shape[2], 0));
+    std::vector<float> tmp(length * output_shape[2], 0.f);
+    size_t idx = 0;
+
+    std::cout << "audio_feature shape: " << audio_feature.size() << " " << audio_feature[0].size() << std::endl;
+    for (int i = 0; i < length; ++i) {
+        for (int j = 0; j < output_shape[2]; ++j) {
+            audio_feature[i][j] = output_data[i * output_shape[2] + j];
+            tmp[idx++] = audio_feature[i][j];
+        }
+    }
+    write_binary_file("audio_feature_nncase.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
+
+    std::vector<std::vector<int64_t>> input_ids(8);
+    for (int i = 0; i < 7; ++i) {
+        input_ids[i].push_back(_input_a + 152000 + i * 4160);
+        input_ids[i].insert(input_ids[i].end(), length, _pad_a + 152000 + i * 4160);
+        input_ids[i].push_back(_eoa + +152000 + i * 4160);
+        input_ids[i].push_back(special_token_a + +152000 + i * 4160);
+    }
+//    input_ids[7] = std::vector<int64_t>{_input_t, std::vector<int64_t>(length, _pad_t), _eot, _answer_t};
+    input_ids[7].push_back(_input_t);
+    input_ids[7].insert(input_ids[7].end(), length, _pad_t);
+    input_ids[7].push_back(_eot);
+    input_ids[7].push_back(special_token_t);
+
+    return {audio_feature, input_ids};
+}
+
 #endif
 
 std::string strip(const std::string &str, const std::string &chars) {

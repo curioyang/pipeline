@@ -36,10 +36,13 @@ int main(int argc, const char* argv[])
     auto tokenizer = tokenizers::Tokenizer::FromBlobJSON(blob);
 #else
     std::string vad_model = models_dir + "/vad/vad_calib60_v7167122.kmodel";
-    // std::string whisper_model = models_dir + "/whisper/whisper.onnx";
+    std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
     // std::string adapter_model = models_dir + "/adapter/adapter.onnx";
     // std::string wte_model = models_dir + "/wte/wte.onnx";
     // std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
+
+    NncaseModel whisper(whisper_model);
+
 #endif
 
     // 处理音频输入
@@ -73,9 +76,8 @@ int main(int argc, const char* argv[])
     auto [mel, length] = load_audio(argv[2]);
 #endif
 
+    auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
 #if defined(ONNX)
-
-    // auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
 
     // 执行生成
     // auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, snac, tokenizer);
