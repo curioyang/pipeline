@@ -62,12 +62,12 @@ add_library(wav2wav STATIC ${SRCS}
         src/utils.cpp)
 
 if (BUILD_ONNX)
-target_link_libraries(wav2wav onnxruntime SndFile::sndfile fftw3f tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
+target_link_libraries(wav2wav onnxruntime SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
 else()
 if(CMAKE_CROSSCOMPILING)
-target_link_libraries(wav2wav PUBLIC libfftw3f.a nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz)
+target_link_libraries(wav2wav PUBLIC nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz)
 else()
-target_link_libraries(wav2wav  Nncase.Runtime.Native SndFile::sndfile fftw3f tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
+target_link_libraries(wav2wav Nncase.Runtime.Native SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
 endif()
 endif()
 

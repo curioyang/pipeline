@@ -140,48 +140,40 @@ std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
     return transposed;
 }
 
-#if 1
 std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
 {
-    auto window = hann_window(N_FFT);
+    // auto window = hann_window(N_FFT);
     // auto stft_result = stft2(audio, N_FFT, HOP_LENGTH, window);
+#if 0
     auto stft_result = librosa::Feature::stft(audio, N_FFT, HOP_LENGTH, "hann", true, "reflect");
-    stft_result = transpose(stft_result);
+#else
+    std::vector<std::vector<std::complex<float>>> stft_result;
+    {
+        ScopedTiming st("librosa::Feature::stft");
+        stft_result = librosa::Feature::stft(audio, N_FFT, HOP_LENGTH, "hann", true, "reflect");
+    }
+#endif
+    {
+        ScopedTiming st("transpose");
+        stft_result = transpose(stft_result);
+    }
     std::cout << stft_result.size() << "  " << stft_result[0].size() << std::endl;
 
     // mag.. = stft[..., :-1].abs() ** 2
     std::vector<std::vector<float>> magnitudes(stft_result.size(), std::vector<float>(stft_result[0].size() - 1, 0));
-    for (int i = 0; i < stft_result.size(); ++i)
     {
-        for (int j = 0; j < stft_result[0].size() - 1; ++j)
+        ScopedTiming st("std::norm");
+        for (int i = 0; i < stft_result.size(); ++i)
         {
-            magnitudes[i][j] = (float)std::norm(stft_result[i][j]);
+            for (int j = 0; j < stft_result[0].size() - 1; ++j)
+            {
+                magnitudes[i][j] = (float)std::norm(stft_result[i][j]);
+            }
         }
     }
+
 
     // load mel filter
-    // from librosa.filters.mel(sr=16000, n_fft=400, n_mels=80),
-    // Pythonlib: whisper->audio.py->mel_filters:92L
-    // Path is python3.12/site-packages/whisper/assets/mel_filters.npz : contains two arrays: mel_80 and mel_128
-    // here we need mel_80.
-    // TODO: remove libcnpy, use mel_80 directly. use python to convert mel_filters.npz[0] to mel_filters.bin
-
-#if 0
-    auto filters = cnpy::npz_load("../data/mel_filters.npz");
-    auto mel_filters_info = filters["mel_80"];
-    std::cout << "mel_filters_info.shape[0] = " << mel_filters_info.shape[0] << ", mel_filters_info.shape[1]=" << mel_filters_info.shape[1] << std::endl;
-    std::vector<std::vector<float>> mel_filter_80(mel_filters_info.shape[0],
-                                                  std::vector<float>(mel_filters_info.shape[1], 0));
-    auto filter_data_pointer = mel_filters_info.data<float>();
-
-    for (int i = 0; i < mel_filters_info.shape[0]; ++i)
-    {
-        for (int j = 0; j < mel_filters_info.shape[1]; ++j)
-        {
-            mel_filter_80[i][j] = filter_data_pointer[i * mel_filters_info.shape[1] + j];
-        }
-    }
-#else
     constexpr size_t M = 80;
     constexpr size_t K = 201;
     std::vector<std::vector<float>> mel_filter_80(M, std::vector<float>(K, 0));
@@ -194,38 +186,49 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
             mel_filter_80[i][j] = v_mel.data()[i * K + j];
         }
     }
-#endif
-    // matmul: mel_filter_80: 80*201 ; magnitudes: 201*3001
+
+    // matmul: mel_filter_80: 80*201 ; magnitudes: 201*3000
     // clmap min to 1e-10, and calculate log10
     // log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)
-    std::vector<float> tmp(80 * 3001, 0.f);
-    size_t idx = 0;
+    // std::vector<float> tmp(80 * 3000, 0.f);
+    // size_t idx = 0;
+#if 0
     auto mel_spec = matmul(mel_filter_80, magnitudes);
-    float max_mel_spec = -INFINITY;
-    for (int i = 0; i < mel_spec.size(); ++i)
+#else
+    std::vector<std::vector<float>> mel_spec;
     {
-        for (int j = 0; j < mel_spec[0].size(); ++j)
+        ScopedTiming st("matmul");
+        mel_spec = matmul(mel_filter_80, magnitudes);
+    }
+#endif
+    float max_mel_spec = -INFINITY;
+    {
+        ScopedTiming st("max + log10");
+        for (int i = 0; i < mel_spec.size(); ++i)
         {
-            mel_spec[i][j] = std::log10(std::max(1e-10f, mel_spec[i][j]));
-            if (mel_spec[i][j] > max_mel_spec)
+            for (int j = 0; j < mel_spec[0].size(); ++j)
             {
-                max_mel_spec = mel_spec[i][j];
+                mel_spec[i][j] = std::log10(std::max(1e-10f, mel_spec[i][j]));
+                if (mel_spec[i][j] > max_mel_spec)
+                {
+                    max_mel_spec = mel_spec[i][j];
+                }
+            }
+        }
+
+        for (int i = 0; i < mel_spec.size(); ++i)
+        {
+            for (int j = 0; j < mel_spec[0].size(); ++j)
+            {
+                mel_spec[i][j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
+                // tmp[idx++] = mel_spec[i][j];
             }
         }
     }
 
-    for (int i = 0; i < mel_spec.size(); ++i)
-    {
-        for (int j = 0; j < mel_spec[0].size(); ++j)
-        {
-            mel_spec[i][j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
-            tmp[idx++] = mel_spec[i][j];
-        }
-    }
-    write_binary_file("onnx_mel_spec.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
+    // write_binary_file("onnx_mel_spec.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
     return mel_spec;
 }
-#endif
 
 #if VAD_ENABLE
 std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr)
