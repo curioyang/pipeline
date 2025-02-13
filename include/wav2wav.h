@@ -16,6 +16,7 @@ using namespace Ort;
 #include <nncase/runtime/runtime_op_utility.h>
 #endif
 
+#include "utils.h"
 #define DUMP_WAV 0
 
 
@@ -104,6 +105,7 @@ public:
     }
 
     std::vector<Value> onForward(const std::vector<Value> &inputs) {
+        ScopedTiming st("onnx forward");
         auto outputs = session_->Run(Ort::RunOptions{nullptr},
                                      input_names_.data(), inputs.data(), inputs.size(),
                                      output_names_.data(), output_names_.size());
@@ -393,10 +395,13 @@ private:
         ort_inputs.emplace_back(std::move(sr_ort));
 
         // Infer
-        ort_outputs = session->Run(
-                Ort::RunOptions{nullptr},
-                input_node_names.data(), ort_inputs.data(), ort_inputs.size(),
-                output_node_names.data(), output_node_names.size());
+        {
+            ScopedTiming st("vad onnx run");
+            ort_outputs = session->Run(
+                    Ort::RunOptions{nullptr},
+                    input_node_names.data(), ort_inputs.data(), ort_inputs.size(),
+                    output_node_names.data(), output_node_names.size());
+        }
 
         // Output probability & update h,c recursively
         float speech_prob = ort_outputs[0].GetTensorMutableData<float>()[0];
@@ -540,14 +545,6 @@ private:
         entry_function_ = interpreter_.entry_function().unwrap_or_throw();
     };
 
-#if NNCASE_DUMP_BIN
-    void dump_to_bin(const char *file_name, const char *buf, size_t size)
-    {
-        std::ofstream ofs(file_name, std::ios::out | std::ios::binary);
-        ofs.write(buf, size);
-        ofs.close();
-    }
-#endif
     void predict(const std::vector<float> &data)
     {
         // Infer
@@ -573,7 +570,7 @@ private:
 #if NNCASE_DUMP_BIN
         char file_name[64] = "\0";
         snprintf(file_name, sizeof(file_name) / sizeof(file_name[0]), "tmp/input_%08lu.bin", count);
-        dump_to_bin(file_name, reinterpret_cast<const char *>(input_ptr), input.size() * sizeof(float));
+        write_binary_file(file_name, reinterpret_cast<const char *>(input_ptr), input.size() * sizeof(float));
 #endif
 
         // set input2
@@ -591,7 +588,7 @@ private:
         inputs.push_back(state_tensor);
 #if NNCASE_DUMP_BIN
         snprintf(file_name, sizeof(file_name) / sizeof(file_name[0]), "tmp/state_%08lu.bin", count);
-        dump_to_bin(file_name, reinterpret_cast<const char *>(state_ptr), _state.size() * sizeof(float));
+        write_binary_file(file_name, reinterpret_cast<const char *>(state_ptr), _state.size() * sizeof(float));
 #endif
 
         // set input3
@@ -609,12 +606,16 @@ private:
         inputs.push_back(sr_tensor);
 #if NNCASE_DUMP_BIN
         snprintf(file_name, sizeof(file_name) / sizeof(file_name[0]), "tmp/sr_%08lu.bin", count);
-        dump_to_bin(file_name, reinterpret_cast<const char *>(sr_ptr), sizeof(int64_t));
+        write_binary_file(file_name, reinterpret_cast<const char *>(sr_ptr), sizeof(int64_t));
         count++;
 #endif
 
         // Infer
-        auto outputs = entry_function_->invoke(inputs).unwrap_or_throw().as<nncase::tuple>().unwrap_or_throw();
+        nncase::tuple outputs;
+        {
+            ScopedTiming st("nncase invoke");
+            outputs = entry_function_->invoke(inputs).unwrap_or_throw().as<nncase::tuple>().unwrap_or_throw();
+        }
 
         // output1
         auto output = outputs->fields()[0].as<nncase::tensor>().unwrap_or_throw();

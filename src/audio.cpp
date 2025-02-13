@@ -140,7 +140,7 @@ std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
     return transposed;
 }
 
-#if 0
+#if 1
 std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
 {
     auto window = hann_window(N_FFT);
@@ -166,11 +166,14 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
     // here we need mel_80.
     // TODO: remove libcnpy, use mel_80 directly. use python to convert mel_filters.npz[0] to mel_filters.bin
 
+#if 0
     auto filters = cnpy::npz_load("../data/mel_filters.npz");
     auto mel_filters_info = filters["mel_80"];
+    std::cout << "mel_filters_info.shape[0] = " << mel_filters_info.shape[0] << ", mel_filters_info.shape[1]=" << mel_filters_info.shape[1] << std::endl;
     std::vector<std::vector<float>> mel_filter_80(mel_filters_info.shape[0],
                                                   std::vector<float>(mel_filters_info.shape[1], 0));
     auto filter_data_pointer = mel_filters_info.data<float>();
+
     for (int i = 0; i < mel_filters_info.shape[0]; ++i)
     {
         for (int j = 0; j < mel_filters_info.shape[1]; ++j)
@@ -178,10 +181,25 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
             mel_filter_80[i][j] = filter_data_pointer[i * mel_filters_info.shape[1] + j];
         }
     }
-
-    // matmul: mel_filter_80: 80*201 ; magnitudes: 201*3000
+#else
+    constexpr size_t M = 80;
+    constexpr size_t K = 201;
+    std::vector<std::vector<float>> mel_filter_80(M, std::vector<float>(K, 0));
+    std::vector<float> v_mel;
+    read_binary_file("../data/mel_filters.bin", v_mel);
+    for (size_t i = 0; i < M; ++i)
+    {
+        for (size_t j = 0; j < K; ++j)
+        {
+            mel_filter_80[i][j] = v_mel.data()[i * K + j];
+        }
+    }
+#endif
+    // matmul: mel_filter_80: 80*201 ; magnitudes: 201*3001
     // clmap min to 1e-10, and calculate log10
-    //log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)
+    // log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)
+    std::vector<float> tmp(80 * 3001, 0.f);
+    size_t idx = 0;
     auto mel_spec = matmul(mel_filter_80, magnitudes);
     float max_mel_spec = -INFINITY;
     for (int i = 0; i < mel_spec.size(); ++i)
@@ -201,37 +219,39 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
         for (int j = 0; j < mel_spec[0].size(); ++j)
         {
             mel_spec[i][j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
+            tmp[idx++] = mel_spec[i][j];
         }
     }
+    write_binary_file("onnx_mel_spec.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
     return mel_spec;
 }
 #endif
 
-// #if VAD_ENABLE
-// std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr)
-// {
-//     size_t frame_count = audio.size();
-//     auto duration_ms = (float)frame_count / sr * 1000.0f;
-//     pad_or_trim(audio);
-//     auto mel = log_mel_spectrogram(audio);
-//     return {mel, duration_ms / 20 + 1};
-// }
-// #else
-// std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& path, int sr)
-// {
-//     SF_INFO sf_info;
-//     SNDFILE* file = sf_open(path.c_str(), SFM_READ, &sf_info);
-//     std::vector<float> audio(sf_info.frames * sf_info.channels);
-//     size_t frame_count = sf_readf_float(file, audio.data(), audio.size());
-//     sf_close(file);
+#if VAD_ENABLE
+std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr)
+{
+    size_t frame_count = audio.size();
+    auto duration_ms = (float)frame_count / sr * 1000.0f;
+    pad_or_trim(audio);
+    auto mel = log_mel_spectrogram(audio);
+    return {mel, duration_ms / 20 + 1};
+}
+#else
+std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& path, int sr)
+{
+    SF_INFO sf_info;
+    SNDFILE* file = sf_open(path.c_str(), SFM_READ, &sf_info);
+    std::vector<float> audio(sf_info.frames * sf_info.channels);
+    size_t frame_count = sf_readf_float(file, audio.data(), audio.size());
+    sf_close(file);
 
-//     auto duration_ms = (float)frame_count / sr * 1000.0f;
-//     pad_or_trim(audio);
-//     auto mel = log_mel_spectrogram(audio);
+    auto duration_ms = (float)frame_count / sr * 1000.0f;
+    pad_or_trim(audio);
+    auto mel = log_mel_spectrogram(audio);
 
-//     return {mel, duration_ms / 20 + 1};
-// }
-// #endif
+    return {mel, duration_ms / 20 + 1};
+}
+#endif
 
 // void save_audio(const std::string &path, const std::vector<float> &audio, int sr)
 // {

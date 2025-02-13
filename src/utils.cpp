@@ -7,6 +7,12 @@
 #include <utility> // for std::pair
 #include <algorithm>
 
+void write_binary_file(const char *file_name, const char *buf, size_t size)
+{
+    std::ofstream ofs(file_name, std::ios::out | std::ios::binary);
+    ofs.write(buf, size);
+    ofs.close();
+}
 
 std::vector<std::vector<float>> matmul(const std::vector<std::vector<float>> &A,
                                        const std::vector<std::vector<float>> &B) {

@@ -11,11 +11,10 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include "librosa.h"
 
 #if defined(ONNX)
 #include <sndfile.h>
-#include "librosa.h"
-#include "cnpy.h"
 #endif
 
 //               utils

@@ -67,8 +67,8 @@ int main(int argc, const char* argv[])
         std::cout << stamps[i].c_str() << std::endl;
     }
 
-    // std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
-    // auto [mel, length] = load_audio(audio);
+    std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
+    auto [mel, length] = load_audio(audio);
 #else
     auto [mel, length] = load_audio(argv[2]);
 #endif
