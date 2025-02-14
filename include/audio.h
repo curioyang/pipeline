@@ -14,6 +14,7 @@
 #include <fstream>
 #include <iostream>
 #include "cnpy.h"
+#include "common.h"
 
 //               utils
 ///////////////////////////////////////////////////
@@ -84,14 +85,14 @@ stft(std::vector<float> &signal, int windowSize, int hopSize, const std::vector<
 //     return X;
 // }
 
-std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float> &audio, int n_mels = 80, int padding = 0);
+tensor_info<float> log_mel_spectrogram(std::vector<float> &audio, int n_mels = 80, int padding = 0);
 
 #if VAD_ENABLE
 
-std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr = SAMPLE_RATE);
+std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr = SAMPLE_RATE);
 
 #else
-std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string &path, int sr = SAMPLE_RATE);
+std::pair<tensor_info<float>, int> load_audio(const std::string &path, int sr = SAMPLE_RATE);
 #endif
 
 void save_audio(const std::string &path, const std::vector<float> &audio, int sr = SAMPLE_RATE);

@@ -22,7 +22,7 @@ int main(int argc, const char* argv[])
     std::string adapter_model = models_dir + "/adapter/adapter.onnx";
     std::string wte_model = models_dir + "/wte/wte.onnx";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
-    std::string snac_model = models_dir + "/snac/snac.onnx";
+    std::string snac_model = models_dir + "/snac/sim.onnx";
 
     ONNXModel whisper(std::make_unique<RuntimeManager>("whisper"), whisper_model);
     ONNXModel adapter(std::make_unique<RuntimeManager>("adapter"), adapter_model);
@@ -67,7 +67,6 @@ int main(int argc, const char* argv[])
     int buffer_size = 4096;
     StreamingAudioPlayer audioplayer(24000, buffer_size); // 24kHz, 4KB buffer
     audioplayer.start();
-
 
     // 执行生成
     auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, snac, tokenizer, audioplayer);

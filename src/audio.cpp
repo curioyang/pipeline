@@ -141,7 +141,7 @@ std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
 }
 
 
-std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
+tensor_info<float> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
 {
     auto window = hann_window(N_FFT);
     // auto stft_result = stft2(audio, N_FFT, HOP_LENGTH, window);
@@ -195,19 +195,21 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
             }
         }
     }
-
-    for (int i = 0; i < mel_spec.size(); ++i)
+    tensor_info<float>mel_spec_tensor;
+    mel_spec_tensor.data = std::vector<float>(mel_spec.size()*mel_spec[0].size());
+    mel_spec_tensor.shape = {(long)mel_spec.size(), (long)mel_spec[0].size()};
+    for (int i = 0; i < mel_spec_tensor.shape[0]; ++i)
     {
-        for (int j = 0; j < mel_spec[0].size(); ++j)
+        for (int j = 0; j < mel_spec_tensor.shape[1]; ++j)
         {
-            mel_spec[i][j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
+            mel_spec_tensor.data[i* mel_spec_tensor.shape[1] + j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
         }
     }
-    return mel_spec;
+    return std::move(mel_spec_tensor);
 }
 
 #if VAD_ENABLE
-std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr)
+std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr)
 {
     size_t frame_count = audio.size();
     auto duration_ms = (float)frame_count / sr * 1000.0f;
@@ -216,7 +218,7 @@ std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &a
     return {mel, duration_ms / 20 + 1};
 }
 #else
-std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& path, int sr)
+std::pair<tensor_info<float>, int> load_audio(const std::string& path, int sr)
 {
     SF_INFO sf_info;
     SNDFILE* file = sf_open(path.c_str(), SFM_READ, &sf_info);

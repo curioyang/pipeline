@@ -5,19 +5,37 @@
 #include <thread>
 
 
+template<class T1, class T2>
+tensor_info<T2> model_run(ONNXModel &model, tensor_info<T1> &input_ids) {
+    auto input = Input<T1>(input_ids, model.runtime_manager_);
+    std::vector<Value> model_inputs;
+    model_inputs.emplace_back(std::move(input));
+    auto output = model.onForward(model_inputs);
+    auto result = model.get_result_vector<T2>(output, 0);
+
+    return std::move(result);
+}
+
+template<class T1, class T2>
+tensor_info<T2> model_run(ONNXModel &model, std::vector<tensor_info<T1>> &input_ids) {
+    std::vector<Value> model_inputs;
+    for(auto &it: input_ids)
+    {
+        auto input = Input<T1>(it, model.runtime_manager_);
+        model_inputs.emplace_back(std::move(input));
+    }
+    auto output = model.onForward(model_inputs);
+    auto result = model.get_result_vector<T2>(output, 0);
+
+    return std::move(result);
+}
+
 
 tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs) {
     auto audio_embs_shape = audio_embs.shape;
     auto input_embs_shape = input_embs.shape;
     auto audio_embs_data = audio_embs.data;
     auto input_embs_data = input_embs.data;
-
-    /*
-     * audio_len = audio_emb.shape[1]
-     * for i in range(7):
-     *      input_embs[i, 0, 1:audio_len + 1, :] = audio_emb[0, :audio_len].copy()
-     * return input_embs
-     */
 
     auto audio_len = audio_embs_shape[1];
 
@@ -53,62 +71,6 @@ int sample(tensor_info<float> &logits, float temperature, int top_k, float top_p
         index.push_back(i.second);
     }
     return index[0];
-//// 从现在的Python代码来看,下面的函数似乎不起作用
-////    logits = torch.full_like(logits, float("-inf")).scatter_(-1, i, v)
-//    std::fill(logits_part.begin(), logits_part.end(), -INFINITY);
-//    for (int i = 0; i < value.size(); i++)
-//        logits_part[index[i]] = value[i];
-//
-//    if (temperature > 0.0 || top_p > 0.0) {
-//        // 温度调整
-//        if (temperature > 0.0) {
-//            for (auto &i: logits_part)
-//                i /= temperature;
-//        }
-//
-////        if (top_p < 1.0) {
-////            sample_top_p(logits_part, top_p);
-//        auto probs = softmax(logits_part);
-//
-//        //        multinomial_num_samples_1(probs);
-
-//    }
-//
-//    if (top_k > 0) {
-//        std::vector<std::pair<float, int>> pairs;
-//        for (int i = 0; i < logits_part.size(); ++i)
-//            pairs.emplace_back(logits_[i], i);
-//        std::partial_sort(pairs.begin(), pairs.begin() + top_k, pairs.end(),
-//                          std::greater<>());
-//        std::fill(logits_.begin(), logits_.end(), -INFINITY);
-//        for (int i = 0; i < top_k; ++i)
-//            logits_[pairs[i].second] = pairs[i].first;
-//    }
-//
-//    // Top-P采样
-//    if (top_p < 1.0f) {
-//        std::vector<std::pair<float, int>> pairs;
-//        for (int i = 0; i < logits_part.size(); ++i)
-//            pairs.emplace_back(logits_[i], i);
-//        std::sort(pairs.begin(), pairs.end(), std::greater<>());
-//
-//        float cumulative = 0.0f;
-//        int cutoff = 0;
-//        while (cumulative < top_p && cutoff < logits_part.size()) {
-//            cumulative += expf(pairs[cutoff].first);
-//            cutoff++;
-//        }
-//
-//        std::fill(logits_.begin(), logits_.end(), -INFINITY);
-//        for (int i = 0; i < cutoff; ++i)
-//            logits_[pairs[i].second] = pairs[i].first;
-//    }
-//
-//    // 多项式采样
-//    std::random_device rd;
-//    std::mt19937 gen(rd());
-//    std::discrete_distribution<> dist(logits_.begin(), logits_.end());
-//    return dist(gen);
 }
 
 std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
@@ -117,22 +79,22 @@ next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_in
                 float temperature, int top_k, float top_p) {
     std::vector<Value> inputs;
 
-    auto input_embs = Input<float>(input_embs_concat.shape, gpt.runtime_manager_);
+    auto input_embs = Input(input_embs_concat, gpt.runtime_manager_);
     auto input_embs_ptr = input_embs.GetTensorMutableData<float>();
     std::memcpy(input_embs_ptr, input_embs_concat.data.data(), input_embs_concat.data.size() * sizeof(float));
     inputs.emplace_back(std::move(input_embs));
 
-    auto past_ks_ = Input<float>(past_ks_tensor.shape, gpt.runtime_manager_);
+    auto past_ks_ = Input(past_ks_tensor, gpt.runtime_manager_);
     auto past_ks_ptr = past_ks_.GetTensorMutableData<float>();
     std::memcpy(past_ks_ptr, past_ks_tensor.data.data(), past_ks_tensor.data.size() * sizeof(float));
     inputs.emplace_back(std::move(past_ks_));
 
-    auto past_vs_ = Input<float>(past_vs_tensor.shape, gpt.runtime_manager_);
+    auto past_vs_ = Input<float>(past_vs_tensor, gpt.runtime_manager_);
     auto past_vs_ptr = past_vs_.GetTensorMutableData<float>();
     std::memcpy(past_vs_ptr, past_vs_tensor.data.data(), past_vs_tensor.data.size() * sizeof(float));
     inputs.emplace_back(std::move(past_vs_));
 
-    auto input_pos = Input<long>(input_pos_tensor.shape, gpt.runtime_manager_);
+    auto input_pos = Input<long>(input_pos_tensor, gpt.runtime_manager_);
     auto input_pos_ptr = input_pos.GetTensorMutableData<long>();
     std::memcpy(input_pos_ptr, input_pos_tensor.data.data(), input_pos_tensor.data.size() * sizeof(long));
     inputs.emplace_back(std::move(input_pos));
@@ -158,10 +120,42 @@ next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_in
     return {next_audio_tokens, next_t, next_ks, next_vs};
 }
 
+void generate_audio(ONNXModel &snac, std::vector<tensor_info<long>> &audios, StreamingAudioPlayer &player) {
+//    auto audio_list = reconscruct_snac(tokenizer_list);
+//    auto audio = reconstruct_tensors(audio_list);
+    // process 3 audio into 1 for single dynamic axis.
+//    std::vector<long> audio_(audio[0].begin(), audio[0].end());
+//    audio_.insert(audio_.end(), audio[1].begin(), audio[1].end());
+//    audio_.insert(audio_.end(), audio[2].begin(), audio[2].end());
+//    tensor_info<long> snac_input_tensor{.data = audio_, .shape = {1, (int) audio_.size()}};
+
+    auto audio_hat = model_run<long, float>(snac, audios);
+    std::cout << "               audio_hat size: " << audio_hat.data.size()<<std::endl;  // 2048 length.
+    auto begin = audio_hat.data.begin();
+    int part_size = 1200; //50ms
+    while (1) {
+        auto end = begin + part_size;
+        if (end >= audio_hat.data.end())
+            end = audio_hat.data.end();
+
+        std::vector<float> tmp_data(begin, end);
+        while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        std::cout << "Wrote chunk, available space: "
+                  << player.available() << std::endl;
+        begin = end;
+        if (end == audio_hat.data.end())
+            break;
+    }
+    std::string save_path = "../data/output.wav";
+    save_audio(save_path, audio_hat.data, 24000);
+}
 
 std::vector<std::vector<int>>
-generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vector<long>> &input_ids,
-            ONNXModel &adapter, ONNXModel &wte, ONNXModel &gpt,
+generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
+            ONNXModel &adapter, ONNXModel &wte, ONNXModel &gpt, ONNXModel &snac, StreamingAudioPlayer &player,
             int max_returned_tokens = 2048,
             float temperature = 0.9,
             int top_k = 1,
@@ -172,39 +166,16 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
             int shift = padded_text_vocabsize,
             bool include_prompt = true,
             bool generate_text = false) {
-    auto T = input_ids[0].size();
+    auto T = input_ids.shape[1];
     std::vector<std::vector<int>> outputs(8);
 
     // adapter
-    std::vector<long> audio_shape = {1, (int) audio_feature.size(), (int) audio_feature[0].size()};
-    auto adapter_input = Input<float>(audio_shape, adapter.runtime_manager_);
-    auto adapter_ptr = adapter_input.GetTensorMutableData<float>();
-    for (int i = 0; i < audio_feature.size(); ++i) {
-        for (int j = 0; j < audio_feature[0].size(); ++j) {
-            *adapter_ptr++ = audio_feature[i][j];
-        }
-    }
+//     std::vector<long> audio_shape = {1, (int) audio_feature.size(), (int) audio_feature[0].size()};
+    audio_feature.shape = {1, audio_feature.shape[0], audio_feature.shape[1]};
+    auto audio_embs = model_run<float, float>(adapter, audio_feature);
 
-    std::vector<Value> adapter_inputs;
-    adapter_inputs.emplace_back(std::move(adapter_input));
-
-    auto adapter_output = adapter.onForward(adapter_inputs);
-    auto audio_embs = adapter.get_result_vector<float>(adapter_output, 0);
-
-    std::vector<long> input_ids_shape = {(int) input_ids.size(), 1, (int) input_ids[0].size()};
-    auto wte_input = Input<long>(input_ids_shape, wte.runtime_manager_);
-    auto wte_ptr = wte_input.GetTensorMutableData<long>();
-    for (int i = 0; i < input_ids.size(); ++i) {
-        for (int j = 0; j < input_ids[0].size(); ++j) {
-            *wte_ptr++ = input_ids[i][j];
-        }
-    }
-
-    std::vector<Value> wte_inputs;
-    wte_inputs.emplace_back(std::move(wte_input));
-    auto wte_output = wte.onForward(wte_inputs);
-    auto input_embs = wte.get_result_vector<float>(wte_output, 0);
-
+    input_ids.shape = {input_ids.shape[0], 1, input_ids.shape[1]};
+    auto input_embs = model_run<long, float>(wte, input_ids);
 
     auto input_embs_concat = concat_feat(audio_embs, input_embs);
 
@@ -237,15 +208,17 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
             model_input_ids.emplace_back((long) tokens_A[i] + 152000 + i * 4160);
         }
         model_input_ids.emplace_back((long) token_T);
-        tensor_info<long> input_ids_tensor{.data=model_input_ids, .shape={(long) model_input_ids.size(), 1, 1}};
-        std::vector<Value> wte_inputs_loop;
-        auto wte_input_ = Input<long>(input_ids_tensor.shape, wte.runtime_manager_);
-        auto wte_input_ptr = wte_input_.GetTensorMutableData<long>();
-        std::memcpy(wte_input_ptr, input_ids_tensor.data.data(), input_ids_tensor.data.size() * sizeof(long));
-        wte_inputs_loop.emplace_back(std::move(wte_input_));
+//         tensor_info<long> input_ids_tensor{.data=model_input_ids, .shape={(long) model_input_ids.size(), 1, 1}};
+//         std::vector<Value> wte_inputs_loop;
+//         auto wte_input_ = Input<long>(input_ids_tensor.shape, wte.runtime_manager_);
+//         auto wte_input_ptr = wte_input_.GetTensorMutableData<long>();
+//         std::memcpy(wte_input_ptr, input_ids_tensor.data.data(), input_ids_tensor.data.size() * sizeof(long));
+//         wte_inputs_loop.emplace_back(std::move(wte_input_));
+//         auto wte_output_loop = wte.onForward(wte_inputs_loop);
+//         auto input_embs_loop_tensor = wte.get_result_vector<float>(wte_output_loop, 0);
+        tensor_info<long> input_ids_tensor{.data = model_input_ids, .shape={(long) model_input_ids.size(), 1, 1}};
+        auto input_embs_loop_tensor = model_run<long, float>(wte, input_ids_tensor);
 
-        auto wte_output_loop = wte.onForward(wte_inputs_loop);
-        auto input_embs_loop_tensor = wte.get_result_vector<float>(wte_output_loop, 0);
 
         tensor_info<long> input_pos_loop_tensor{.data=input_pos, .shape={(long) input_pos.size()}};
 //        std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
@@ -275,6 +248,18 @@ generate_AA(std::vector<std::vector<float>> &audio_feature, std::vector<std::vec
         }
         outputs[7].emplace_back(token_T);
         input_pos[0] += 1;
+
+        if(sub_step>=8) {
+            std::vector<long> audio_0{outputs[0][sub_step-7]};
+            std::vector<long> audio_1{outputs[1][sub_step-6], outputs[4][sub_step-3]};
+            std::vector<long> audio_2{outputs[2][sub_step-5],outputs[3][sub_step-4], outputs[5][sub_step-2], outputs[6][sub_step-1]};
+
+            tensor_info<long> audio_0_tensor{.data=audio_0,.shape={1, 1}};
+            tensor_info<long> audio_1_tensor{.data=audio_1,.shape={1, 2}};
+            tensor_info<long> audio_2_tensor{.data=audio_2,.shape={1, 4}};
+            std::vector<tensor_info<long>>data{audio_0_tensor,audio_1_tensor, audio_2_tensor};
+            generate_audio(snac, data, player);
+        }
 
         // for (int i = 0; i < 8; i++)
         // {
@@ -314,19 +299,19 @@ int countElementsBetweenHashes(const std::vector<int> &lst) {
 
 std::vector<std::vector<long>> reconstruct_tensors(std::vector<int> &flatten_snac) {
     auto size_in_two_hash = countElementsBetweenHashes(flatten_snac);
-    if(size_in_two_hash != 7)
+    if (size_in_two_hash != 7)
         throw std::runtime_error("elem between hash not 7");
     std::vector<std::vector<long>> snac_output(3);
     for (int i = 0; i < flatten_snac.size();) {
-        snac_output[0].emplace_back((long)flatten_snac[i + 1]);
+        snac_output[0].emplace_back((long) flatten_snac[i + 1]);
 
-        snac_output[1].emplace_back((long)flatten_snac[i + 2]);
-        snac_output[1].emplace_back((long)flatten_snac[i + 5]);
+        snac_output[1].emplace_back((long) flatten_snac[i + 2]);
+        snac_output[1].emplace_back((long) flatten_snac[i + 5]);
 
-        snac_output[2].emplace_back((long)flatten_snac[i + 3]);
-        snac_output[2].emplace_back((long)flatten_snac[i + 4]);
-        snac_output[2].emplace_back((long)flatten_snac[i + 6]);
-        snac_output[2].emplace_back((long)flatten_snac[i + 7]);
+        snac_output[2].emplace_back((long) flatten_snac[i + 3]);
+        snac_output[2].emplace_back((long) flatten_snac[i + 4]);
+        snac_output[2].emplace_back((long) flatten_snac[i + 6]);
+        snac_output[2].emplace_back((long) flatten_snac[i + 7]);
 
         i += 8;
     }
@@ -336,7 +321,7 @@ std::vector<std::vector<long>> reconstruct_tensors(std::vector<int> &flatten_sna
 std::vector<int> reconscruct_snac(std::vector<std::vector<int>> &src_snac) {
     std::vector<std::vector<int>> src_snac_(7);
     for (int i = 0; i < 7; i++) {
-        src_snac_[i] = std::vector<int>(src_snac[i].begin() + i+1, src_snac[i].end());
+        src_snac_[i] = std::vector<int>(src_snac[i].begin() + i + 1, src_snac[i].end());
     }
     std::vector<int> snac_output;
     size_t last_size = src_snac_[src_snac_.size() - 1].size();
@@ -351,8 +336,8 @@ std::vector<int> reconscruct_snac(std::vector<std::vector<int>> &src_snac) {
     return snac_output;
 }
 
-std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
-                  std::vector<std::vector<int64_t>> &input_ids,
+std::string A1_A2(tensor_info<float> &audio_feature,
+                  tensor_info<long> &input_ids,
                   int length,
                   ONNXModel &adapter,
                   ONNXModel &wte,
@@ -361,7 +346,7 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
                   StreamingAudioPlayer &player) {
 #if 1
-    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, wte, gpt,
+    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, wte, gpt, snac, player,
                                       2048,
                                       0.9,
                                       1,
@@ -396,17 +381,8 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
     audio_.insert(audio_.end(), audio[2].begin(), audio[2].end());
     tensor_info<long> snac_input_tensor{.data = audio_, .shape = {1, (int)audio_.size()}};
 
-    std::vector<Value> inputs;
-    auto snac_input = Input<long>(snac_input_tensor.shape, snac.runtime_manager_);
-    auto snac_input_ptr = snac_input.GetTensorMutableData<long>();
-    std::memcpy(snac_input_ptr, snac_input_tensor.data.data(), snac_input_tensor.data.size() * sizeof(long));
-    inputs.emplace_back(std::move(snac_input));
+    auto audio_hat = model_run<long, float>(snac,snac_input_tensor);
 
-    auto snac_output = snac.onForward(inputs);
-
-    auto audio_hat = snac.get_result_vector<float>(snac_output, 0);
-
-//    playAudio(audio_hat.data, 24000);
     auto begin = audio_hat.data.begin();
     int part_size = 1200; //50ms
     while(1)
@@ -427,7 +403,6 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
             break;
     }
 
-
     std::string save_path = "../data/output.wav";
     save_audio(save_path, audio_hat.data, 24000);
 #endif
@@ -443,75 +418,19 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
     return strip(text);
 }
 
-//{
-//// 初始化模型输入
-//Ort::MemoryInfo memory_info = Ort::MemoryInfo::CreateCpu(
-//        OrtAllocatorType::OrtDeviceAllocator, OrtMemType::OrtMemTypeCPU);
-//
-//// 运行适配器模型
-//std::vector<Ort::Value> adapter_inputs;
-//adapter_inputs.emplace_back(Ort::Value::CreateTensor<float>(
-//        memory_info, const_cast<float *>(mel.data()), mel.size(), {1, 80, 3000}));
-//auto adapter_out = adapter.run({"mel"}, adapter_inputs, {"audio_embs"});
-//
-//// 生成嵌入
-//std::vector<Ort::Value> wte_inputs;
-//// 构建输入ID张量...
-//auto wte_out = wte.run({"input_ids"}, wte_inputs, {"embeddings"});
-//
-//// 主生成循环
-//std::vector<int> generated_tokens;
-//std::vector<float> past_keys, past_values;
-//
-//while (!stop_condition)
-//{
-//// 构建GPT输入
-//Ort::Value inputs[] = {embeddings_tensor, keys_tensor, values_tensor};
-//auto gpt_out = gpt.run({"input_embs", "past_keys", "past_values"},
-//                       {inputs, 3}, {"logits", "new_keys", "new_values"});
-//
-//// 采样并更新状态
-//int next_token = sample(gpt_out[0].GetTensorData<float>(),
-//                        gpt_out[0].GetTensorTypeAndShapeInfo().GetElementCount(),
-//                        0.9f, 1, 1.0f);
-//generated_tokens.push_back(next_token);
-//
-//// 更新past keys/values
-//past_keys = process_new_keys(gpt_out[1]);
-//past_values = process_new_values(gpt_out[2]);
-//}
-//
-//return {audio_tokens, text_tokens};
-//}
-
-
-std::pair<std::vector<std::vector<float>>, std::vector<std::vector<long>>>
-generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int length,
+std::pair<tensor_info<float>, tensor_info<long>>
+generate_input_ids(ONNXModel &model, tensor_info<float> &mel, int length,
                    int step,
                    int special_token_a, int special_token_t) {
-    std::vector<long> mel_shape = {1, (int) mel.size(), (int) mel[0].size()};
-    auto mel_input = Input<float>(mel_shape, model.runtime_manager_);
-    std::vector<Value> inputs;
-    auto ptr = mel_input.GetTensorMutableData<float>();
-    for (int i = 0; i < mel.size(); ++i) {
-        for (int j = 0; j < mel[0].size(); ++j) {
-            *ptr++ = mel[i][j];
-        }
-    }
 
-    inputs.emplace_back(std::move(mel_input));
-    auto output = model.onForward(inputs);
-    auto [output_data, output_shape] = model.get_result_vector<float>(output, 0);
+    mel.shape = {1, mel.shape[0], mel.shape[1]};
+    auto audio_feature = model_run<float, float>(model, mel);
+    std::vector<float> part_audio_of_length(audio_feature.data.begin(),
+                                            audio_feature.data.begin() + length * audio_feature.shape[2]);
+    audio_feature.data = part_audio_of_length;
+    audio_feature.shape = {length, audio_feature.shape[2]};
 
-    std::vector<std::vector<float>> audio_feature(length, std::vector<float>(output_shape[2], 0));
-    std::cout << "audio_feature shape: " << audio_feature.size() << " " << audio_feature[0].size() << std::endl;
-    for (int i = 0; i < length; ++i) {
-        for (int j = 0; j < output_shape[2]; ++j) {
-            audio_feature[i][j] = output_data[i * output_shape[2] + j];
-        }
-    }
-
-    std::vector<std::vector<int64_t>> input_ids(8);
+    std::vector<std::vector<long>> input_ids(8);
     for (int i = 0; i < 7; ++i) {
         input_ids[i].push_back(_input_a + 152000 + i * 4160);
         input_ids[i].insert(input_ids[i].end(), length, _pad_a + 152000 + i * 4160);
@@ -519,13 +438,17 @@ generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int l
         input_ids[i].push_back(special_token_a + +152000 + i * 4160);
 
     }
-//    input_ids[7] = std::vector<int64_t>{_input_t, std::vector<int64_t>(length, _pad_t), _eot, _answer_t};
     input_ids[7].push_back(_input_t);
     input_ids[7].insert(input_ids[7].end(), length, _pad_t);
     input_ids[7].push_back(_eot);
     input_ids[7].push_back(special_token_t);
 
-    return {audio_feature, input_ids};
+    std::vector<long> input_ids_;
+    for (int i = 0; i < 8; i++) {
+        input_ids_.insert(input_ids_.end(), input_ids[i].begin(), input_ids[i].end());
+    }
+
+    return {audio_feature, {.data=input_ids_, .shape={(long) input_ids.size(), (long) input_ids[0].size()}}};
 }
 
 std::string load_bytes_from_file(const std::string &path) {

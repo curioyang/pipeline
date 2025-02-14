@@ -7,48 +7,12 @@
 #include <tokenizers_cpp.h>
 #include "timer.h"
 #include "audio_play.h"
+#include "common.h"
 
 using namespace Ort;
 
-#define DUMP_WAV 1
+#define DUMP_WAV 0
 
-
-constexpr int hash_flag = -9999;
-
-constexpr int padded_audio_vocab = 4096 + 64;
-
-constexpr int text_vocabsize = 151936;
-constexpr int text_specialtokens = 64;
-constexpr int audio_vocabsize = 4096;
-constexpr int audio_specialtokens = 64;
-
-constexpr int padded_text_vocabsize = text_vocabsize + text_specialtokens;
-constexpr int padded_audio_vocabsize = audio_vocabsize + audio_specialtokens;
-
-constexpr int _eot = text_vocabsize;
-constexpr int _pad_t = text_vocabsize + 1;
-constexpr int _input_t = text_vocabsize + 2;
-constexpr int _answer_t = text_vocabsize + 3;
-constexpr int _asr = text_vocabsize + 4;
-
-constexpr int _eoa = audio_vocabsize;
-constexpr int _pad_a = audio_vocabsize + 1;
-constexpr int _input_a = audio_vocabsize + 2;
-constexpr int _answer_a = audio_vocabsize + 3;
-constexpr int _split = audio_vocabsize + 4;
-constexpr int _image = audio_vocabsize + 5;
-constexpr int _eoimage = audio_vocabsize + 6;
-
-
-struct GenerationResult {
-    std::vector<int> audio_tokens;
-    std::vector<int> text_tokens;
-};
-template<class T>
-struct tensor_info {
-    std::vector<T> data;
-    std::vector<long> shape;
-};
 
 class RuntimeManager {
 public:
@@ -57,7 +21,7 @@ public:
         env_ = std::make_unique<Ort::Env>(ORT_LOGGING_LEVEL_WARNING, name);
         options_ = std::make_unique<Ort::SessionOptions>();
         options_->SetIntraOpNumThreads(6);
-        options_->SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
+        options_->SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
         allocator_ = std::make_unique<Ort::AllocatorWithDefaultOptions>();
     }
 
@@ -110,6 +74,7 @@ public:
                                      output_names_.data(), output_names_.size());
         return outputs;
     }
+
 
     template<class T>
     tensor_info<T> get_result_vector(std::vector<Value> &data, int idx) {
@@ -542,12 +507,12 @@ next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_in
 tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs);
 
 template<typename T>
-static Value Input(const std::vector<long> &shape, const std::shared_ptr<RuntimeManager> &rtmgr) {
-    return Value::CreateTensor<T>(rtmgr->allocator(), shape.data(), shape.size());
+static Value Input(tensor_info<T> &tensor, const std::shared_ptr<RuntimeManager> &rtmgr) {
+    return Value::CreateTensor<T>(rtmgr->allocator().GetInfo(), tensor.data.data(), tensor.data.size(), tensor.shape.data(), tensor.shape.size());
 }
 
-std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
-                  std::vector<std::vector<int64_t>> &input_ids,
+std::string A1_A2(tensor_info<float> &audio_feature,
+                  tensor_info<int64_t> &input_ids,
                   int length,
                   ONNXModel &adapter,
                   ONNXModel &wte,
@@ -556,8 +521,8 @@ std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
                   StreamingAudioPlayer &player);
 
-std::pair<std::vector<std::vector<float>>, std::vector<std::vector<int64_t>>>
-generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int length,
+std::pair<tensor_info<float>, tensor_info<long>>
+generate_input_ids(ONNXModel &model, tensor_info<float> &mel, int length,
                    int step = 0,
                    int special_token_a = _answer_a, int special_token_t = _answer_t);
 
@@ -573,3 +538,5 @@ int sample(tensor_info<float> &logits, float temperature, int top_k, float top_p
 std::string load_bytes_from_file(const std::string &path);
 
 std::string strip(const std::string &str, const std::string &chars = " \t\n\v\f\r");
+
+
