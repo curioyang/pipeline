@@ -16,6 +16,11 @@ int main(int argc, const char* argv[])
     std::string models_dir = argv[1];
     std::cout << "models dir is: " << models_dir << std::endl;
 
+    // Tokenizer
+    std::string tokenizer_file = models_dir + "/../checkpoint/tokenizer.json";
+    auto blob = load_bytes_from_file(tokenizer_file);
+    auto tokenizer = tokenizers::Tokenizer::FromBlobJSON(blob);
+
 #if defined(ONNX)
     std::string vad_model = models_dir + "/vad/silero_vad.onnx";
     std::string whisper_model = models_dir + "/whisper/whisper.onnx";
@@ -29,20 +34,19 @@ int main(int argc, const char* argv[])
     ONNXModel wte(std::make_unique<RuntimeManager>("wte"), wte_model );
     ONNXModel lit_gpt(std::make_unique<RuntimeManager>("lit_gpt"), lit_gpt_model);
     ONNXModel snac(std::make_unique<RuntimeManager>("snac"), snac_model);
-
-    // Tokenizer
-    std::string tokenizer_file = models_dir + "/../checkpoint/tokenizer.json";
-    auto blob = load_bytes_from_file(tokenizer_file);
-    auto tokenizer = tokenizers::Tokenizer::FromBlobJSON(blob);
 #else
-    std::string vad_model = models_dir + "/vad/vad_calib60_v7167122.kmodel";
+    std::string vad_model = models_dir + "/vad/vad.kmodel";
     std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
-    // std::string adapter_model = models_dir + "/adapter/adapter.onnx";
-    // std::string wte_model = models_dir + "/wte/wte.onnx";
-    // std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
+    std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
+    std::string wte_model = models_dir + "/wte/wte.kmodel";
+    std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
+    std::string snac_model = models_dir + "/sanc/snac.kmodel";
 
     NncaseModel whisper(whisper_model);
-
+    NncaseModel adapter(adapter_model);
+    NncaseModel wte(wte_model);
+    NncaseModel lit_gpt(lit_gpt_model);
+    NncaseModel snac(snac_model);
 #endif
 
     // 处理音频输入
@@ -77,11 +81,10 @@ int main(int argc, const char* argv[])
 #endif
 
     auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
-#if defined(ONNX)
 
     // 执行生成
-    // auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, snac, tokenizer);
-    // std::cout << "Generated text: " << text << std::endl;
-#endif
+    auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, snac, tokenizer);
+    std::cout << "Generated text: " << text << std::endl;
+
     return 0;
 }

@@ -190,8 +190,8 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
     // matmul: mel_filter_80: 80*201 ; magnitudes: 201*3000
     // clmap min to 1e-10, and calculate log10
     // log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)
-    // std::vector<float> tmp(80 * 3000, 0.f);
-    // size_t idx = 0;
+    std::vector<float> tmp(80 * 3000, 0.f);
+    size_t idx = 0;
 #if 0
     auto mel_spec = matmul(mel_filter_80, magnitudes);
 #else
@@ -221,12 +221,12 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
             for (int j = 0; j < mel_spec[0].size(); ++j)
             {
                 mel_spec[i][j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
-                // tmp[idx++] = mel_spec[i][j];
+                tmp[idx++] = mel_spec[i][j];
             }
         }
     }
 
-    // write_binary_file("onnx_mel_spec.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
+    write_binary_file("mel_spec.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
     return mel_spec;
 }
 

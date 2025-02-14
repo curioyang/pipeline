@@ -822,6 +822,19 @@ generate_input_ids(ONNXModel &model, std::vector<std::vector<float>> &mel, int l
                    int step = 0,
                    int special_token_a = _answer_a, int special_token_t = _answer_t);
 #else
+std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
+next_token_A1T2(NncaseModel &gpt, tensor_info<float> &input_embs_concat, tensor_info<long> &input_pos_tensor,
+                tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step, float temperature,
+                int top_k, float top_p);
+
+std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
+                  std::vector<std::vector<int64_t>> &input_ids,
+                  int length,
+                  NncaseModel &adapter,
+                  NncaseModel &wte,
+                  NncaseModel &gpt,
+                  NncaseModel &snac,
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
 std::pair<std::vector<std::vector<float>>, std::vector<std::vector<int64_t>>>
 generate_input_ids(NncaseModel &model, std::vector<std::vector<float>> &mel, int length,
                    int step = 0,
