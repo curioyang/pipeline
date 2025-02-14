@@ -166,7 +166,7 @@ tensor_info<float> log_mel_spectrogram(std::vector<float>& audio, int n_mels, in
     // here we need mel_80.
     // TODO: remove libcnpy, use mel_80 directly. use python to convert mel_filters.npz[0] to mel_filters.bin
     
-    auto filters = cnpy::npz_load("/home/curio/mini-omni2-pipeline-onnxruntime/pipeline/data/mel_filters.npz");
+    auto filters = cnpy::npz_load("../data/mel_filters.npz");
     auto mel_filters_info = filters["mel_80"];
     std::vector<std::vector<float>> mel_filter_80(mel_filters_info.shape[0],
                                                   std::vector<float>(mel_filters_info.shape[1], 0));
