@@ -149,8 +149,8 @@ void generate_audio(ONNXModel &snac, std::vector<tensor_info<long>> &audios, Str
         if (end == audio_hat.data.end())
             break;
     }
-    std::string save_path = "../data/output.wav";
-    save_audio(save_path, audio_hat.data, 24000);
+//    std::string save_path = "../data/output.wav";
+//    save_audio(save_path, audio_hat.data, 24000);
 }
 
 std::vector<std::vector<int>>
@@ -170,12 +170,12 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     std::vector<std::vector<int>> outputs(8);
 
     // adapter
-//     std::vector<long> audio_shape = {1, (int) audio_feature.size(), (int) audio_feature[0].size()};
     audio_feature.shape = {1, audio_feature.shape[0], audio_feature.shape[1]};
     auto audio_embs = model_run<float, float>(adapter, audio_feature);
 
     input_ids.shape = {input_ids.shape[0], 1, input_ids.shape[1]};
-    auto input_embs = model_run<long, float>(wte, input_ids);
+//    auto input_embs = model_run<long, float>(wte, input_ids);
+    auto input_embs = wte_get_data(input_ids);
 
     auto input_embs_concat = concat_feat(audio_embs, input_embs);
 
@@ -217,7 +217,8 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
 //         auto wte_output_loop = wte.onForward(wte_inputs_loop);
 //         auto input_embs_loop_tensor = wte.get_result_vector<float>(wte_output_loop, 0);
         tensor_info<long> input_ids_tensor{.data = model_input_ids, .shape={(long) model_input_ids.size(), 1, 1}};
-        auto input_embs_loop_tensor = model_run<long, float>(wte, input_ids_tensor);
+//        auto input_embs_loop_tensor = model_run<long, float>(wte, input_ids_tensor);
+        auto input_embs_loop_tensor = wte_get_data(input_ids_tensor);
 
 
         tensor_info<long> input_pos_loop_tensor{.data=input_pos, .shape={(long) input_pos.size()}};
