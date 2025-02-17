@@ -29,7 +29,9 @@ int main(int argc, const char* argv[])
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
     std::string snac_model = models_dir + "/snac/snac.onnx";
 
-    ONNXModel whisper(std::make_unique<RuntimeManager>("whisper"), whisper_model);
+    // ONNXModel whisper(std::make_unique<RuntimeManager>("whisper"), whisper_model);
+    std::unique_ptr<ONNXModel> whisper(new ONNXModel(std::make_unique<RuntimeManager>("whisper"), whisper_model));
+
     ONNXModel adapter(std::make_unique<RuntimeManager>("adapter"), adapter_model);
     ONNXModel wte(std::make_unique<RuntimeManager>("wte"), wte_model );
     ONNXModel lit_gpt(std::make_unique<RuntimeManager>("lit_gpt"), lit_gpt_model);
@@ -38,11 +40,14 @@ int main(int argc, const char* argv[])
     std::string vad_model = models_dir + "/vad/vad.kmodel";
     std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
-    std::string wte_model = models_dir + "/wte/wte.kmodel";
-    std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
-    std::string snac_model = models_dir + "/sanc/snac.kmodel";
+    // std::string wte_model = models_dir + "/wte/wte.kmodel";
+    // std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
+    // std::string snac_model = models_dir + "/snac/snac.kmodel";
+    std::string wte_model = models_dir + "/vad/vad.kmodel";
+    std::string lit_gpt_model = models_dir + "/vad/vad.kmodel";
+    std::string snac_model = models_dir + "/vad/vad.kmodel";
+    std::unique_ptr<NncaseModel> whisper(new NncaseModel(whisper_model));
 
-    NncaseModel whisper(whisper_model);
     NncaseModel adapter(adapter_model);
     NncaseModel wte(wte_model);
     NncaseModel lit_gpt(lit_gpt_model);
@@ -73,6 +78,7 @@ int main(int argc, const char* argv[])
     {
         std::cout << stamps[i].c_str() << std::endl;
     }
+    vad = nullptr;
 
     std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
     auto [mel, length] = load_audio(audio);
@@ -80,10 +86,11 @@ int main(int argc, const char* argv[])
     auto [mel, length] = load_audio(argv[2]);
 #endif
 
-    auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
+    auto [audio_feature, input_ids] = generate_input_ids(*(whisper.get()), mel, length);
+    whisper = nullptr;
 
     // 执行生成
-    auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, snac, tokenizer);
+    auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, tokenizer);
     std::cout << "Generated text: " << text << std::endl;
 
     return 0;

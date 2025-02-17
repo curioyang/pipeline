@@ -10,7 +10,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-
+#include "common.h"
 //
 //template <class T>
 //class EmptyTensor
@@ -76,14 +76,6 @@ std::vector<std::pair<T, int> > topK(const std::vector<T> &arr, size_t k);
 template<class T>
 std::vector<T> softmax(std::vector<T>& x);
 
-
-//typedef struct {
-//    int start;
-//    int end;
-//    int step;
-//} Slice_info;
-//
-//template <class T>
-//auto slice(const std::vector<T>& vec, std::vector<int> axis, std::vector<Slice_info> values);
+tensor_info<float> wte_get_data(tensor_info<long> &input_ids);
 
 #endif //WAV2WAV_UTILS_H

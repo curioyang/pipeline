@@ -2,8 +2,8 @@
 // Created by curio on 2025/2/9.
 //
 #include "audio.h"
-#include "wav2wav.h"
 #include "utils.h"
+#include "wav2wav.h"
 
 void pad_or_trim(std::vector<float>& audio, int length, int axis)
 {
@@ -140,7 +140,8 @@ std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
     return transposed;
 }
 
-std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
+
+tensor_info<float> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
 {
     // auto window = hann_window(N_FFT);
     // auto stft_result = stft2(audio, N_FFT, HOP_LENGTH, window);
@@ -190,18 +191,16 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
     // matmul: mel_filter_80: 80*201 ; magnitudes: 201*3000
     // clmap min to 1e-10, and calculate log10
     // log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)
-    std::vector<float> tmp(80 * 3000, 0.f);
-    size_t idx = 0;
-#if 0
-    auto mel_spec = matmul(mel_filter_80, magnitudes);
-#else
+    // std::vector<float> tmp(80 * 3000, 0.f);
+    // size_t idx = 0;
     std::vector<std::vector<float>> mel_spec;
     {
         ScopedTiming st("matmul");
         mel_spec = matmul(mel_filter_80, magnitudes);
     }
-#endif
+
     float max_mel_spec = -INFINITY;
+    tensor_info<float>mel_spec_tensor;
     {
         ScopedTiming st("max + log10");
         for (int i = 0; i < mel_spec.size(); ++i)
@@ -215,23 +214,24 @@ std::vector<std::vector<float>> log_mel_spectrogram(std::vector<float>& audio, i
                 }
             }
         }
-
-        for (int i = 0; i < mel_spec.size(); ++i)
+        mel_spec_tensor.data = std::vector<float>(mel_spec.size()*mel_spec[0].size());
+        mel_spec_tensor.shape = {(long)mel_spec.size(), (long)mel_spec[0].size()};
+        for (int i = 0; i < mel_spec_tensor.shape[0]; ++i)
         {
-            for (int j = 0; j < mel_spec[0].size(); ++j)
+            for (int j = 0; j < mel_spec_tensor.shape[1]; ++j)
             {
-                mel_spec[i][j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
-                tmp[idx++] = mel_spec[i][j];
+                mel_spec_tensor.data[i* mel_spec_tensor.shape[1] + j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
             }
         }
     }
 
-    write_binary_file("mel_spec.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
-    return mel_spec;
+    // write_binary_file("mel_spec.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
+    // return mel_spec;
+    return std::move(mel_spec_tensor);
 }
 
 #if VAD_ENABLE
-std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &audio, int sr)
+std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr)
 {
     size_t frame_count = audio.size();
     auto duration_ms = (float)frame_count / sr * 1000.0f;
@@ -240,7 +240,7 @@ std::pair<std::vector<std::vector<float>>, int> load_audio(std::vector<float> &a
     return {mel, duration_ms / 20 + 1};
 }
 #else
-std::pair<std::vector<std::vector<float>>, int> load_audio(const std::string& path, int sr)
+std::pair<tensor_info<float>, int> load_audio(const std::string& path, int sr)
 {
     SF_INFO sf_info;
     SNDFILE* file = sf_open(path.c_str(), SFM_READ, &sf_info);
