@@ -33,7 +33,7 @@ int main(int argc, const char* argv[])
     std::unique_ptr<ONNXModel> whisper(new ONNXModel(std::make_unique<RuntimeManager>("whisper"), whisper_model));
 
     ONNXModel adapter(std::make_unique<RuntimeManager>("adapter"), adapter_model);
-    ONNXModel wte(std::make_unique<RuntimeManager>("wte"), wte_model );
+    // ONNXModel wte(std::make_unique<RuntimeManager>("wte"), wte_model );
     ONNXModel lit_gpt(std::make_unique<RuntimeManager>("lit_gpt"), lit_gpt_model);
     ONNXModel snac(std::make_unique<RuntimeManager>("snac"), snac_model);
 #else
@@ -41,15 +41,13 @@ int main(int argc, const char* argv[])
     std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
     // std::string wte_model = models_dir + "/wte/wte.kmodel";
-    // std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
+    std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
     // std::string snac_model = models_dir + "/snac/snac.kmodel";
-    std::string wte_model = models_dir + "/vad/vad.kmodel";
-    std::string lit_gpt_model = models_dir + "/vad/vad.kmodel";
     std::string snac_model = models_dir + "/vad/vad.kmodel";
     std::unique_ptr<NncaseModel> whisper(new NncaseModel(whisper_model));
 
     NncaseModel adapter(adapter_model);
-    NncaseModel wte(wte_model);
+    // NncaseModel wte(wte_model);
     NncaseModel lit_gpt(lit_gpt_model);
     NncaseModel snac(snac_model);
 #endif
@@ -90,7 +88,7 @@ int main(int argc, const char* argv[])
     whisper = nullptr;
 
     // 执行生成
-    auto text = A1_A2(audio_feature, input_ids, length, adapter, wte, lit_gpt, tokenizer);
+    auto text = A1_A2(audio_feature, input_ids, length, adapter, lit_gpt, tokenizer);
     std::cout << "Generated text: " << text << std::endl;
 
     return 0;

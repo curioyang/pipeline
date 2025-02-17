@@ -783,7 +783,6 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   tensor_info<int64_t> &input_ids,
                   int length,
                   ONNXModel &adapter,
-                  ONNXModel &wte,
                   ONNXModel &gpt,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
 
@@ -797,15 +796,14 @@ next_token_A1T2(NncaseModel &gpt, tensor_info<float> &input_embs_concat, tensor_
                 tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step, float temperature,
                 int top_k, float top_p);
 
-std::string A1_A2(std::vector<std::vector<float>> &audio_feature,
-                  std::vector<std::vector<int64_t>> &input_ids,
+std::string A1_A2(tensor_info<float> &audio_feature,
+                  tensor_info<int64_t> &input_ids,
                   int length,
                   NncaseModel &adapter,
-                  NncaseModel &wte,
                   NncaseModel &gpt,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
-std::pair<std::vector<std::vector<float>>, std::vector<std::vector<int64_t>>>
-generate_input_ids(NncaseModel &model, std::vector<std::vector<float>> &mel, int length,
+std::pair<tensor_info<float>, tensor_info<long>>
+generate_input_ids(NncaseModel &model, tensor_info<float> &mel, int length,
                    int step = 0,
                    int special_token_a = _answer_a, int special_token_t = _answer_t);
 #endif
