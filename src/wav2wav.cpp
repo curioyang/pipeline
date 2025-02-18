@@ -418,49 +418,6 @@ std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
 next_token_A1T2(NncaseModel &gpt, tensor_info<float> &input_embs_concat, tensor_info<long> &input_pos_t,
                 tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step,
                 float temperature, int top_k, float top_p) {
-#if 0
-    std::vector<Value> inputs;
-
-    auto input_embs = Input<float>(input_embs_concat.shape, gpt.runtime_manager_);
-    auto input_embs_ptr = input_embs.GetTensorMutableData<float>();
-    std::memcpy(input_embs_ptr, input_embs_concat.data.data(), input_embs_concat.data.size() * sizeof(float));
-    inputs.emplace_back(std::move(input_embs));
-
-    auto past_ks_ = Input<float>(past_ks_tensor.shape, gpt.runtime_manager_);
-    auto past_ks_ptr = past_ks_.GetTensorMutableData<float>();
-    std::memcpy(past_ks_ptr, past_ks_tensor.data.data(), past_ks_tensor.data.size() * sizeof(float));
-    inputs.emplace_back(std::move(past_ks_));
-
-    auto past_vs_ = Input<float>(past_vs_tensor.shape, gpt.runtime_manager_);
-    auto past_vs_ptr = past_vs_.GetTensorMutableData<float>();
-    std::memcpy(past_vs_ptr, past_vs_tensor.data.data(), past_vs_tensor.data.size() * sizeof(float));
-    inputs.emplace_back(std::move(past_vs_));
-
-    auto input_pos = Input<long>(input_pos_tensor.shape, gpt.runtime_manager_);
-    auto input_pos_ptr = input_pos.GetTensorMutableData<long>();
-    std::memcpy(input_pos_ptr, input_pos_tensor.data.data(), input_pos_tensor.data.size() * sizeof(long));
-    inputs.emplace_back(std::move(input_pos));
-
-    auto gpt_output = gpt.onForward(inputs);
-
-    auto logits_a = gpt.get_result_vector<float>(gpt_output, 0);
-    auto logit_t = gpt.get_result_vector<float>(gpt_output, 1);
-    auto next_ks = gpt.get_result_vector<float>(gpt_output, 2);
-    auto next_vs = gpt.get_result_vector<float>(gpt_output, 3);
-
-    std::vector<int> next_audio_tokens;
-    for (int i = 0; i < logits_a.shape[0]; i++) {
-        std::vector<float> logits_a_i_data(
-                std::vector<float>(logits_a.data.data() + i * logits_a.shape[2] * logits_a.shape[3],
-                                   logits_a.data.data() + (i + 1) * logits_a.shape[2] * logits_a.shape[3]));
-        tensor_info<float> logits_a_i{.data = logits_a_i_data, .shape = {1, logits_a.shape[2], logits_a.shape[3]}};
-        auto next_a = sample(logits_a_i, temperature, top_k, top_p);
-
-        next_audio_tokens.emplace_back(next_a);
-    }
-    auto next_t = sample(logit_t, temperature, top_k, top_p);
-    return {next_audio_tokens, next_t, next_ks, next_vs};
-#else
     std::vector<nncase::value_t> inputs;
     auto entry = gpt.entry();
 
@@ -495,7 +452,7 @@ next_token_A1T2(NncaseModel &gpt, tensor_info<float> &input_embs_concat, tensor_
     ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
     data_type = ts_type->dtype()->typecode();
     nncase::dims_t past_values_shape(past_vs_tensor.shape.begin(), past_vs_tensor.shape.end());
-    auto past_values_tensor = nncase::runtime::host_runtime_tensor::create(data_type, past_keys_shape, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
+    auto past_values_tensor = nncase::runtime::host_runtime_tensor::create(data_type, past_values_shape, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
     auto past_values_buffer = past_values_tensor->buffer().as_host().unwrap_or_throw();
     auto past_values_mapped = past_values_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
     auto past_values_ptr = past_values_mapped.buffer().as_span<float>().data();
@@ -508,7 +465,7 @@ next_token_A1T2(NncaseModel &gpt, tensor_info<float> &input_embs_concat, tensor_
     ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
     data_type = ts_type->dtype()->typecode();
     nncase::dims_t input_pos_shape(input_pos_t.shape.begin(), input_pos_t.shape.end());
-    auto input_pos_tensor = nncase::runtime::host_runtime_tensor::create(data_type, past_keys_shape, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
+    auto input_pos_tensor = nncase::runtime::host_runtime_tensor::create(data_type, input_pos_shape, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
     auto input_pos_buffer = input_pos_tensor->buffer().as_host().unwrap_or_throw();
     auto input_pos_mapped = input_pos_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
     auto input_pos_ptr = input_pos_mapped.buffer().as_span<float>().data();
@@ -570,7 +527,6 @@ next_token_A1T2(NncaseModel &gpt, tensor_info<float> &input_embs_concat, tensor_
     }
     auto next_t = sample(logit_t, temperature, top_k, top_p);
     return {next_audio_tokens, next_t, next_ks, next_vs};
-#endif
 }
 
 
@@ -587,9 +543,10 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
             int shift = padded_text_vocabsize,
             bool include_prompt = true,
             bool generate_text = false) {
-    std::cout << "nncase generate_AA is entering" << std::endl;
+    std::cout << "nncase generate_AA is entering: audio shape = " << audio_feature.shape[0] << " " << audio_feature.shape[1] << std::endl;
     auto T = input_ids.shape[1];
     std::vector<std::vector<int>> outputs(8);
+    write_binary_file("adapter_input_audio_feature.bin", reinterpret_cast<char *>(audio_feature.data.data()), audio_feature.data.size() * sizeof(float));
 
     // 1. adapter
     std::vector<long> audio_shape = {1, audio_feature.shape[0], audio_feature.shape[1]};
@@ -604,25 +561,19 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     auto audio_features_buffer = audio_features_tensor->buffer().as_host().unwrap_or_throw();
     auto audio_features_mapped = audio_features_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
     auto adapter_ptr = audio_features_mapped.buffer().as_span<float>().data();
-#if 0
-    for (int i = 0; i < audio_feature.size(); ++i) {
-        for (int j = 0; j < audio_feature[0].size(); ++j) {
-            *adapter_ptr++ = audio_feature[i][j];
-        }
-    }
-#else
     std::cout << "audio_feature.data.size() " << audio_feature.data.size() << std::endl;
     memcpy(reinterpret_cast<void *>(adapter_ptr), reinterpret_cast<void *>(audio_feature.data.data()), audio_feature.data.size() * sizeof(float));
-#endif
 
     audio_features_buffer.sync(nncase::runtime::sync_write_back, true).unwrap_or_throw();
     inputs.push_back(audio_features_tensor);
+    std::cout << "adapter inputs done." << std::endl;
     nncase::value_t output;
     {
         ScopedTiming st("adapter invoke");
         output = adapter.run(inputs);
     }
 
+    std::cout << "adapter run done." << std::endl;
     auto audio_embs_tensor = output.as<nncase::tensor>().unwrap_or_throw();
     auto audio_embs_buffer = audio_embs_tensor->buffer().as_host().unwrap_or_throw();
     auto audio_embs_mapped = audio_embs_buffer.map(nncase::runtime::map_read).unwrap_or_throw();

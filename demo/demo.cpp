@@ -40,14 +40,12 @@ int main(int argc, const char* argv[])
     std::string vad_model = models_dir + "/vad/vad.kmodel";
     std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
-    // std::string wte_model = models_dir + "/wte/wte.kmodel";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
     // std::string snac_model = models_dir + "/snac/snac.kmodel";
     std::string snac_model = models_dir + "/vad/vad.kmodel";
     std::unique_ptr<NncaseModel> whisper(new NncaseModel(whisper_model));
 
     NncaseModel adapter(adapter_model);
-    // NncaseModel wte(wte_model);
     NncaseModel lit_gpt(lit_gpt_model);
     NncaseModel snac(snac_model);
 #endif
