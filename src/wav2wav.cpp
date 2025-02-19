@@ -624,6 +624,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     tensor_info<float> input_embs = {input_embs_v, input_embs_shape};
 #endif
 #else
+    input_ids.shape = {input_ids.shape[0], 1, input_ids.shape[1]};
     auto input_embs = wte_get_data(input_ids);
 #endif
 
@@ -637,7 +638,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         input_pos.emplace_back(i);
 
     tensor_info<float> past_ks_tensor{.data=past_ks, .shape={24, 1, 14, 0, 64}};
-    tensor_info<float> past_vs_tensor{.data=past_ks, .shape={24, 1, 14, 0, 64}};
+    tensor_info<float> past_vs_tensor{.data=past_vs, .shape={24, 1, 14, 0, 64}};
     tensor_info<long> input_pos_tensor{.data=input_pos, .shape={(long) input_pos.size()}};
 
 
