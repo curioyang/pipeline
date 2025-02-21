@@ -4,6 +4,7 @@
 #include <cstdarg>
 #include <iostream>
 #include <tokenizers_cpp.h>
+#include "audio_play.h"
 #include "common.h"
 #include "timer.h"
 #if defined(ONNX)
@@ -18,7 +19,7 @@ using namespace Ort;
 #endif
 
 #include "utils.h"
-#define DUMP_WAV 0
+#define DUMP_WAV 1
 
 #if defined(ONNX)
 class RuntimeManager {
@@ -784,7 +785,9 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   int length,
                   ONNXModel &adapter,
                   ONNXModel &gpt,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
+                  ONNXModel &snac,
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
+                  StreamingAudioPlayer &player);
 
 std::pair<tensor_info<float>, tensor_info<long>>
 generate_input_ids(ONNXModel &model, tensor_info<float> &mel, int length,
@@ -801,7 +804,8 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   int length,
                   NncaseModel &adapter,
                   NncaseModel &gpt,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
+				  StreamingAudioPlayer &player);
 std::pair<tensor_info<float>, tensor_info<long>>
 generate_input_ids(NncaseModel &model, tensor_info<float> &mel, int length,
                    int step = 0,

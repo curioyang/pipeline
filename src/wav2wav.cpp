@@ -2,6 +2,7 @@
 #include "wav2wav.h"
 #include "audio.h"
 #include "utils.h"
+#include <thread>
 
 
 tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs) {
@@ -9,13 +10,6 @@ tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float
     auto input_embs_shape = input_embs.shape;
     auto audio_embs_data = audio_embs.data;
     auto input_embs_data = input_embs.data;
-
-    /*
-     * audio_len = audio_emb.shape[1]
-     * for i in range(7):
-     *      input_embs[i, 0, 1:audio_len + 1, :] = audio_emb[0, :audio_len].copy()
-     * return input_embs
-     */
 
     auto audio_len = audio_embs_shape[1];
 
@@ -141,10 +135,42 @@ next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_in
     return {next_audio_tokens, next_t, next_ks, next_vs};
 }
 
+void generate_audio(ONNXModel &snac, std::vector<tensor_info<long>> &audios, StreamingAudioPlayer &player) {
+//    auto audio_list = reconscruct_snac(tokenizer_list);
+//    auto audio = reconstruct_tensors(audio_list);
+    // process 3 audio into 1 for single dynamic axis.
+//    std::vector<long> audio_(audio[0].begin(), audio[0].end());
+//    audio_.insert(audio_.end(), audio[1].begin(), audio[1].end());
+//    audio_.insert(audio_.end(), audio[2].begin(), audio[2].end());
+//    tensor_info<long> snac_input_tensor{.data = audio_, .shape = {1, (int) audio_.size()}};
+
+    auto audio_hat = model_run<long, float>(snac, audios);
+    std::cout << "               audio_hat size: " << audio_hat.data.size()<<std::endl;  // 2048 length.
+    auto begin = audio_hat.data.begin();
+    int part_size = 1200; //50ms
+    while (1) {
+        auto end = begin + part_size;
+        if (end >= audio_hat.data.end())
+            end = audio_hat.data.end();
+
+        std::vector<float> tmp_data(begin, end);
+        while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        std::cout << "Wrote chunk, available space: "
+                  << player.available() << std::endl;
+        begin = end;
+        if (end == audio_hat.data.end())
+            break;
+    }
+//    std::string save_path = "../data/output.wav";
+//    save_audio(save_path, audio_hat.data, 24000);
+}
 
 std::vector<std::vector<int>>
 generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
-            ONNXModel &adapter, ONNXModel &gpt,
+            ONNXModel &adapter, ONNXModel &gpt, ONNXModel &snac, StreamingAudioPlayer &player,
             int max_returned_tokens = 2048,
             float temperature = 0.9,
             int top_k = 1,
@@ -163,6 +189,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     auto audio_embs = model_run<float, float>(adapter, audio_feature);
 
     input_ids.shape = {input_ids.shape[0], 1, input_ids.shape[1]};
+//    auto input_embs = model_run<long, float>(wte, input_ids);
     auto input_embs = wte_get_data(input_ids);
 
     auto input_embs_concat = concat_feat(audio_embs, input_embs);
@@ -237,6 +264,18 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         }
         outputs[7].emplace_back(token_T);
         input_pos[0] += 1;
+
+        // if(sub_step>=8) {
+        //     std::vector<long> audio_0{outputs[0][sub_step-7]};
+        //     std::vector<long> audio_1{outputs[1][sub_step-6], outputs[4][sub_step-3]};
+        //     std::vector<long> audio_2{outputs[2][sub_step-5],outputs[3][sub_step-4], outputs[5][sub_step-2], outputs[6][sub_step-1]};
+
+        //     tensor_info<long> audio_0_tensor{.data=audio_0,.shape={1, 1}};
+        //     tensor_info<long> audio_1_tensor{.data=audio_1,.shape={1, 2}};
+        //     tensor_info<long> audio_2_tensor{.data=audio_2,.shape={1, 4}};
+        //     std::vector<tensor_info<long>>data{audio_0_tensor,audio_1_tensor, audio_2_tensor};
+        //     generate_audio(snac, data, player);
+        // }
 
         // for (int i = 0; i < 8; i++)
         // {
@@ -318,9 +357,11 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   int length,
                   ONNXModel &adapter,
                   ONNXModel &gpt,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer) {
+                  ONNXModel &snac,
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
+                  StreamingAudioPlayer &player) {
 #if 1
-    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt,
+    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt, snac, player,
                                       2048,
                                       0.9,
                                       1,
@@ -349,21 +390,51 @@ std::string A1_A2(tensor_info<float> &audio_feature,
     auto audio_list = reconscruct_snac(tokenizer_list);
     auto audio = reconstruct_tensors(audio_list);
 
+#if 0
     // process 3 audio into 1 for single dynamic axis.
     std::vector<long> audio_(audio[0].begin(), audio[0].end());
     audio_.insert(audio_.end(), audio[1].begin(), audio[1].end());
     audio_.insert(audio_.end(), audio[2].begin(), audio[2].end());
     tensor_info<long> snac_input_tensor{.data = audio_, .shape = {1, (int)audio_.size()}};
 
-    std::vector<Value> inputs;
-    auto snac_input = Input<long>(snac_input_tensor.shape, snac.runtime_manager_);
-    auto snac_input_ptr = snac_input.GetTensorMutableData<long>();
-    std::memcpy(snac_input_ptr, snac_input_tensor.data.data(), snac_input_tensor.data.size() * sizeof(long));
-    inputs.emplace_back(std::move(snac_input));
+    auto audio_hat = model_run<long, float>(snac,snac_input_tensor);
+#else
+    std::vector<tensor_info<long>> inputs;
 
-    auto snac_output = snac.onForward(inputs);
+    std::vector<long> v_audio_0(audio[0].begin(), audio[0].end());
+    tensor_info<long> t_autio_0{.data = v_audio_0, .shape = {1, v_audio_0.size()}};
+    inputs.push_back(t_autio_0);
 
-    auto audio_hat = snac.get_result_vector<float>(snac_output, 0);
+
+    std::vector<long> v_audio_1(audio[1].begin(), audio[1].end());
+    tensor_info<long> t_autio_1{.data = v_audio_1, .shape = {1, v_audio_1.size()}};
+    inputs.push_back(t_autio_1);
+
+    std::vector<long> v_audio_2(audio[2].begin(), audio[2].end());
+    tensor_info<long> t_autio_2{.data = v_audio_2, .shape = {1, v_audio_2.size()}};
+    inputs.push_back(t_autio_2);
+
+    auto audio_hat = model_run<long, float>(snac, inputs);
+#endif
+    // auto begin = audio_hat.data.begin();
+    // int part_size = 1200; //50ms
+    // while(1)
+    // {
+    //     auto end = begin + part_size;
+    //     if(end >= audio_hat.data.end())
+    //         end = audio_hat.data.end();
+
+    //     std::vector<float> tmp_data(begin, end);
+    //     while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
+    //         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //     }
+
+    //     std::cout << "Wrote chunk, available space: "
+    //               << player.available() << std::endl;
+    //     begin = end;
+    //     if(end == audio_hat.data.end())
+    //         break;
+    // }
 
     std::string save_path = "../data/output.wav";
     save_audio(save_path, audio_hat.data, 24000);

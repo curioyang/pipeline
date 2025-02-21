@@ -25,15 +25,12 @@ int main(int argc, const char* argv[])
     std::string vad_model = models_dir + "/vad/silero_vad.onnx";
     std::string whisper_model = models_dir + "/whisper/whisper.onnx";
     std::string adapter_model = models_dir + "/adapter/adapter.onnx";
-    std::string wte_model = models_dir + "/wte/wte.onnx";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
     std::string snac_model = models_dir + "/snac/snac.onnx";
 
-    // ONNXModel whisper(std::make_unique<RuntimeManager>("whisper"), whisper_model);
-    std::unique_ptr<ONNXModel> whisper(new ONNXModel(std::make_unique<RuntimeManager>("whisper"), whisper_model));
+    ONNXModel whisper(std::make_unique<RuntimeManager>("whisper"), whisper_model);
 
     ONNXModel adapter(std::make_unique<RuntimeManager>("adapter"), adapter_model);
-    // ONNXModel wte(std::make_unique<RuntimeManager>("wte"), wte_model );
     ONNXModel lit_gpt(std::make_unique<RuntimeManager>("lit_gpt"), lit_gpt_model);
     ONNXModel snac(std::make_unique<RuntimeManager>("snac"), snac_model);
 #else
@@ -42,8 +39,7 @@ int main(int argc, const char* argv[])
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
     std::string snac_model = models_dir + "/snac/snac.kmodel";
-    std::unique_ptr<NncaseModel> whisper(new NncaseModel(whisper_model));
-
+    NncaseModel whisper(whisper_model);
     NncaseModel adapter(adapter_model);
     NncaseModel lit_gpt(lit_gpt_model);
     NncaseModel snac(snac_model);
@@ -81,12 +77,20 @@ int main(int argc, const char* argv[])
     auto [mel, length] = load_audio(argv[2]);
 #endif
 
-    auto [audio_feature, input_ids] = generate_input_ids(*(whisper.get()), mel, length);
-    // whisper = nullptr;
+    auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
+
+    // // init audio Player
+    int buffer_size = 4096;
+    StreamingAudioPlayer audioplayer(24000, buffer_size); // 24kHz, 4KB buffer
+    // audioplayer.start();
 
     // 执行生成
-    auto text = A1_A2(audio_feature, input_ids, length, adapter, lit_gpt, tokenizer);
+    auto text = A1_A2(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
     std::cout << "Generated text: " << text << std::endl;
+    // while (audioplayer.available() < buffer_size) {
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    // }
 
+    // audioplayer.stop();
     return 0;
 }
