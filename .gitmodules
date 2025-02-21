@@ -1,3 +1,0 @@
-[submodule "3rd_party/cnpy"]
-	path = 3rd_party/cnpy
-	url = https://github.com/rogersce/cnpy
