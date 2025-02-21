@@ -165,7 +165,7 @@ tensor_info<float> log_mel_spectrogram(std::vector<float>& audio, int n_mels, in
     mel_spec_tensor.shape = {WHISPER_N_MELS, 3000};
     int m = WHISPER_N_MELS;
     int n = mel_spec[0].size();
-    
+
     for (int i = 0; i < m; ++i)
     {
         int index = i * 3000;
@@ -209,92 +209,92 @@ void save_audio(const std::string &path, const std::vector<float> &audio, int sr
     WW.Write(path);
 }
 
-void playAudio(const std::vector<float> &audio_hat, int sampleRate)
-{
-    PaError err = Pa_Initialize();
-    if (err != paNoError)
-    {
-        // 处理初始化错误
-        return;
-    }
+// void playAudio(const std::vector<float> &audio_hat, int sampleRate)
+// {
+//     PaError err = Pa_Initialize();
+//     if (err != paNoError)
+//     {
+//         // 处理初始化错误
+//         return;
+//     }
 
-    PlaybackData playbackData{
-        audio_hat.data(),
-        static_cast<unsigned long>(audio_hat.size()),
-        0};
+//     PlaybackData playbackData{
+//         audio_hat.data(),
+//         static_cast<unsigned long>(audio_hat.size()),
+//         0};
 
-    PaStreamParameters outputParams;
-    outputParams.device = Pa_GetDefaultOutputDevice();
-    if (outputParams.device == paNoDevice)
-    {
-        Pa_Terminate();
-        return;
-    }
-    outputParams.channelCount = 1;         // 单声道
-    outputParams.sampleFormat = paFloat32; // 32位浮点格式
-    outputParams.suggestedLatency = Pa_GetDeviceInfo(outputParams.device)->defaultLowOutputLatency;
-    outputParams.hostApiSpecificStreamInfo = nullptr;
+//     PaStreamParameters outputParams;
+//     outputParams.device = Pa_GetDefaultOutputDevice();
+//     if (outputParams.device == paNoDevice)
+//     {
+//         Pa_Terminate();
+//         return;
+//     }
+//     outputParams.channelCount = 1;         // 单声道
+//     outputParams.sampleFormat = paFloat32; // 32位浮点格式
+//     outputParams.suggestedLatency = Pa_GetDeviceInfo(outputParams.device)->defaultLowOutputLatency;
+//     outputParams.hostApiSpecificStreamInfo = nullptr;
 
-    PaStream *stream;
-    err = Pa_OpenStream(&stream,
-                        nullptr,
-                        &outputParams,
-                        sampleRate,
-                        paFramesPerBufferUnspecified,
-                        paClipOff,
-                        audioCallback,
-                        &playbackData);
+//     PaStream *stream;
+//     err = Pa_OpenStream(&stream,
+//                         nullptr,
+//                         &outputParams,
+//                         sampleRate,
+//                         paFramesPerBufferUnspecified,
+//                         paClipOff,
+//                         audioCallback,
+//                         &playbackData);
 
-    if (err != paNoError)
-    {
-        Pa_Terminate();
-        return;
-    }
+//     if (err != paNoError)
+//     {
+//         Pa_Terminate();
+//         return;
+//     }
 
-    err = Pa_StartStream(stream);
-    if (err != paNoError)
-    {
-        Pa_CloseStream(stream);
-        Pa_Terminate();
-        return;
-    }
+//     err = Pa_StartStream(stream);
+//     if (err != paNoError)
+//     {
+//         Pa_CloseStream(stream);
+//         Pa_Terminate();
+//         return;
+//     }
 
-    // 等待播放完成
-    while (Pa_IsStreamActive(stream))
-    {
-        Pa_Sleep(100);
-    }
+//     // 等待播放完成
+//     while (Pa_IsStreamActive(stream))
+//     {
+//         Pa_Sleep(100);
+//     }
 
-    Pa_StopStream(stream);
-    Pa_CloseStream(stream);
-    Pa_Terminate();
-}
+//     Pa_StopStream(stream);
+//     Pa_CloseStream(stream);
+//     Pa_Terminate();
+// }
 
-static int audioCallback(const void *input, void *output,
-                         unsigned long frameCount,
-                         const PaStreamCallbackTimeInfo *timeInfo,
-                         PaStreamCallbackFlags statusFlags,
-                         void *userData)
-{
-    PlaybackData *data = (PlaybackData *)userData;
-    float *out = (float *)output;
-    unsigned long framesToCopy = frameCount;
+// static int audioCallback(const void *input, void *output,
+//                          unsigned long frameCount,
+//                          const PaStreamCallbackTimeInfo *timeInfo,
+//                          PaStreamCallbackFlags statusFlags,
+//                          void *userData)
+// {
+//     PlaybackData *data = (PlaybackData *)userData;
+//     float *out = (float *)output;
+//     unsigned long framesToCopy = frameCount;
 
-    // 计算剩余帧数
-    if (data->currentFrame + framesToCopy > data->totalFrames)
-        framesToCopy = data->totalFrames - data->currentFrame;
+//     // 计算剩余帧数
+//     if (data->currentFrame + framesToCopy > data->totalFrames)
+//         framesToCopy = data->totalFrames - data->currentFrame;
 
-    if (framesToCopy > 0)
-    {
-        // 复制数据到输出缓冲区
-        memcpy(out, data->data + data->currentFrame, framesToCopy * sizeof(float));
-        data->currentFrame += framesToCopy;
-    }
+//     if (framesToCopy > 0)
+//     {
+//         // 复制数据到输出缓冲区
+//         memcpy(out, data->data + data->currentFrame, framesToCopy * sizeof(float));
+//         data->currentFrame += framesToCopy;
+//     }
 
-    // 静音填充剩余缓冲区（如果有）
-    if (framesToCopy < frameCount)
-        memset(out + framesToCopy, 0, (frameCount - framesToCopy) * sizeof(float));
+//     // 静音填充剩余缓冲区（如果有）
+//     if (framesToCopy < frameCount)
+//         memset(out + framesToCopy, 0, (frameCount - framesToCopy) * sizeof(float));
 
-    // 判断是否播放完毕
-    return (data->currentFrame >= data->totalFrames) ? paComplete : paContinue;
-}
+//     // 判断是否播放完毕
+//     return (data->currentFrame >= data->totalFrames) ? paComplete : paContinue;
+// }

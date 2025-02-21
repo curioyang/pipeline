@@ -80,12 +80,13 @@ int main(int argc, const char* argv[])
     auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
 
     // // init audio Player
-    int buffer_size = 4096;
-    StreamingAudioPlayer audioplayer(24000, buffer_size); // 24kHz, 4KB buffer
+    // int buffer_size = 4096;
+    // StreamingAudioPlayer audioplayer(24000, buffer_size); // 24kHz, 4KB buffer
     // audioplayer.start();
 
     // 执行生成
-    auto text = A1_A2(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
+    // auto text = A1_A2(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
+    auto text = A1_A2(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer);
     std::cout << "Generated text: " << text << std::endl;
     // while (audioplayer.available() < buffer_size) {
     //     std::this_thread::sleep_for(std::chrono::milliseconds(100));

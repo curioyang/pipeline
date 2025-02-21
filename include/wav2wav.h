@@ -780,6 +780,7 @@ static Value Input(tensor_info<T> &tensor, const std::shared_ptr<RuntimeManager>
     return Value::CreateTensor<T>(rtmgr->allocator().GetInfo(), tensor.data.data(), tensor.data.size(), tensor.shape.data(), tensor.shape.size());
 }
 
+#if 0
 std::string A1_A2(tensor_info<float> &audio_feature,
                   tensor_info<int64_t> &input_ids,
                   int length,
@@ -788,6 +789,15 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   ONNXModel &snac,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
                   StreamingAudioPlayer &player);
+#else
+std::string A1_A2(tensor_info<float> &audio_feature,
+                  tensor_info<int64_t> &input_ids,
+                  int length,
+                  ONNXModel &adapter,
+                  ONNXModel &gpt,
+                  ONNXModel &snac,
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
+#endif
 
 std::pair<tensor_info<float>, tensor_info<long>>
 generate_input_ids(ONNXModel &model, tensor_info<float> &mel, int length,
@@ -799,6 +809,7 @@ next_token_A1T2(NncaseModel &gpt, tensor_info<float> &input_embs_concat, tensor_
                 tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step, float temperature,
                 int top_k, float top_p);
 
+#if 0
 std::string A1_A2(tensor_info<float> &audio_feature,
                   tensor_info<int64_t> &input_ids,
                   int length,
@@ -806,6 +817,15 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   NncaseModel &gpt,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
 				  StreamingAudioPlayer &player);
+#else
+std::string A1_A2(tensor_info<float> &audio_feature,
+                  tensor_info<int64_t> &input_ids,
+                  int length,
+                  NncaseModel &adapter,
+                  NncaseModel &gpt,
+                  NncaseModel &snac,
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
+#endif
 std::pair<tensor_info<float>, tensor_info<long>>
 generate_input_ids(NncaseModel &model, tensor_info<float> &mel, int length,
                    int step = 0,

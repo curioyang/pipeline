@@ -135,6 +135,7 @@ next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_in
     return {next_audio_tokens, next_t, next_ks, next_vs};
 }
 
+#if 0
 void generate_audio(ONNXModel &snac, std::vector<tensor_info<long>> &audios, StreamingAudioPlayer &player) {
 //    auto audio_list = reconscruct_snac(tokenizer_list);
 //    auto audio = reconstruct_tensors(audio_list);
@@ -167,6 +168,7 @@ void generate_audio(ONNXModel &snac, std::vector<tensor_info<long>> &audios, Str
 //    std::string save_path = "../data/output.wav";
 //    save_audio(save_path, audio_hat.data, 24000);
 }
+#endif
 
 std::vector<std::vector<int>>
 generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
@@ -352,6 +354,7 @@ std::vector<int> reconscruct_snac(std::vector<std::vector<int>> &src_snac) {
     return snac_output;
 }
 
+#if 0
 std::string A1_A2(tensor_info<float> &audio_feature,
                   tensor_info<long> &input_ids,
                   int length,
@@ -360,7 +363,17 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   ONNXModel &snac,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
                   StreamingAudioPlayer &player) {
+#else
+std::string A1_A2(tensor_info<float> &audio_feature,
+                  tensor_info<long> &input_ids,
+                  int length,
+                  ONNXModel &adapter,
+                  ONNXModel &gpt,
+                  ONNXModel &snac,
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer) {
+#endif
 #if 1
+#if 0
     auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt, snac, player,
                                       2048,
                                       0.9,
@@ -372,6 +385,19 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                                       padded_text_vocabsize,
                                       true,
                                       false);
+#else
+    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt, snac,
+                                      2048,
+                                      0.9,
+                                      1,
+                                      1.0,
+                                      _eoa,
+                                      _eot,
+                                      _pad_t,
+                                      padded_text_vocabsize,
+                                      true,
+                                      false);
+#endif
 
 #else
     std::vector<std::vector<int>> tokenizer_list = {
@@ -436,7 +462,7 @@ std::string A1_A2(tensor_info<float> &audio_feature,
     //         break;
     // }
 
-    std::string save_path = "../data/output.wav";
+    std::string save_path = "output.wav";
     save_audio(save_path, audio_hat.data, 24000);
 #endif
 
@@ -814,6 +840,7 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   int length,
                   NncaseModel &adapter,
                   NncaseModel &gpt,
+                  NncaseModel &snac,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer) {
 #if 1
     auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt,
@@ -845,23 +872,84 @@ std::string A1_A2(tensor_info<float> &audio_feature,
     auto audio_list = reconscruct_snac(tokenizer_list);
     auto audio = reconstruct_tensors(audio_list);
 
-    // process 3 audio into 1 for single dynamic axis.
-    std::vector<long> audio_(audio[0].begin(), audio[0].end());
-    audio_.insert(audio_.end(), audio[1].begin(), audio[1].end());
-    audio_.insert(audio_.end(), audio[2].begin(), audio[2].end());
-    tensor_info<long> snac_input_tensor{.data = audio_, .shape = {1, (int)audio_.size()}};
+#if 0
+    std::vector<tensor_info<long>> inputs;
 
-    std::vector<Value> inputs;
-    auto snac_input = Input<long>(snac_input_tensor.shape, snac.runtime_manager_);
-    auto snac_input_ptr = snac_input.GetTensorMutableData<long>();
-    std::memcpy(snac_input_ptr, snac_input_tensor.data.data(), snac_input_tensor.data.size() * sizeof(long));
-    inputs.emplace_back(std::move(snac_input));
+    std::vector<long> v_audio_0(audio[0].begin(), audio[0].end());
+    tensor_info<long> t_autio_0{.data = v_audio_0, .shape = {1, v_audio_0.size()}};
+    inputs.push_back(t_autio_0);
 
-    auto snac_output = snac.onForward(inputs);
+    std::vector<long> v_audio_1(audio[1].begin(), audio[1].end());
+    tensor_info<long> t_autio_1{.data = v_audio_1, .shape = {1, v_audio_1.size()}};
+    inputs.push_back(t_autio_1);
 
-    auto audio_hat = snac.get_result_vector<float>(snac_output, 0);
+    std::vector<long> v_audio_2(audio[2].begin(), audio[2].end());
+    tensor_info<long> t_autio_2{.data = v_audio_2, .shape = {1, v_audio_2.size()}};
+    inputs.push_back(t_autio_2);
 
-    std::string save_path = "../data/output.wav";
+    auto audio_hat = model_run<long, float>(snac, inputs);
+#else
+    std::vector<nncase::value_t> inputs;
+    auto entry = snac.entry();
+
+    // input 0: audio_0
+    auto type = entry->parameter_type(0).expect("parameter type out of index");
+    auto ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
+    auto data_type = ts_type->dtype()->typecode();
+    nncase::dims_t audio_0_shape{1, audio[0].size()};
+    auto audio_0_tensor = nncase::runtime::host_runtime_tensor::create(data_type, audio_0_shape, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
+    auto audio_0_buffer = audio_0_tensor->buffer().as_host().unwrap_or_throw();
+    auto audio_0_mapped = audio_0_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
+    auto audio_0_ptr = audio_0_mapped.buffer().as_span<long>().data();
+    std::memcpy(audio_0_ptr, audio[0].data(), audio[0].size() * sizeof(long));
+    audio_0_buffer.sync(nncase::runtime::sync_write_back, true).unwrap_or_throw();
+    inputs.push_back(audio_0_tensor);
+
+    // input 1: audio_1
+    type = entry->parameter_type(1).expect("parameter type out of index");
+    ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
+    data_type = ts_type->dtype()->typecode();
+    nncase::dims_t audio_1_shape{1, audio[1].size()};
+    auto audio_1_tensor = nncase::runtime::host_runtime_tensor::create(data_type, audio_1_shape, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
+    auto audio_1_buffer = audio_1_tensor->buffer().as_host().unwrap_or_throw();
+    auto audio_1_mapped = audio_1_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
+    auto audio_1_ptr = audio_1_mapped.buffer().as_span<long>().data();
+    std::memcpy(audio_1_ptr, audio[1].data(), audio[1].size() * sizeof(long));
+    audio_1_buffer.sync(nncase::runtime::sync_write_back, true).unwrap_or_throw();
+    inputs.push_back(audio_1_tensor);
+
+    // input 2: audio_2
+    type = entry->parameter_type(2).expect("parameter type out of index");
+    ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
+    data_type = ts_type->dtype()->typecode();
+    nncase::dims_t audio_2_shape{1, audio[2].size()};
+    auto audio_2_tensor = nncase::runtime::host_runtime_tensor::create(data_type, audio_2_shape, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
+    auto audio_2_buffer = audio_2_tensor->buffer().as_host().unwrap_or_throw();
+    auto audio_2_mapped = audio_2_buffer.map(nncase::runtime::map_write).unwrap_or_throw();
+    auto audio_2_ptr = audio_2_mapped.buffer().as_span<long>().data();
+    std::memcpy(audio_2_ptr, audio[2].data(), audio[2].size() * sizeof(long));
+    audio_2_buffer.sync(nncase::runtime::sync_write_back, true).unwrap_or_throw();
+    inputs.push_back(audio_2_tensor);
+
+    // run
+    nncase::value_t out;
+    {
+        ScopedTiming st("snac invoke");
+        out = snac.run(inputs);
+    }
+    // auto outputs = outs.as<nncase::tuple>().unwrap();
+
+    // get output 0
+    auto audio_hat_tensor = out.as<nncase::tensor>().unwrap_or_throw();
+    auto audio_hat_buffer = audio_hat_tensor->buffer().as_host().unwrap_or_throw();
+    auto audio_hat_mapped = audio_hat_buffer.map(nncase::runtime::map_read).unwrap_or_throw();
+    auto audio_hat_data = audio_hat_mapped.buffer().as_span<float>();
+    std::vector<float> audio_hat_v(audio_hat_data.begin(), audio_hat_data.end());
+    std::vector<long> audio_hat_shape(audio_hat_tensor->shape().begin(), audio_hat_tensor->shape().end());
+    tensor_info<float> audio_hat = {audio_hat_v, audio_hat_shape };
+#endif
+
+    std::string save_path = "output.wav";
     save_audio(save_path, audio_hat.data, 24000);
 #endif
 
