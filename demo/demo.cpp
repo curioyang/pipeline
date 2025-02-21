@@ -41,8 +41,7 @@ int main(int argc, const char* argv[])
     std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
-    // std::string snac_model = models_dir + "/snac/snac.kmodel";
-    std::string snac_model = models_dir + "/vad/vad.kmodel";
+    std::string snac_model = models_dir + "/snac/snac.kmodel";
     std::unique_ptr<NncaseModel> whisper(new NncaseModel(whisper_model));
 
     NncaseModel adapter(adapter_model);
@@ -74,7 +73,7 @@ int main(int argc, const char* argv[])
     {
         std::cout << stamps[i].c_str() << std::endl;
     }
-    vad = nullptr;
+    // vad = nullptr;
 
     std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
     auto [mel, length] = load_audio(audio);
@@ -83,7 +82,7 @@ int main(int argc, const char* argv[])
 #endif
 
     auto [audio_feature, input_ids] = generate_input_ids(*(whisper.get()), mel, length);
-    whisper = nullptr;
+    // whisper = nullptr;
 
     // 执行生成
     auto text = A1_A2(audio_feature, input_ids, length, adapter, lit_gpt, tokenizer);

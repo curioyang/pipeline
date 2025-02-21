@@ -226,7 +226,6 @@ tensor_info<float> log_mel_spectrogram(std::vector<float>& audio, int n_mels, in
     }
 
     // write_binary_file("mel_spec.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
-    // return mel_spec;
     return std::move(mel_spec_tensor);
 }
 
