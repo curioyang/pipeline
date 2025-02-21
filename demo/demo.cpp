@@ -1,10 +1,18 @@
-#include <fstream>
-#include <stdlib.h>
-#include <iostream>
-#include <string>
-#include "wav2wav.h"
-#include "wav.h"
+
 #include "audio.h"
+#include "wav.h"
+#include "wav2wav.h"
+#include <fstream>
+#include <iostream>
+#include <stdlib.h>
+#include <string>
+
+#ifdef BUILD_ONNX
+#include "ONNXWrapper.h"
+using namespace omni_onnx;
+#else
+#include "NNCASEWrapper.h"
+#endif
 
 int main(int argc, const char* argv[])
 {
@@ -39,10 +47,10 @@ int main(int argc, const char* argv[])
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
     std::string snac_model = models_dir + "/snac/snac.kmodel";
-    NncaseModel whisper(whisper_model);
-    NncaseModel adapter(adapter_model);
-    NncaseModel lit_gpt(lit_gpt_model);
-    NncaseModel snac(snac_model);
+    NNCASEModel whisper(whisper_model, "whisper");
+    NNCASEModel adapter(adapter_model, "adapter");
+    NNCASEModel lit_gpt(lit_gpt_model, "lit_gpt");
+    NNCASEModel snac(snac_model,"snac");
 #endif
 
     // 处理音频输入
@@ -77,16 +85,22 @@ int main(int argc, const char* argv[])
     auto [mel, length] = load_audio(argv[2]);
 #endif
 
-    auto [audio_feature, input_ids] = generate_input_ids(whisper, mel, length);
-
+#if defined(ONNX)
+    auto [audio_feature, input_ids] = generate_input_ids<ONNXModel>(whisper, mel, length);
+#else
+    auto [audio_feature, input_ids] = generate_input_ids<NNCASEModel>(whisper, mel, length);
+#endif
     // // init audio Player
     // int buffer_size = 4096;
     // StreamingAudioPlayer audioplayer(24000, buffer_size); // 24kHz, 4KB buffer
     // audioplayer.start();
 
     // 执行生成
-    // auto text = A1_A2(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
-    auto text = A1_A2(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer);
+#if defined(ONNX)
+    auto text = A1_A2<ONNXModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer);
+#else
+    auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer);
+#endif
     std::cout << "Generated text: " << text << std::endl;
     // while (audioplayer.available() < buffer_size) {
     //     std::this_thread::sleep_for(std::chrono::milliseconds(100));

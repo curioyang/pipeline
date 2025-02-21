@@ -65,33 +65,32 @@ stft(std::vector<float> &signal, int windowSize, int hopSize, const std::vector<
 
 tensor_info<float> log_mel_spectrogram(std::vector<float> &audio, int n_mels = 80, int padding = 0);
 
-#if VAD_ENABLE
+
 
 std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr = SAMPLE_RATE);
 
-#else
 std::pair<tensor_info<float>, int> load_audio(const std::string &path, int sr = SAMPLE_RATE);
-#endif
+
 
 void save_audio(const std::string &path, const std::vector<float> &audio, int sr = SAMPLE_RATE);
 
-// #include <portaudio.h>
+#include <portaudio.h>
 
-// // 播放状态结构体
-// struct PlaybackData
-// {
-//     const float *data;          // 音频数据指针
-//     unsigned long totalFrames;  // 总帧数
-//     unsigned long currentFrame; // 当前播放位置
-// };
+// 播放状态结构体
+struct PlaybackData
+{
+    const float *data;          // 音频数据指针
+    unsigned long totalFrames;  // 总帧数
+    unsigned long currentFrame; // 当前播放位置
+};
 
-// // 音频回调函数
-// static int audioCallback(const void *input, void *output,
-//                          unsigned long frameCount,
-//                          const PaStreamCallbackTimeInfo *timeInfo,
-//                          PaStreamCallbackFlags statusFlags,
-//                          void *userData);
+// 音频回调函数
+static int audioCallback(const void *input, void *output,
+                         unsigned long frameCount,
+                         const PaStreamCallbackTimeInfo *timeInfo,
+                         PaStreamCallbackFlags statusFlags,
+                         void *userData);
 
-// void playAudio(const std::vector<float> &audio_hat, int sampleRate);
+void playAudio(const std::vector<float> &audio_hat, int sampleRate);
 
 #endif //WAV2WAV_AUDIO_H

@@ -177,7 +177,6 @@ tensor_info<float> log_mel_spectrogram(std::vector<float>& audio, int n_mels, in
     return std::move(mel_spec_tensor);
 }
 
-#if VAD_ENABLE
 std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr)
 {
     size_t frame_count = audio.size();
@@ -186,22 +185,22 @@ std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr)
     auto mel = log_mel_spectrogram(audio);
     return {mel, duration_ms / 20 + 1};
 }
-#else
-std::pair<tensor_info<float>, int> load_audio(const std::string& path, int sr)
-{
-    SF_INFO sf_info;
-    SNDFILE* file = sf_open(path.c_str(), SFM_READ, &sf_info);
-    std::vector<float> audio(sf_info.frames * sf_info.channels);
-    size_t frame_count = sf_readf_float(file, audio.data(), audio.size());
-    sf_close(file);
 
-    auto duration_ms = (float)frame_count / sr * 1000.0f;
-    // pad_or_trim(audio);
-    auto mel = log_mel_spectrogram(audio);
+// std::pair<tensor_info<float>, int> load_audio(const std::string& path, int sr)
+// {
+//     SF_INFO sf_info;
+//     SNDFILE* file = sf_open(path.c_str(), SFM_READ, &sf_info);
+//     std::vector<float> audio(sf_info.frames * sf_info.channels);
+//     size_t frame_count = sf_readf_float(file, audio.data(), audio.size());
+//     sf_close(file);
 
-    return {mel, duration_ms / 20 + 1};
-}
-#endif
+//     auto duration_ms = (float)frame_count / sr * 1000.0f;
+//     // pad_or_trim(audio);
+//     auto mel = log_mel_spectrogram(audio);
+
+//     return {mel, duration_ms / 20 + 1};
+// }
+// #endif
 
 void save_audio(const std::string &path, const std::vector<float> &audio, int sr)
 {

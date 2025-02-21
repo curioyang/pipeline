@@ -7,9 +7,10 @@
 #include "audio_play.h"
 #include "common.h"
 #include "timer.h"
+
 #if defined(ONNX)
-#include <onnxruntime_cxx_api.h>
-using namespace Ort;
+#include "ONNXWrapper.h"
+using namespace omni_onnx;
 #else
 #include <nncase/runtime/interpreter.h>
 #include <nncase/runtime/runtime_tensor.h>
@@ -20,89 +21,6 @@ using namespace Ort;
 
 #include "utils.h"
 #define DUMP_WAV 1
-
-#if defined(ONNX)
-class RuntimeManager {
-public:
-    explicit RuntimeManager(const char *name) {
-        name_ = name;
-        env_ = std::make_unique<Ort::Env>(ORT_LOGGING_LEVEL_WARNING, name);
-        options_ = std::make_unique<Ort::SessionOptions>();
-        options_->SetIntraOpNumThreads(6);
-        options_->SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-        allocator_ = std::make_unique<Ort::AllocatorWithDefaultOptions>();
-    }
-
-    ~RuntimeManager() = default;
-
-    [[nodiscard]] const Ort::Env &env() const {
-        return *env_;
-    }
-
-    [[nodiscard]] const Ort::SessionOptions &options() const {
-        return *options_;
-    }
-
-    [[nodiscard]] const Ort::AllocatorWithDefaultOptions &allocator() const {
-        return *allocator_;
-    }
-
-    [[nodiscard]] std::string name() const {
-        return name_;
-    }
-
-private:
-    std::string name_;
-    std::unique_ptr<Ort::Env> env_;
-    std::unique_ptr<Ort::SessionOptions> options_;
-    std::unique_ptr<Ort::AllocatorWithDefaultOptions> allocator_;
-};
-
-class ONNXModel {
-public:
-    ONNXModel(const std::shared_ptr<RuntimeManager> &runtime, const std::string &path)
-            : runtime_manager_(runtime) {
-        session_ = std::make_unique<Ort::Session>(runtime->env(), path.c_str(), runtime->options());
-        input_count_ = session_->GetInputCount();
-        output_count_ = session_->GetOutputCount();
-        for (int i = 0; i < input_count_; i++) {
-            input_strs_.push_back(session_->GetInputNameAllocated(i, runtime->allocator()));
-            input_names_.push_back(input_strs_[i].get());
-        }
-        for (int i = 0; i < output_count_; i++) {
-            output_strs_.push_back(session_->GetOutputNameAllocated(i, runtime->allocator()));
-            output_names_.push_back(output_strs_[i].get());
-        }
-    }
-
-    std::vector<Value> onForward(const std::vector<Value> &inputs) {
-        ScopedTiming st("onnx forward");
-        auto outputs = session_->Run(Ort::RunOptions{nullptr},
-                                     input_names_.data(), inputs.data(), inputs.size(),
-                                     output_names_.data(), output_names_.size());
-        return outputs;
-    }
-
-    template<class T>
-    tensor_info<T> get_result_vector(std::vector<Value> &data, int idx) {
-        auto &it = data[idx];
-        auto t = it.GetTensorTypeAndShapeInfo().GetElementType();
-
-        auto data_tmp = it.GetTensorMutableData<T>();
-        auto s = it.GetTensorTypeAndShapeInfo().GetShape();
-        auto k = std::accumulate(s.begin(), s.end(), 1, std::multiplies<>());
-        std::vector<T> result(data_tmp, data_tmp + k);
-        return {.data=result, .shape=s};
-    }
-
-    std::shared_ptr<RuntimeManager> runtime_manager_;
-private:
-    std::unique_ptr<Ort::Session> session_;
-    size_t input_count_, output_count_;
-    std::vector<AllocatedStringPtr> input_strs_, output_strs_;
-    std::vector<const char *> input_names_, output_names_;
-};
-#endif
 
 #define VAD_ENABLE 1
 
@@ -739,98 +657,38 @@ public:
     }
 };
 
-class NncaseModel
-{
-public:
-    NncaseModel(const std::string &kmodel_file) {
-        std::ifstream ifs(kmodel_file, std::ios::binary);
-        interpreter_.load_model(ifs).unwrap_or_throw();
-        entry_function_ = interpreter_.entry_function().unwrap_or_throw();
-    }
-
-    ~NncaseModel() {}
-
-    nncase::value_t run(std::vector<nncase::value_t> &inputs) {
-        return entry_function_->invoke(inputs).unwrap_or_throw();
-    }
-
-    const nncase::runtime::runtime_function *entry() {
-        return entry_function_;
-    }
-
-private:
-    nncase::runtime::interpreter interpreter_;
-    nncase::runtime::runtime_function *entry_function_;
-};
-
 
 #endif
 #endif
 
-#if defined(ONNX)
+
+
+template<class M>
 std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
-next_token_A1T2(ONNXModel &gpt, tensor_info<float> &input_embs_concat, tensor_info<long> &input_pos_tensor,
+next_token_A1T2(M &gpt, tensor_info<float> &input_embs_concat, tensor_info<long> &input_pos_tensor,
                 tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step, float temperature,
                 int top_k, float top_p);
 
 tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs);
 
-template<typename T>
-static Value Input(tensor_info<T> &tensor, const std::shared_ptr<RuntimeManager> &rtmgr) {
-    return Value::CreateTensor<T>(rtmgr->allocator().GetInfo(), tensor.data.data(), tensor.data.size(), tensor.shape.data(), tensor.shape.size());
-}
-
-#if 0
+template <class M>
 std::string A1_A2(tensor_info<float> &audio_feature,
                   tensor_info<int64_t> &input_ids,
                   int length,
-                  ONNXModel &adapter,
-                  ONNXModel &gpt,
-                  ONNXModel &snac,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
-                  StreamingAudioPlayer &player);
-#else
-std::string A1_A2(tensor_info<float> &audio_feature,
-                  tensor_info<int64_t> &input_ids,
-                  int length,
-                  ONNXModel &adapter,
-                  ONNXModel &gpt,
-                  ONNXModel &snac,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
-#endif
+                  M &adapter,
+                  M &gpt,
+                  M &snac,
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer /*,
+                   StreamingAudioPlayer &player*/
+);
 
+template <class M>
 std::pair<tensor_info<float>, tensor_info<long>>
-generate_input_ids(ONNXModel &model, tensor_info<float> &mel, int length,
+generate_input_ids(M &model, tensor_info<float> &mel, int length,
                    int step = 0,
                    int special_token_a = _answer_a, int special_token_t = _answer_t);
-#else
-std::tuple<std::vector<int>, int, tensor_info<float>, tensor_info<float>>
-next_token_A1T2(NncaseModel &gpt, tensor_info<float> &input_embs_concat, tensor_info<long> &input_pos_tensor,
-                tensor_info<float> &past_ks_tensor, tensor_info<float> &past_vs_tensor, int sub_step, float temperature,
-                int top_k, float top_p);
 
-#if 0
-std::string A1_A2(tensor_info<float> &audio_feature,
-                  tensor_info<int64_t> &input_ids,
-                  int length,
-                  NncaseModel &adapter,
-                  NncaseModel &gpt,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
-				  StreamingAudioPlayer &player);
-#else
-std::string A1_A2(tensor_info<float> &audio_feature,
-                  tensor_info<int64_t> &input_ids,
-                  int length,
-                  NncaseModel &adapter,
-                  NncaseModel &gpt,
-                  NncaseModel &snac,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer);
-#endif
-std::pair<tensor_info<float>, tensor_info<long>>
-generate_input_ids(NncaseModel &model, tensor_info<float> &mel, int length,
-                   int step = 0,
-                   int special_token_a = _answer_a, int special_token_t = _answer_t);
-#endif
+
 #include <algorithm>
 #include <random>
 
