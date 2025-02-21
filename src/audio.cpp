@@ -143,89 +143,37 @@ std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
 
 tensor_info<float> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
 {
-    // auto window = hann_window(N_FFT);
-    // auto stft_result = stft2(audio, N_FFT, HOP_LENGTH, window);
-#if 0
-    auto stft_result = librosa::Feature::stft(audio, N_FFT, HOP_LENGTH, "hann", true, "reflect");
-#else
-    std::vector<std::vector<std::complex<float>>> stft_result;
-    {
-        ScopedTiming st("librosa::Feature::stft");
-        stft_result = librosa::Feature::stft(audio, N_FFT, HOP_LENGTH, "hann", true, "reflect");
-    }
-#endif
-    {
-        ScopedTiming st("transpose");
-        stft_result = transpose(stft_result);
-    }
-    std::cout << stft_result.size() << "  " << stft_result[0].size() << std::endl;
-
-    // mag.. = stft[..., :-1].abs() ** 2
-    std::vector<std::vector<float>> magnitudes(stft_result.size(), std::vector<float>(stft_result[0].size() - 1, 0));
-    {
-        ScopedTiming st("std::norm");
-        for (int i = 0; i < stft_result.size(); ++i)
-        {
-            for (int j = 0; j < stft_result[0].size() - 1; ++j)
-            {
-                magnitudes[i][j] = (float)std::norm(stft_result[i][j]);
-            }
-        }
-    }
-
-
-    // load mel filter
-    constexpr size_t M = 80;
-    constexpr size_t K = 201;
-    std::vector<std::vector<float>> mel_filter_80(M, std::vector<float>(K, 0));
-    std::vector<float> v_mel;
-    read_binary_file("../data/mel_filters.bin", v_mel);
-    for (size_t i = 0; i < M; ++i)
-    {
-        for (size_t j = 0; j < K; ++j)
-        {
-            mel_filter_80[i][j] = v_mel.data()[i * K + j];
-        }
-    }
-
-    // matmul: mel_filter_80: 80*201 ; magnitudes: 201*3000
-    // clmap min to 1e-10, and calculate log10
-    // log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)
-    // std::vector<float> tmp(80 * 3000, 0.f);
-    // size_t idx = 0;
-    std::vector<std::vector<float>> mel_spec;
-    {
-        ScopedTiming st("matmul");
-        mel_spec = matmul(mel_filter_80, magnitudes);
-    }
+    auto mel = librosa::Feature::melspectrogram(audio, WHISPER_SAMPLE_RATE, WHISPER_N_FFT, WHISPER_HOP_LENGTH, "hann",
+                                                true, "reflect", 2.0f, WHISPER_N_MELS, 0.0f,
+                                                WHISPER_SAMPLE_RATE / 2.0f);
+    auto mel_spec = transpose(mel);
 
     float max_mel_spec = -INFINITY;
-    tensor_info<float>mel_spec_tensor;
+    for (int i = 0; i < mel_spec.size(); ++i)
     {
-        ScopedTiming st("max + log10");
-        for (int i = 0; i < mel_spec.size(); ++i)
+        for (int j = 0; j < mel_spec[0].size(); ++j)
         {
-            for (int j = 0; j < mel_spec[0].size(); ++j)
+            mel_spec[i][j] = std::log10(std::max(1e-10f, mel_spec[i][j]));
+            if (mel_spec[i][j] > max_mel_spec)
             {
-                mel_spec[i][j] = std::log10(std::max(1e-10f, mel_spec[i][j]));
-                if (mel_spec[i][j] > max_mel_spec)
-                {
-                    max_mel_spec = mel_spec[i][j];
-                }
-            }
-        }
-        mel_spec_tensor.data = std::vector<float>(mel_spec.size()*mel_spec[0].size());
-        mel_spec_tensor.shape = {(long)mel_spec.size(), (long)mel_spec[0].size()};
-        for (int i = 0; i < mel_spec_tensor.shape[0]; ++i)
-        {
-            for (int j = 0; j < mel_spec_tensor.shape[1]; ++j)
-            {
-                mel_spec_tensor.data[i* mel_spec_tensor.shape[1] + j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
+                max_mel_spec = mel_spec[i][j];
             }
         }
     }
-
-    // write_binary_file("mel_spec.bin", reinterpret_cast<char *>(tmp.data()), tmp.size() * sizeof(float));
+    tensor_info<float> mel_spec_tensor;
+    mel_spec_tensor.data = std::vector<float>(WHISPER_N_MELS * 3000, 0);
+    mel_spec_tensor.shape = {WHISPER_N_MELS, 3000};
+    int m = WHISPER_N_MELS;
+    int n = mel_spec[0].size();
+    
+    for (int i = 0; i < m; ++i)
+    {
+        int index = i * 3000;
+        for (int j = 0; j < n; ++j)
+        {
+            mel_spec_tensor.data[index + j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;
+        }
+    }
     return std::move(mel_spec_tensor);
 }
 
@@ -234,7 +182,7 @@ std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr)
 {
     size_t frame_count = audio.size();
     auto duration_ms = (float)frame_count / sr * 1000.0f;
-    pad_or_trim(audio);
+    // pad_or_trim(audio);
     auto mel = log_mel_spectrogram(audio);
     return {mel, duration_ms / 20 + 1};
 }
@@ -248,7 +196,7 @@ std::pair<tensor_info<float>, int> load_audio(const std::string& path, int sr)
     sf_close(file);
 
     auto duration_ms = (float)frame_count / sr * 1000.0f;
-    pad_or_trim(audio);
+    // pad_or_trim(audio);
     auto mel = log_mel_spectrogram(audio);
 
     return {mel, duration_ms / 20 + 1};

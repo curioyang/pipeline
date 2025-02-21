@@ -29,6 +29,10 @@ constexpr int _split = audio_vocabsize + 4;
 constexpr int _image = audio_vocabsize + 5;
 constexpr int _eoimage = audio_vocabsize + 6;
 
+constexpr int WHISPER_N_MELS = 80;
+constexpr int WHISPER_SAMPLE_RATE = 16000;
+constexpr int WHISPER_N_FFT = 400;
+constexpr int WHISPER_HOP_LENGTH = 160;
 
 template<class T>
 struct tensor_info {
