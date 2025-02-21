@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include "librosa.h"
+#include "wav.h"
 
 #if defined(ONNX)
 #include <sndfile.h>
@@ -61,30 +62,6 @@ std::vector<double> hann_window(int window_length = N_FFT, bool periodic = true)
 
 std::vector<std::vector<std::complex<double>>>
 stft(std::vector<float> &signal, int windowSize, int hopSize, const std::vector<double> &window);
-//
-// typedef std::complex<double> Complex;
-//
-// // 计算复数指数
-// Complex exp_j(double theta) {
-//     return Complex(cos(theta), sin(theta));
-// }
-//
-// std::vector<std::vector<std::complex<double>>>
-// stft2(std::vector<float> &signal, int windowSize, int hopSize, const std::vector<double> &window)
-// {
-//     std::vector<std::vector<std::complex<double>>> X; // 存储结果
-//
-//     // 遍历所有频率
-//     for (int omega = 0; omega < windowSize; ++omega) {
-//         std::vector<Complex> frame_result(windowSize, Complex(0, 0)); // 初始化当前帧的结果
-//         for (int k = 0; k < windowSize; ++k) {
-//             frame_result[k] = (double)signal[k] * exp_j(-2 * M_PI * omega * k / windowSize);
-//         }
-//         X.push_back(frame_result);
-//     }
-//
-//     return X;
-// }
 
 tensor_info<float> log_mel_spectrogram(std::vector<float> &audio, int n_mels = 80, int padding = 0);
 

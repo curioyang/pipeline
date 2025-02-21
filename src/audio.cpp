@@ -205,12 +205,8 @@ std::pair<tensor_info<float>, int> load_audio(const std::string& path, int sr)
 
 void save_audio(const std::string &path, const std::vector<float> &audio, int sr)
 {
-    SF_INFO sf_info;
-    sf_info.samplerate = sr;
-    sf_info.channels = 1;
-    sf_info.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
-    SNDFILE *file = sf_open(path.c_str(), SFM_WRITE, &sf_info);
-    sf_writef_float(file, audio.data(), audio.size());
+    wav::WavWriter WW(audio.data(), audio.size(), 1, sr, 32);
+    WW.Write(path);
 }
 
 void playAudio(const std::vector<float> &audio_hat, int sampleRate)
