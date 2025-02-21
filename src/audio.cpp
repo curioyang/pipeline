@@ -143,11 +143,21 @@ std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
 
 tensor_info<float> log_mel_spectrogram(std::vector<float>& audio, int n_mels, int padding)
 {
-    auto mel = librosa::Feature::melspectrogram(audio, WHISPER_SAMPLE_RATE, WHISPER_N_FFT, WHISPER_HOP_LENGTH, "hann",
+    std::vector<std::vector<float>> mel;
+    {
+        ScopedTiming st("melspectrogram");
+        mel = librosa::Feature::melspectrogram(audio, WHISPER_SAMPLE_RATE, WHISPER_N_FFT, WHISPER_HOP_LENGTH, "hann",
                                                 true, "reflect", 2.0f, WHISPER_N_MELS, 0.0f,
                                                 WHISPER_SAMPLE_RATE / 2.0f);
-    auto mel_spec = transpose(mel);
+    }
 
+    std::vector<std::vector<float>> mel_spec;
+    {
+        ScopedTiming st("mel transpose");
+        mel_spec = transpose(mel);
+    }
+
+    ScopedTiming st("mel max + log10");
     float max_mel_spec = -INFINITY;
     for (int i = 0; i < mel_spec.size(); ++i)
     {

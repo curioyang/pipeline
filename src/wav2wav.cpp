@@ -412,6 +412,15 @@ std::string A1_A2(tensor_info<float> &audio_feature,
     };
 #endif
 
+    auto vec = tokenizer_list.back();
+    size_t size = vec.size();
+    auto it = std::find(vec.begin(), vec.end(), text_vocabsize);
+    if (it != vec.end()) {
+        size = std::distance(vec.begin(), it) + 1;
+    }
+    vec.resize(size);
+    auto text = tokenizer->Decode(vec);
+
 #if DUMP_WAV
     auto audio_list = reconscruct_snac(tokenizer_list);
     auto audio = reconstruct_tensors(audio_list);
@@ -466,14 +475,6 @@ std::string A1_A2(tensor_info<float> &audio_feature,
     save_audio(save_path, audio_hat.data, 24000);
 #endif
 
-    auto vec = tokenizer_list.back();
-    size_t size = vec.size();
-    auto it = std::find(vec.begin(), vec.end(), text_vocabsize);
-    if (it != vec.end()) {
-        size = std::distance(vec.begin(), it) + 1;
-    }
-    vec.resize(size);
-    auto text = tokenizer->Decode(vec);
     return strip(text);
 }
 
@@ -868,27 +869,19 @@ std::string A1_A2(tensor_info<float> &audio_feature,
     };
 #endif
 
+    auto vec = tokenizer_list.back();
+    size_t size = vec.size();
+    auto it = std::find(vec.begin(), vec.end(), text_vocabsize);
+    if (it != vec.end()) {
+        size = std::distance(vec.begin(), it) + 1;
+    }
+    vec.resize(size);
+    auto text = tokenizer->Decode(vec);
+
 #if DUMP_WAV
     auto audio_list = reconscruct_snac(tokenizer_list);
     auto audio = reconstruct_tensors(audio_list);
 
-#if 0
-    std::vector<tensor_info<long>> inputs;
-
-    std::vector<long> v_audio_0(audio[0].begin(), audio[0].end());
-    tensor_info<long> t_autio_0{.data = v_audio_0, .shape = {1, v_audio_0.size()}};
-    inputs.push_back(t_autio_0);
-
-    std::vector<long> v_audio_1(audio[1].begin(), audio[1].end());
-    tensor_info<long> t_autio_1{.data = v_audio_1, .shape = {1, v_audio_1.size()}};
-    inputs.push_back(t_autio_1);
-
-    std::vector<long> v_audio_2(audio[2].begin(), audio[2].end());
-    tensor_info<long> t_autio_2{.data = v_audio_2, .shape = {1, v_audio_2.size()}};
-    inputs.push_back(t_autio_2);
-
-    auto audio_hat = model_run<long, float>(snac, inputs);
-#else
     std::vector<nncase::value_t> inputs;
     auto entry = snac.entry();
 
@@ -937,7 +930,6 @@ std::string A1_A2(tensor_info<float> &audio_feature,
         ScopedTiming st("snac invoke");
         out = snac.run(inputs);
     }
-    // auto outputs = outs.as<nncase::tuple>().unwrap();
 
     // get output 0
     auto audio_hat_tensor = out.as<nncase::tensor>().unwrap_or_throw();
@@ -947,20 +939,11 @@ std::string A1_A2(tensor_info<float> &audio_feature,
     std::vector<float> audio_hat_v(audio_hat_data.begin(), audio_hat_data.end());
     std::vector<long> audio_hat_shape(audio_hat_tensor->shape().begin(), audio_hat_tensor->shape().end());
     tensor_info<float> audio_hat = {audio_hat_v, audio_hat_shape };
-#endif
 
     std::string save_path = "output.wav";
     save_audio(save_path, audio_hat.data, 24000);
 #endif
 
-    auto vec = tokenizer_list.back();
-    size_t size = vec.size();
-    auto it = std::find(vec.begin(), vec.end(), text_vocabsize);
-    if (it != vec.end()) {
-        size = std::distance(vec.begin(), it) + 1;
-    }
-    vec.resize(size);
-    auto text = tokenizer->Decode(vec);
     return strip(text);
 }
 
