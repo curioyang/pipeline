@@ -41,17 +41,16 @@ set(ROSA_PATH ${CMAKE_SOURCE_DIR}/3rd_party/librosa)
 set(TOKENIZER_PATH ${CMAKE_SOURCE_DIR}/3rd_party/tokenizers-cpp)
 
 if (CMAKE_CROSSCOMPILING)
-link_directories(${TOKENIZER_PATH}/lib/riscv64)
+    link_directories(${TOKENIZER_PATH}/lib/riscv64)
 else()
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/sndfile/lib/cmake)
-    set(CMAKE_PREFIX_PATH ${CMAKE_MODULE_PATH})
-    find_package(SndFile REQUIRED)
+    # list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/sndfile/lib/cmake)
+    # set(CMAKE_PREFIX_PATH ${CMAKE_MODULE_PATH})
+    # find_package(SndFile REQUIRED)
 
     # tokenizers-cpp
     link_directories(${TOKENIZER_PATH}/lib/x86_64)
 
     include_directories(${ONNXRUNTIME_PATH}/include)
-
 endif()
 
 include_directories(${ROSA_PATH} ${TOKENIZER_PATH}/include ${CMAKE_SOURCE_DIR}/include)
@@ -61,16 +60,16 @@ add_library(wav2wav STATIC ${SRCS}
         src/utils.cpp)
 
 if (BUILD_ONNX)
-# target_link_libraries(wav2wav onnxruntime SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
-target_link_libraries(wav2wav onnxruntime SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
+    # target_link_libraries(wav2wav onnxruntime SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
+    target_link_libraries(wav2wav onnxruntime sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
 else()
-if(CMAKE_CROSSCOMPILING)
-# target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz portaudio)
-target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz)
-else()
-# target_link_libraries(wav2wav Nncase.Runtime.Native SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
-target_link_libraries(wav2wav Nncase.Runtime.Native SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
-endif()
+    if(CMAKE_CROSSCOMPILING)
+        # target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz portaudio)
+        target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz)
+    else()
+        # target_link_libraries(wav2wav Nncase.Runtime.Native SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
+        target_link_libraries(wav2wav Nncase.Runtime.Native sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
+    endif()
 endif()
 
 add_executable(demo ${CMAKE_SOURCE_DIR}/demo/demo.cpp)
