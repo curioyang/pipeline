@@ -13,10 +13,7 @@
 #include <vector>
 #include "librosa.h"
 #include "wav.h"
-
-#if defined(ONNX)
-#include <sndfile.h>
-#endif
+#include "sndfile.h"
 #include "common.h"
 //               utils
 ///////////////////////////////////////////////////

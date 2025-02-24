@@ -4,18 +4,8 @@
 #include "utils.h"
 #include <thread>
 
-#if defined(ONNX)
+// #if defined(ONNX)
 #include "ONNXWrapper.h"
-using namespace omni_onnx;
-
-template std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids<omni_onnx::ONNXModel>(
-    omni_onnx::ONNXModel &, tensor_info<float> &, int, int, int, int);
-
-template std::string A1_A2<omni_onnx::ONNXModel>(
-    tensor_info<float> &, tensor_info<long> &, int, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &,
-    std::unique_ptr<tokenizers::Tokenizer> & /*, StreamingAudioPlayer &*/);
-
-#else
 #include "NNCASEWrapper.h"
 #include <nncase/runtime/interpreter.h>
 #include <nncase/runtime/runtime_tensor.h>
@@ -25,15 +15,35 @@ template std::string A1_A2<omni_onnx::ONNXModel>(
 using namespace nncase;
 using namespace nncase::runtime;
 using namespace nncase::runtime::detail;
+using namespace omni_onnx;
+
+template std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids<omni_onnx::ONNXModel>(
+    omni_onnx::ONNXModel &, tensor_info<float> &, int, int, int, int);
 
 template std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids<NNCASEModel>(
     NNCASEModel &, tensor_info<float> &, int, int, int, int);
 
-template std::string A1_A2<NNCASEModel>(
-    tensor_info<float> &, tensor_info<long> &, int, NNCASEModel &, NNCASEModel &, NNCASEModel &,
+template std::string A1_A2<omni_onnx::ONNXModel, omni_onnx::ONNXModel, omni_onnx::ONNXModel>(
+    tensor_info<float> &, tensor_info<long> &, int, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &,
     std::unique_ptr<tokenizers::Tokenizer> & /*, StreamingAudioPlayer &*/);
 
-#endif
+template std::string A1_A2<NNCASEModel, omni_onnx::ONNXModel, omni_onnx::ONNXModel>(
+    tensor_info<float> &, tensor_info<long> &, int, NNCASEModel &, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &,
+    std::unique_ptr<tokenizers::Tokenizer> & /*, StreamingAudioPlayer &*/);
+
+template std::string A1_A2<omni_onnx::ONNXModel, NNCASEModel, omni_onnx::ONNXModel>(
+    tensor_info<float> &, tensor_info<long> &, int, omni_onnx::ONNXModel &, NNCASEModel &, omni_onnx::ONNXModel &,
+    std::unique_ptr<tokenizers::Tokenizer> & /*, StreamingAudioPlayer &*/);
+
+template std::string A1_A2<omni_onnx::ONNXModel, omni_onnx::ONNXModel, NNCASEModel>(
+    tensor_info<float> &, tensor_info<long> &, int, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &, NNCASEModel &,
+    std::unique_ptr<tokenizers::Tokenizer> & /*, StreamingAudioPlayer &*/);
+
+// template std::string A1_A2<NNCASEModel>(
+//     tensor_info<float> &, tensor_info<long> &, int, NNCASEModel &, NNCASEModel &, NNCASEModel &,
+//     std::unique_ptr<tokenizers::Tokenizer> & /*, StreamingAudioPlayer &*/);
+
+// #endif
 
 
 tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs) {
@@ -111,6 +121,9 @@ next_token_A1T2(M &gpt, tensor_info<float> &input_embs_concat, tensor_info<long>
     auto next_ks = gpt.template get_result_vector<float>(2);
     auto next_vs = gpt.template get_result_vector<float>(3);
 
+    // fit fot lit_gpt_v4
+    logits_a.shape = {7, logits_a.shape[0], logits_a.shape[1], logits_a.shape[2] / 7};
+    //
     std::vector<int> next_audio_tokens;
     for (int i = 0; i < logits_a.shape[0]; i++)
     {
@@ -159,10 +172,10 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
 //    save_audio(save_path, audio_hat.data, 24000);
 }
 
-template <class M>
+template <class M0, class M1, class M2>
 std::vector<std::vector<int>>
 generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
-            M &adapter, M &gpt, M &snac, /* StreamingAudioPlayer &player,*/
+            M0 &adapter, M1 &gpt, M2 &snac, /* StreamingAudioPlayer &player,*/
             int max_returned_tokens = 2048,
             float temperature = 0.9,
             int top_k = 1,
@@ -188,8 +201,11 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     input_ids.shape = {input_ids.shape[0], 1, input_ids.shape[1]};
     //    auto input_embs = model_run<long, float>(wte, input_ids);
     auto input_embs = wte_get_data(input_ids);
+    std::cout<<"get wte data"<<std::endl;
 
     auto input_embs_concat = concat_feat(audio_embs, input_embs);
+    for(auto i: input_embs_concat.shape)
+        std::cout<<i <<" "<<std::endl;
 
     std::vector<float> past_ks(0, 0);
     std::vector<float> past_vs(0, 0);
@@ -213,6 +229,10 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     input_pos[0] = (long)T;
 
     bool text_end = false;
+    std::vector<long> audio_0;
+    std::vector<long> audio_1;
+    std::vector<long> audio_2;
+    int count = 0;
     for (int sub_step = 2; sub_step < max_returned_tokens - T + 1; sub_step++)
     {
         std::vector<long> model_input_ids;
@@ -257,17 +277,35 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         input_pos[0] += 1;
 
         if(sub_step>=8) {
-            std::vector<long> audio_0{outputs[0][sub_step-7]};
-            std::vector<long> audio_1{outputs[1][sub_step-6], outputs[4][sub_step-3]};
-            std::vector<long> audio_2{outputs[2][sub_step-5],outputs[3][sub_step-4], outputs[5][sub_step-2], outputs[6][sub_step-1]};
+            std::vector<long> audio_0_{outputs[0][sub_step-7]};
+            std::vector<long> audio_1_{outputs[1][sub_step-6], outputs[4][sub_step-3]};
+            std::vector<long> audio_2_{outputs[2][sub_step-5],outputs[3][sub_step-4], outputs[5][sub_step-2], outputs[6][sub_step-1]};
 
-            tensor_info<long> audio_0_tensor{.data=audio_0,.shape={1, 1}};
-            tensor_info<long> audio_1_tensor{.data=audio_1,.shape={1, 2}};
-            tensor_info<long> audio_2_tensor{.data=audio_2,.shape={1, 4}};
-            std::vector<tensor_info<long>>data{audio_0_tensor,audio_1_tensor, audio_2_tensor};
-            auto part_autio_data = generate_audio(snac, data);
-            std::cout << part_autio_data.data.size() << std::endl;
-            audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end());
+            audio_0.insert(audio_0.end(), audio_0_.begin(), audio_0_.end());
+            audio_1.insert(audio_1.end(), audio_1_.begin(), audio_1_.end());
+            audio_2.insert(audio_2.end(), audio_2_.begin(), audio_2_.end());
+            if(audio_0.size() == 8)
+            {
+                tensor_info<long> audio_0_tensor{.data=audio_0,.shape={1, (long)audio_0.size()}};
+                tensor_info<long> audio_1_tensor{.data=audio_1,.shape={1, (long)audio_1.size()}};
+                tensor_info<long> audio_2_tensor{.data=audio_2,.shape={1, (long)audio_2.size()}};
+                std::vector<tensor_info<long>>data{audio_0_tensor,audio_1_tensor, audio_2_tensor};
+#ifdef DUMP_INPUT
+                std::string p0= "/mnt/mini-omni2-pipeline/pipeline/data/calib/snac/input_0_" + std::to_string(count) + ".bin";
+                std::string p1= "/mnt/mini-omni2-pipeline/pipeline/data/calib/snac/input_1_" + std::to_string(count) + ".bin";
+                std::string p2= "/mnt/mini-omni2-pipeline/pipeline/data/calib/snac/input_2_" + std::to_string(count) + ".bin";
+                dump_data(audio_0, p0);
+                dump_data(audio_1, p1);
+                dump_data(audio_2, p2);
+#endif
+                auto part_autio_data = generate_audio(snac, data);
+                std::cout << part_autio_data.data.size() << std::endl;
+                audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end());
+                audio_0.clear();
+                audio_1.clear();
+                audio_2.clear();
+                count++;
+            }
         }
     }
     std::string save_path = "output.wav";
@@ -350,13 +388,13 @@ std::vector<int> reconscruct_snac(std::vector<std::vector<int>> &src_snac)
     return snac_output;
 }
 
-template<class M>
+template<class M0, class M1,  class M2>
 std::string A1_A2(tensor_info<float> &audio_feature,
                   tensor_info<long> &input_ids,
                   int length,
-                  M &adapter,
-                  M &gpt,
-                  M &snac,
+                  M0 &adapter,
+                  M1 &gpt,
+                  M2 &snac,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer
                 //   StreamingAudioPlayer &player
                 ) 

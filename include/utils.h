@@ -78,4 +78,20 @@ std::vector<T> softmax(std::vector<T>& x);
 
 tensor_info<float> wte_get_data(tensor_info<long> &input_ids);
 
+
+template<class T>
+void dump_data(std::vector<T>& data, std::string &path)
+{
+    std::ofstream outfile(path, std::ios::binary);
+    if (!outfile.is_open()) {
+        std::cerr << "无法打开文件进行写入！" << std::endl;
+    }
+
+    // 计算字节数并写入数据
+    size_t dataSize = data.size() * sizeof(T);
+    outfile.write(reinterpret_cast<const char*>(data.data()), dataSize);
+
+    // 关闭文件流
+    outfile.close();
+}
 #endif //WAV2WAV_UTILS_H

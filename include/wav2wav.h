@@ -8,16 +8,16 @@
 #include "common.h"
 #include "timer.h"
 
-#if defined(ONNX)
+// #if defined(ONNX)
 #include "ONNXWrapper.h"
 using namespace omni_onnx;
-#else
+// #else
 #include <nncase/runtime/interpreter.h>
 #include <nncase/runtime/runtime_tensor.h>
 #include <nncase/runtime/simple_types.h>
 #include <nncase/runtime/util.h>
 #include <nncase/runtime/runtime_op_utility.h>
-#endif
+// #endif
 
 #include "utils.h"
 #define DUMP_WAV 1
@@ -447,7 +447,7 @@ private:
         auto type = entry_function_->parameter_type(0).expect("parameter type out of index");
         auto ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
         auto data_type = ts_type->dtype()->typecode();
-        std::vector<size_t> tmp1 { input_node_dims[0], input_node_dims[1]};
+        std::vector<size_t> tmp1 { (size_t)input_node_dims[0], (size_t)input_node_dims[1]};
         nncase::dims_t shape1(tmp1.begin(), tmp1.end());
         auto input_tensor = nncase::runtime::host_runtime_tensor::create(data_type, shape1, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
         auto input_buffer = input_tensor->buffer().as_host().unwrap_or_throw();
@@ -466,7 +466,7 @@ private:
         type = entry_function_->parameter_type(1).expect("parameter type out of index");
         ts_type = type.as<nncase::tensor_type>().expect("input is not a tensor type");
         data_type = ts_type->dtype()->typecode();
-        std::vector<size_t> tmp2 { state_node_dims[0], state_node_dims[1], state_node_dims[2] };
+        std::vector<size_t> tmp2 { (size_t)state_node_dims[0], (size_t)state_node_dims[1], (size_t)state_node_dims[2] };
         nncase::dims_t shape2(tmp2.begin(), tmp2.end());
         auto state_tensor = nncase::runtime::host_runtime_tensor::create(data_type, shape2, nncase::runtime::host_runtime_tensor::pool_shared).expect("cannot create input tensor").impl();
         auto state_buffer = state_tensor->buffer().as_host().unwrap_or_throw();
@@ -671,13 +671,13 @@ next_token_A1T2(M &gpt, tensor_info<float> &input_embs_concat, tensor_info<long>
 
 tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs);
 
-template <class M>
+template<class M0, class M1,  class M2>
 std::string A1_A2(tensor_info<float> &audio_feature,
-                  tensor_info<int64_t> &input_ids,
+                  tensor_info<long> &input_ids,
                   int length,
-                  M &adapter,
-                  M &gpt,
-                  M &snac,
+                  M0 &adapter,
+                  M1 &gpt,
+                  M2 &snac,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer /*,
                    StreamingAudioPlayer &player*/
 );

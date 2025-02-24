@@ -42,81 +42,7 @@ std::vector<double> hann_window(int window_length, bool periodic)
     return window;
 }
 
-// std::vector<std::vector<std::complex<double>>>
-// stft(std::vector<float> &signal, int windowSize, int hopSize, const std::vector<double> &window) {
-//     // TODO: 实现需要确认
-//     // pad signal
-//     int pad = windowSize / 2;
-//     signal = reflectPad(signal, pad, pad);
-//
-//     int signalLength = signal.size();
-//     int numWindows = (signalLength - windowSize) / hopSize + 1;
-//
-//     std::vector<std::vector<std::complex<double>>> stftResult(numWindows,
-//                                                               std::vector<std::complex<double>>(windowSize / 2 + 1));
-//
-//     // 分配 FFTW 输入和输出数组
-//     double *in = (double *) fftw_malloc(sizeof(double) * windowSize);
-//     fftw_complex *out = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (windowSize / 2 + 1));
-//
-//     // 创建 FFTW 计划
-//     fftw_plan plan = fftw_plan_dft_r2c_1d(windowSize, in, out, FFTW_ESTIMATE);
-//
-//     for (int i = 0; i < numWindows; ++i) {
-//         int start = i * hopSize;
-//         std::vector<float> windowedSignal(signal.begin() + start, signal.begin() + start + windowSize);
-//
-//         // 应用窗口函数
-//         int N = windowedSignal.size();
-//         for (int ii = 0; ii < N; ++ii) {
-//             windowedSignal[ii] *= window[ii];
-//         }
-//
-//         // 复制数据到 FFTW 输入数组
-//         for (int j = 0; j < windowSize; ++j) {
-//             in[j] = windowedSignal[j];
-//         }
-//
-//         // 执行 FFT
-//         fftw_execute(plan);
-//
-//         // 存储结果
-//         for (int j = 0; j < windowSize / 2 + 1; ++j) {
-//             stftResult[i][j] = std::complex<double>(out[j][0], out[j][1]);
-//         }
-//     }
-//
-//     // 释放资源
-//     fftw_destroy_plan(plan);
-//     fftw_free(in);
-//     fftw_free(out);
-//     stftResult = transpose(stftResult);
-//     return stftResult;
-// }
-//
-// typedef std::complex<double> Complex;
-//
-// // 计算复数指数
-// Complex exp_j(double theta) {
-//     return Complex(cos(theta), sin(theta));
-// }
-//
-// std::vector<std::vector<std::complex<double>>>
-// stft2(std::vector<float> &signal, int windowSize, int hopSize, const std::vector<double> &window)
-// {
-//     std::vector<std::vector<std::complex<double>>> X; // 存储结果
-//
-//     // 遍历所有频率
-//     for (int omega = 0; omega < windowSize; ++omega) {
-//         std::vector<Complex> frame_result(windowSize, Complex(0, 0)); // 初始化当前帧的结果
-//         for (int k = 0; k < windowSize; ++k) {
-//             frame_result[k] = (double)signal[k] * exp_j(-2 * M_PI * omega * k / windowSize);
-//         }
-//         X.push_back(frame_result);
-//     }
-//
-//     return X;
-// }
+
 template <class T>
 std::vector<std::vector<T>> transpose(const std::vector<std::vector<T>>& matrix)
 {
@@ -214,14 +140,20 @@ std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr)
 
 void save_audio(const std::string &path, const std::vector<float> &audio, int sr)
 {
+    // libwav
     // wav::WavWriter WW(audio.data(), audio.size(), 1, sr, 32);
     // WW.Write(path);
+
+    // libsndfile
     SF_INFO sf_info;
     sf_info.samplerate = sr;
     sf_info.channels = 1;
     sf_info.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
     SNDFILE *file = sf_open(path.c_str(), SFM_WRITE, &sf_info);
     sf_writef_float(file, audio.data(), audio.size());
+
+    // audiofile
+    // AudioFile.write
 }
 
 // void playAudio(const std::vector<float> &audio_hat, int sampleRate)
