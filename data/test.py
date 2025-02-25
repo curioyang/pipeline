@@ -39,25 +39,62 @@
 # plt.tight_layout()
 # plt.show()
 
-import numpy as np
+# import numpy as np
 
 
-def cosine_similarity(a, b):
-    # 计算点积
-    dot_product = np.dot(a, b)
-    # 计算向量的模长
-    norm_a = np.linalg.norm(a)
-    norm_b = np.linalg.norm(b)
-    # 计算余弦相似度
-    return dot_product / (norm_a * norm_b)
+# def cosine_similarity(a, b):
+#     # 计算点积
+#     dot_product = np.dot(a, b)
+#     # 计算向量的模长
+#     norm_a = np.linalg.norm(a)
+#     norm_b = np.linalg.norm(b)
+#     # 计算余弦相似度
+#     return dot_product / (norm_a * norm_b)
 
-pythondata = np.load("window.npy")
-cppdata = []
-with open("window.txt", "r") as file:
-    for line in file:
-        for i in line.split(" ")[:-1]:
-            cppdata.append(float(i))
+# pythondata = np.load("window.npy")
+# cppdata = []
+# with open("window.txt", "r") as file:
+#     for line in file:
+#         for i in line.split(" ")[:-1]:
+#             cppdata.append(float(i))
 
-b = np.array(cppdata)
-print(cosine_similarity(b, pythondata))
-# compute cosine with cppdata and pythondata
+# b = np.array(cppdata)
+# print(cosine_similarity(b, pythondata))
+# # compute cosine with cppdata and pythondata
+
+# import numpy as np
+
+# data = np.fromfile("wte_weights.bin", dtype=np.float32).astype(np.bfloat16)
+# print(data)
+# data.tofile("wte_weights_bf16.bin")
+
+
+import torch
+
+def load_fp32_bin(file_path):
+   
+    # 根据元素数量读取文件
+    with open(file_path, 'rb') as f:
+        data = torch.frombuffer(f.read(), dtype=torch.float32)
+    
+    return data
+
+# 示例使用
+input_file_path = 'wte_weights.bin'  # 输入文件路径
+output_file_path = 'wte_weights_bf16.bin'  # 输出文件路径
+tensor_fp32 = load_fp32_bin(input_file_path)
+tensor_bf16 = tensor_fp32.bfloat16()
+
+# 定义输出文件路径
+output_file_path = 'wte_weights_bf16.bin'
+
+# 将 BF16 张量的数据写入文件
+with open(output_file_path, 'wb') as file:
+    # 先将 BF16 张量转换为 CPU 上的连续内存布局，然后获取其字节数据
+    byte_data = tensor_bf16.cpu().contiguous().storage().data_ptr()
+    # 获取字节长度
+    num_bytes = tensor_bf16.numel() * tensor_bf16.element_size()
+    # 使用 ctypes 来复制内存中的数据并写入文件
+    import ctypes
+    ctypes_array = (ctypes.c_char * num_bytes).from_address(byte_data)
+    file.write(ctypes_array)
