@@ -96,15 +96,16 @@ tensor_info<float> log_mel_spectrogram(std::vector<float>& audio, int n_mels, in
             }
         }
     }
+    std::cout << "mel_spec: " << mel_spec.size() << " " << mel_spec [0].size()<< std::endl;
     tensor_info<float> mel_spec_tensor;
-    mel_spec_tensor.data = std::vector<float>(WHISPER_N_MELS * 3000, 0);
-    mel_spec_tensor.shape = {WHISPER_N_MELS, 3000};
+    mel_spec_tensor.data = std::vector<float>(WHISPER_N_MELS * WHISPER_SEQ_LENGTH, 0);
+    mel_spec_tensor.shape = {WHISPER_N_MELS, WHISPER_SEQ_LENGTH};
     int m = WHISPER_N_MELS;
-    int n = mel_spec[0].size();
+    int n = std::min((int)mel_spec[0].size(), WHISPER_SEQ_LENGTH);
 
     for (int i = 0; i < m; ++i)
     {
-        int index = i * 3000;
+        int index = i * WHISPER_SEQ_LENGTH;
         for (int j = 0; j < n; ++j)
         {
             mel_spec_tensor.data[index + j] = (std::max(mel_spec[i][j], max_mel_spec - 8.0f) + 4.f) / 4.f;

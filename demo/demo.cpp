@@ -17,7 +17,7 @@ using namespace omni_onnx;
 #define whisper_ONNX 
 #define adapter_ONNX
 #define lit_gpt_ONNX
-// #define snac_ONNX
+#define snac_ONNX
 
 #ifdef whisper_ONNX
 #define whisper_TYPE ONNXModel
@@ -65,7 +65,11 @@ int main(int argc, const char* argv[])
 #endif
 
 #ifdef whisper_ONNX
-    std::string whisper_model = models_dir + "/whisper/whisper.onnx";
+    std::string whisper_model;
+    if (WHISPER_SEQ_LENGTH == 3000)
+        whisper_model = models_dir + "/whisper/whisper.onnx";
+    else
+        whisper_model = models_dir + "/whisper/whisper_v2.onnx";
     ONNXModel whisper(std::make_unique<RuntimeManager>("whisper"), whisper_model);
 #else
     std::string whisper_model = models_dir + "/whisper/kmodel/test.kmodel";
@@ -94,7 +98,8 @@ int main(int argc, const char* argv[])
     ONNXModel snac(std::make_unique<RuntimeManager>("snac"), snac_model);
 #else
     // std::string snac_model = models_dir + "/snac/kmodel/test.kmodel";
-    std::string snac_model = models_dir + "/snac/kmodel/test_8.kmodel";
+    // std::string snac_model = models_dir + "/snac/kmodel/test_8.kmodel"; OK!
+    std::string snac_model = models_dir + "/snac/kmodel/test_8_u8.kmodel";
     NNCASEModel snac(snac_model,"snac");
 #endif
 

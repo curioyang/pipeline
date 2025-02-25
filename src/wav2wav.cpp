@@ -171,6 +171,38 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
 //    std::string save_path = "../data/output.wav";
 //    save_audio(save_path, audio_hat.data, 24000);
 }
+template <class M>
+void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector<long> &audio_0, std::vector<long> &audio_1, std::vector<long> &audio_2, bool end_now, int &count)
+{
+    size_t pad_size = 8 - audio_0.size();
+    if (end_now)
+    {
+        audio_0.resize(8);
+        audio_1.resize(16);
+        audio_2.resize(32);
+    }
+
+        tensor_info<long> audio_0_tensor{.data = audio_0, .shape = {1, (long)audio_0.size()}};
+        tensor_info<long> audio_1_tensor{.data = audio_1, .shape = {1, (long)audio_1.size()}};
+        tensor_info<long> audio_2_tensor{.data = audio_2, .shape = {1, (long)audio_2.size()}};
+        std::vector<tensor_info<long>> data{audio_0_tensor, audio_1_tensor, audio_2_tensor};
+#ifdef DUMP_INPUT
+        std::string p0 = "/mnt/mini-omni2-pipeline/pipeline/data/calib/snac/input_0_" + std::to_string(count) + ".bin";
+        std::string p1 = "/mnt/mini-omni2-pipeline/pipeline/data/calib/snac/input_1_" + std::to_string(count) + ".bin";
+        std::string p2 = "/mnt/mini-omni2-pipeline/pipeline/data/calib/snac/input_2_" + std::to_string(count) + ".bin";
+        dump_data(audio_0, p0);
+        dump_data(audio_1, p1);
+        dump_data(audio_2, p2);
+#endif
+        auto part_autio_data = generate_audio(snac, data);
+        std::cout << part_autio_data.data.size() << std::endl;
+        audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end() - pad_size * 2048);
+        audio_0.clear();
+        audio_1.clear();
+        audio_2.clear();
+        count++;
+    
+}
 
 template <class M0, class M1, class M2>
 std::vector<std::vector<int>>
@@ -229,6 +261,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     input_pos[0] = (long)T;
 
     bool text_end = false;
+    bool end_now = false;
     std::vector<long> audio_0;
     std::vector<long> audio_1;
     std::vector<long> audio_2;
@@ -264,8 +297,14 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
 
         if (text_end)
             token_T = pad_id_t;
-        if ((int)tokens_A[tokens_A.size() - 1] == eos_id_a)
+        if ((int)tokens_A.back() == eos_id_a)
+        {
+            end_now = true;
+            tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count);
+            std::string save_path = "output.wav";
+            save_audio(save_path, audio_data_all, 24000);
             break;
+        }
         if (token_T == eos_id_t)
             text_end = true;
 
@@ -284,32 +323,12 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
             audio_0.insert(audio_0.end(), audio_0_.begin(), audio_0_.end());
             audio_1.insert(audio_1.end(), audio_1_.begin(), audio_1_.end());
             audio_2.insert(audio_2.end(), audio_2_.begin(), audio_2_.end());
-            if(audio_0.size() == 8)
+            if (audio_0.size() == 8)
             {
-                tensor_info<long> audio_0_tensor{.data=audio_0,.shape={1, (long)audio_0.size()}};
-                tensor_info<long> audio_1_tensor{.data=audio_1,.shape={1, (long)audio_1.size()}};
-                tensor_info<long> audio_2_tensor{.data=audio_2,.shape={1, (long)audio_2.size()}};
-                std::vector<tensor_info<long>>data{audio_0_tensor,audio_1_tensor, audio_2_tensor};
-#ifdef DUMP_INPUT
-                std::string p0= "/mnt/mini-omni2-pipeline/pipeline/data/calib/snac/input_0_" + std::to_string(count) + ".bin";
-                std::string p1= "/mnt/mini-omni2-pipeline/pipeline/data/calib/snac/input_1_" + std::to_string(count) + ".bin";
-                std::string p2= "/mnt/mini-omni2-pipeline/pipeline/data/calib/snac/input_2_" + std::to_string(count) + ".bin";
-                dump_data(audio_0, p0);
-                dump_data(audio_1, p1);
-                dump_data(audio_2, p2);
-#endif
-                auto part_autio_data = generate_audio(snac, data);
-                std::cout << part_autio_data.data.size() << std::endl;
-                audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end());
-                audio_0.clear();
-                audio_1.clear();
-                audio_2.clear();
-                count++;
+                tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count);
             }
         }
     }
-    std::string save_path = "output.wav";
-    save_audio(save_path, audio_data_all, 24000);
 
     return outputs;
 }
@@ -505,6 +524,9 @@ std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids(M &whisper, 
     whisper.template set_input_tensor(mel, 0);
     whisper.template onForward();
     auto audio_feature = whisper.template get_result_vector<float>(0);
+    std::cout << "audio_feature shape:" << std::endl;
+    for (auto i : audio_feature.shape)
+        std::cout << i << std::endl;
 
     std::vector<float> part_audio_of_length(audio_feature.data.begin(),
                                             audio_feature.data.begin() + length * audio_feature.shape[2]);
