@@ -192,7 +192,7 @@ void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector
 template <class M>
 std::vector<std::vector<int>>
 generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
-            M &adapter, M &gpt, M &snac, /* StreamingAudioPlayer &player,*/
+            M &adapter, M &gpt, M &snac, std::unique_ptr<tokenizers::Tokenizer> &tokenizer, /* StreamingAudioPlayer &player,*/
             int max_returned_tokens = 2048,
             float temperature = 0.9,
             int top_k = 1,
@@ -239,6 +239,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     for (int i = 0; i < 7; i++)
         outputs[i].emplace_back(tokens_A[i]);
     outputs[7].emplace_back(token_T);
+    std::cout << tokenizer->Decode(outputs[7]) << std::endl;
     input_pos.resize(1);
     input_pos[0] = (long)T;
 
@@ -276,7 +277,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         token_T = _token_T;
         past_ks_ = _past_ks_;
         past_vs_ = _past_vs_;
-
+        
         if (text_end)
             token_T = pad_id_t;
         if ((int)tokens_A.back() == eos_id_a)
@@ -295,6 +296,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
             outputs[i].emplace_back(tokens_A[i]);
         }
         outputs[7].emplace_back(token_T);
+        std::cout << tokenizer->Decode(outputs[7]) << std::endl;
         input_pos[0] += 1;
 
         if(sub_step>=8) {
@@ -402,7 +404,7 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                 ) 
 {
 
-    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt, snac,/* player,*/
+    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt, snac, tokenizer, /* player,*/
                                       2048,
                                       0.9,
                                       1,
