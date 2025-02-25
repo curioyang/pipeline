@@ -68,7 +68,7 @@ else()
         target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz)
     else()
         # target_link_libraries(wav2wav Nncase.Runtime.Native SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
-        target_link_libraries(wav2wav Nncase.Runtime.Native sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
+        target_link_libraries(wav2wav Nncase.Runtime.Native tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
     endif()
 endif()
 

@@ -2,20 +2,44 @@
 #include "audio.h"
 #include "wav.h"
 #include "wav2wav.h"
+#include <csignal>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
 #include <string>
 
-#ifdef BUILD_ONNX
+#ifdef ONNX
 #include "ONNXWrapper.h"
 using namespace omni_onnx;
 #else
 #include "NNCASEWrapper.h"
+using namespace nncase::runtime;
+void __attribute__((destructor)) cleanup()
+{
+    std::cout << "Cleaning up memory..." << std::endl;
+    shrink_memory_pool();
+}
 #endif
+
+void signal_handler(int signum)
+{
+    std::cout << "Interrupt signal (" << signum << ") received.\n";
+    exit(signum);
+}
 
 int main(int argc, const char* argv[])
 {
+    struct sigaction sa;
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    // 设置多个信号处理器
+    sigaction(SIGINT, &sa, nullptr);  // Ctrl+C
+    sigaction(SIGTERM, &sa, nullptr); // 终止信号
+    sigaction(SIGSEGV, &sa, nullptr); // 段错误
+    sigaction(SIGALRM, &sa, nullptr); // 定时器信号
     if (argc < 3) {
         std::cout << "Usage: " << argv[0] << " model_dir wav_file" << std::endl;
         return 0;
