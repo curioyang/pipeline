@@ -2,11 +2,14 @@
 // Created by curio on 2025/2/9.
 //
 #include "utils.h"
+#include "common.h"
+#include <algorithm>
 #include <complex>
+#include <cstring>
+#include <memory>
 #include <queue>
 #include <utility> // for std::pair
-#include <algorithm>
-#include <memory>
+
 void write_binary_file(const char *file_name, const char *buf, size_t size)
 {
     std::ofstream ofs(file_name, std::ios::out | std::ios::binary);
@@ -122,25 +125,71 @@ std::vector<T> softmax(const std::vector<T> &x) {
     return result;
 }
 
+float bf16_to_fp32(uint16_t bf16)
+{
+    uint32_t fp32_bits = bf16 << 16;
+
+    float result;
+    std::memcpy(&result, &fp32_bits, sizeof(result));
+    return result;
+}
+
 tensor_info<float> wte_get_data(tensor_info<long> &input_ids)
 {
     std::vector<float> wte_data(input_ids.data.size() * 896);
-    std::string weights_path = "../data/wte_weights.bin";
-    FILE* file = fopen(weights_path.c_str(), "rb");
-    size_t size = 896 * sizeof(float);
-    std::vector<float> buffer(896);
-    for (size_t i = 0; i < input_ids.data.size(); i++) {
-        fseek(file, input_ids.data[i] * size, SEEK_SET);
-        size_t bytes_read = fread(buffer.data(), 1, size, file);
-        (void)bytes_read;
-        auto ptr = wte_data.data() + i * 896;
-        for (int j = 0; j < 896; j++) {
-            ptr[j] = buffer[j];
-        }
+    std::string weights_path;
+    size_t size = 0;
+    if (WTE_F16)
+    {
+        weights_path = "../data/wte_weights_bf16.bin";
+        size = 896 * sizeof(float)/2;
     }
-    fclose(file);
-    std::vector<long> new_shape = input_ids.shape;
-    new_shape.emplace_back(896);
-    tensor_info<float> result{.data = wte_data, .shape = new_shape};
-    return std::move(result);
+    else
+    {
+        weights_path = "../data/wte_weights.bin";
+        size = 896 * sizeof(float);
+    }
+    
+    FILE *file = fopen(weights_path.c_str(), "rb");
+
+    if (WTE_F16)
+    {
+        std::vector<uint16_t> buffer(896);
+        for (size_t i = 0; i < input_ids.data.size(); i++)
+        {
+            fseek(file, input_ids.data[i] * size, SEEK_SET);
+            size_t bytes_read = fread(buffer.data(), 1, size, file);
+            (void)bytes_read;
+            auto ptr = wte_data.data() + i * 896;
+            for (int j = 0; j < 896; j++)
+            {
+                ptr[j] = bf16_to_fp32(buffer[j]);
+            }
+        }
+        fclose(file);
+        std::vector<long> new_shape = input_ids.shape;
+        new_shape.emplace_back(896);
+        tensor_info<float> result{.data = wte_data, .shape = new_shape};
+        return std::move(result);
+    }
+    else
+    {
+        std::vector<float> buffer(896);
+        for (size_t i = 0; i < input_ids.data.size(); i++)
+        {
+            fseek(file, input_ids.data[i] * size, SEEK_SET);
+            size_t bytes_read = fread(buffer.data(), 1, size, file);
+            (void)bytes_read;
+            auto ptr = wte_data.data() + i * 896;
+            for (int j = 0; j < 896; j++)
+            {
+                ptr[j] = buffer[j];
+            }
+        }
+        fclose(file);
+        std::vector<long> new_shape = input_ids.shape;
+        new_shape.emplace_back(896);
+        tensor_info<float> result{.data = wte_data, .shape = new_shape};
+        return std::move(result);
+    }
 }

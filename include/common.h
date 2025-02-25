@@ -36,6 +36,8 @@ constexpr int WHISPER_HOP_LENGTH = 160;
 
 constexpr int WHISPER_SEQ_LENGTH = 3000;
 
+constexpr int WTE_F16 = 1;
+
 template<class T>
 struct tensor_info {
     std::vector<T> data;
