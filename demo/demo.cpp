@@ -33,7 +33,7 @@ int main(int argc, const char* argv[])
     std::string vad_model = models_dir + "/vad/silero_vad.onnx";
     // whisper.onnx is 3000 whisper_v2.onnx is 1500
     // if change model, modify common.h:37L
-    std::string whisper_model = models_dir + "/whisper/whisper_v2.onnx"; 
+    std::string whisper_model = models_dir + "/whisper/whisper.onnx";
     std::string adapter_model = models_dir + "/adapter/adapter.onnx";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
     std::string snac_model = models_dir + "/snac/snac.onnx";
@@ -44,6 +44,7 @@ int main(int argc, const char* argv[])
     ONNXModel lit_gpt(std::make_unique<RuntimeManager>("lit_gpt"), lit_gpt_model);
     ONNXModel snac(std::make_unique<RuntimeManager>("snac"), snac_model);
 #else
+    // nncase::runtime::shrink_memory_pool();
     std::string vad_model = models_dir + "/vad/vad.kmodel";
     std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
@@ -83,6 +84,7 @@ int main(int argc, const char* argv[])
     // vad = nullptr;
 
     std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
+    // write_binary_file("vad_output.bin", reinterpret_cast<char *>(audio.data()), audio.size() * sizeof(float));
     auto [mel, length] = load_audio(audio);
 #else
     auto [mel, length] = load_audio(argv[2]);
@@ -98,12 +100,16 @@ int main(int argc, const char* argv[])
     // StreamingAudioPlayer audioplayer(24000, buffer_size); // 24kHz, 4KB buffer
     // audioplayer.start();
 
+    // write_binary_file("whisper_output.bin", reinterpret_cast<char *>(audio_feature.data.data()), audio_feature.data.size() * sizeof(float));
+
     // 执行生成
 #if defined(ONNX)
     auto text = A1_A2<ONNXModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer);
 #else
     auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer);
 #endif
+
+
     std::cout << "Generated text: " << text << std::endl;
     // while (audioplayer.available() < buffer_size) {
     //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
