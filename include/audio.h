@@ -14,9 +14,6 @@
 #include "librosa.h"
 #include "wav.h"
 
-#if defined(ONNX)
-#include <sndfile.h>
-#endif
 #include "common.h"
 //               utils
 ///////////////////////////////////////////////////

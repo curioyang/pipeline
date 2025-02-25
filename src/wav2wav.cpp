@@ -111,6 +111,9 @@ next_token_A1T2(M &gpt, tensor_info<float> &input_embs_concat, tensor_info<long>
     auto next_ks = gpt.template get_result_vector<float>(2);
     auto next_vs = gpt.template get_result_vector<float>(3);
 
+    // TODO: fit fot lit_gpt_v4
+    // logits_a.shape = {7, logits_a.shape[0], logits_a.shape[1], logits_a.shape[2] / 7};
+
     std::vector<int> next_audio_tokens;
     for (int i = 0; i < logits_a.shape[0]; i++)
     {
@@ -157,6 +160,33 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
     // }
 //    std::string save_path = "../data/output.wav";
 //    save_audio(save_path, audio_hat.data, 24000);
+}
+
+template <class M>
+void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector<long> &audio_0, std::vector<long> &audio_1, std::vector<long> &audio_2, bool end_now, int count)
+{
+    // count used to dump data
+
+    size_t pad_size = 8 - audio_0.size();
+    if (end_now)
+    {
+        audio_0.resize(8);
+        audio_1.resize(16);
+        audio_2.resize(32);
+    }
+
+    tensor_info<long> audio_0_tensor{.data = audio_0, .shape = {1, (long)audio_0.size()}};
+    tensor_info<long> audio_1_tensor{.data = audio_1, .shape = {1, (long)audio_1.size()}};
+    tensor_info<long> audio_2_tensor{.data = audio_2, .shape = {1, (long)audio_2.size()}};
+    std::vector<tensor_info<long>> data{audio_0_tensor, audio_1_tensor, audio_2_tensor};
+
+    auto part_autio_data = generate_audio(snac, data);
+    std::cout << part_autio_data.data.size() << std::endl;
+    audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end() - pad_size * 2048);
+    audio_0.clear();
+    audio_1.clear();
+    audio_2.clear();
+    count++;
 }
 
 template <class M>
@@ -213,9 +243,11 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     input_pos[0] = (long)T;
 
     bool text_end = false;
+    bool end_now = false;
     std::vector<long> audio_0;
     std::vector<long> audio_1;
     std::vector<long> audio_2;
+    int count = 0;
     for (int sub_step = 2; sub_step < max_returned_tokens - T + 1; sub_step++)
     {
         std::vector<long> model_input_ids;
@@ -248,7 +280,13 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         if (text_end)
             token_T = pad_id_t;
         if ((int)tokens_A.back() == eos_id_a)
+        {
+            end_now = true;
+            tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count);
+            std::string save_path = "output.wav";
+            save_audio(save_path, audio_data_all, 24000);
             break;
+        }
         if (token_T == eos_id_t)
             text_end = true;
 
@@ -270,21 +308,10 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
 
             if (audio_0.size() == 8)
             {
-                tensor_info<long> audio_0_tensor{.data = audio_0, .shape = {1, (long)audio_0.size()}};
-                tensor_info<long> audio_1_tensor{.data = audio_1, .shape = {1, (long)audio_1.size()}};
-                tensor_info<long> audio_2_tensor{.data = audio_2, .shape = {1, (long)audio_2.size()}};
-                std::vector<tensor_info<long>> data{audio_0_tensor, audio_1_tensor, audio_2_tensor};
-                auto part_autio_data = generate_audio(snac, data);
-                std::cout << part_autio_data.data.size() << std::endl;
-                audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end());
-                audio_0.clear();
-                audio_1.clear();
-                audio_2.clear();
+                tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count);
             }
         }
     }
-    std::string save_path = "output.wav";
-    save_audio(save_path, audio_data_all, 24000);
 
     return outputs;
 }

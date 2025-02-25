@@ -61,7 +61,7 @@ add_library(wav2wav STATIC ${SRCS}
 
 if (BUILD_ONNX)
     # target_link_libraries(wav2wav onnxruntime SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
-    target_link_libraries(wav2wav onnxruntime sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
+    target_link_libraries(wav2wav onnxruntime tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
 else()
     if(CMAKE_CROSSCOMPILING)
         # target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz portaudio)

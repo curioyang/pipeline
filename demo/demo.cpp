@@ -31,7 +31,9 @@ int main(int argc, const char* argv[])
 
 #if defined(ONNX)
     std::string vad_model = models_dir + "/vad/silero_vad.onnx";
-    std::string whisper_model = models_dir + "/whisper/whisper.onnx";
+    // whisper.onnx is 3000 whisper_v2.onnx is 1500
+    // if change model, modify common.h:37L
+    std::string whisper_model = models_dir + "/whisper/whisper_v2.onnx"; 
     std::string adapter_model = models_dir + "/adapter/adapter.onnx";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
     std::string snac_model = models_dir + "/snac/snac.onnx";
@@ -46,6 +48,7 @@ int main(int argc, const char* argv[])
     std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
+    // TODO: change snac to audio_0 length is 8
     std::string snac_model = models_dir + "/snac/snac.kmodel";
     NNCASEModel whisper(whisper_model, "whisper");
     NNCASEModel adapter(adapter_model, "adapter");
