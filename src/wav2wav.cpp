@@ -111,19 +111,23 @@ next_token_A1T2(M &gpt, tensor_info<float> &input_embs_concat, tensor_info<long>
     auto next_ks = gpt.template get_result_vector<float>(2);
     auto next_vs = gpt.template get_result_vector<float>(3);
 
-    // TODO: fit fot lit_gpt_v4
+    // lit_gpt_v4: remove slice 7 block
     // logits_a.shape = {7, logits_a.shape[0], logits_a.shape[1], logits_a.shape[2] / 7};
 
-    std::vector<int> next_audio_tokens;
-    for (int i = 0; i < logits_a.shape[0]; i++)
-    {
-        std::vector<float> logits_a_i_data(
-            std::vector<float>(logits_a.data.data() + i * logits_a.shape[2] * logits_a.shape[3],
-                               logits_a.data.data() + (i + 1) * logits_a.shape[2] * logits_a.shape[3]));
-        tensor_info<float> logits_a_i{.data = logits_a_i_data, .shape = {1, logits_a.shape[2], logits_a.shape[3]}};
-        auto next_a = sample(logits_a_i, temperature, top_k, top_p);
+    // lit_gpt_v6: remove batch size
+     logits_a.shape = {7, 1, logits_a.shape[0], logits_a.shape[1]/ 7};
+     logit_t.shape = {1, logit_t.shape[0], logit_t.shape[1]};
 
-        next_audio_tokens.emplace_back(next_a);
+     std::vector<int> next_audio_tokens;
+     for (int i = 0; i < logits_a.shape[0]; i++)
+     {
+         std::vector<float> logits_a_i_data(
+             std::vector<float>(logits_a.data.data() + i * logits_a.shape[2] * logits_a.shape[3],
+                                logits_a.data.data() + (i + 1) * logits_a.shape[2] * logits_a.shape[3]));
+         tensor_info<float> logits_a_i{.data = logits_a_i_data, .shape = {1, logits_a.shape[2], logits_a.shape[3]}};
+         auto next_a = sample(logits_a_i, temperature, top_k, top_p);
+
+         next_audio_tokens.emplace_back(next_a);
     }
     auto next_t = sample(logit_t, temperature, top_k, top_p);
     return {next_audio_tokens, next_t, next_ks, next_vs};
@@ -220,6 +224,8 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     auto input_embs = wte_get_data(input_ids);
 
     auto input_embs_concat = concat_feat(audio_embs, input_embs);
+    // gpt_v6 : remove batch
+    input_embs_concat.shape = {input_embs_concat.shape[0], input_embs_concat.shape[2], input_embs_concat.shape[3]};
 
     std::vector<float> past_ks(0, 0);
     std::vector<float> past_vs(0, 0);
@@ -227,8 +233,8 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     for (int i = 0; i < T; i++)
         input_pos.emplace_back(i);
 
-    tensor_info<float> past_ks_tensor{.data = past_ks, .shape = {24, 1, 14, 0, 64}};
-    tensor_info<float> past_vs_tensor{.data = past_ks, .shape = {24, 1, 14, 0, 64}};
+    tensor_info<float> past_ks_tensor{.data = past_ks, .shape = {24, 2, 1, 0, 64}};
+    tensor_info<float> past_vs_tensor{.data = past_ks, .shape = {24, 2, 1, 0, 64}};
     tensor_info<long> input_pos_tensor{.data = input_pos, .shape = {(long)input_pos.size()}};
 
     auto [tokens_A, token_T, past_ks_, past_vs_] = next_token_A1T2(gpt, input_embs_concat, input_pos_tensor,
@@ -258,7 +264,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         }
         model_input_ids.emplace_back((long)token_T);
 
-        tensor_info<long> input_ids_tensor{.data = model_input_ids, .shape = {(long)model_input_ids.size(), 1, 1}};
+        tensor_info<long> input_ids_tensor{.data = model_input_ids, .shape = {(long)model_input_ids.size(), 1}};
 
         auto input_embs_loop_tensor = wte_get_data(input_ids_tensor);
 
