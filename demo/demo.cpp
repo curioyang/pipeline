@@ -37,7 +37,7 @@ void signal_handler(int signum)
 #if __riscv
 std::atomic<bool> mic_stop(false);
 
-void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEModel &adapter, NNCASEModel &lit_gpt, NNCASEModel &snac, \
+void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEModel &adapter, NNCASEModel &lit_gpt, NNCASEModel &snac,
      std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer &player)
 {
     unsigned int sample_rate=16000;
@@ -47,13 +47,17 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
     vad->reset_states();
     bool triggering = false;
     bool pcm_running = false;
-    std::cout << "please enter any string to start, \"bye\" to exit" << std::endl;
+    std::cout << "please enter any string to start, \"/bye\" to exit" << std::endl;
     std::string input;
-    std::cin >> input;
+    // std::cin >> input;
+    std::getline(std::cin, input);
+    if (input == "/bye") {
+        mic_stop = true;
+    }
+
     while (!mic_stop)
     {
         if (!pcm_running) {
-            std::cout << "initPcm" << std::endl;
             initPcm(sample_rate, num_channels);
             pcm_running = true;
         }
@@ -73,12 +77,12 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
         {
             audio.insert(audio.end(), wav.begin(), wav.end());
             triggering = true;
-            std::cout << "vad is triggering" << std::endl;
+            // std::cout << "vad is triggering" << std::endl;
             continue;
         }
         else
         {
-            std::cout << "vad is not triggering: triggering = " << triggering << std::endl;
+            // std::cout << "vad is not triggering: triggering = " << triggering << std::endl;
             audio.insert(audio.end(), wav.begin(), wav.end());
             triggering = false;
             deinitPcm();
@@ -92,8 +96,12 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
         auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, player);
         std::cout << "Generated text: " << text << std::endl;
         audio.clear();
-        std::cout << "please enter any string to start, \"bye\" to exit" << std::endl;
-        std::cin >> input;
+        std::cout << "please enter any string to start, \"/bye\" to exit" << std::endl;
+        // std::cin >> input;
+        std::getline(std::cin, input);
+        if (input == "/bye") {
+            mic_stop = true;
+        }
     }
 }
 #endif
@@ -160,8 +168,8 @@ int main(int argc, const char* argv[])
 #endif
 
     // init audio Player
-    int buffer_size = 960 * 1024;
-    StreamingAudioPlayer audioplayer(24000, buffer_size); // 24kHz, 4KB buffer
+    size_t buffer_size = 960 * 1024;
+    StreamingAudioPlayer audioplayer(24000, buffer_size);
     audioplayer.start();
 
     // 处理音频输入
@@ -213,9 +221,9 @@ int main(int argc, const char* argv[])
     std::cout << "Generated text: " << text << std::endl;
 #endif
 
-    while (audioplayer.available() < buffer_size) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+    // while (audioplayer.available() < buffer_size) {
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    // }
 
     audioplayer.stop();
     return 0;

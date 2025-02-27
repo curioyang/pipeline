@@ -136,7 +136,7 @@ next_token_A1T2(M &gpt, tensor_info<float> &input_embs_concat, tensor_info<long>
 }
 
 template <class M>
-tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audios, StreamingAudioPlayer &player)
+tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audios)
 {
     for(int i = 0; i < audios.size(); i++)
         snac.template set_input_tensor(audios[i], i);
@@ -144,26 +144,6 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
     snac.template onForward();
     auto audio_hat = snac.template get_result_vector<float>(0);
     // std::cout << "               audio_hat size: " << audio_hat.data.size()<<std::endl;  // 2048 length.
-    auto part_autio_data = timeStretchPitchMaintain(audio_hat.data, 1.5);
-    auto begin = part_autio_data.begin();
-    int part_size = 1200; //50ms
-    while (1) {
-        auto end = begin + part_size;
-        if (end >= part_autio_data.end())
-            end = part_autio_data.end();
-
-        std::vector<float> tmp_data(begin, end);
-        while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-
-        // std::cout << "Wrote chunk, available space: "
-        //           << player.available() << std::endl;
-        begin = end;
-        if (end == part_autio_data.end())
-            break;
-    }
-
     // std::string save_path = "../data/output.wav";
     // save_audio(save_path, audio_hat.data, 24000);
 
@@ -188,9 +168,31 @@ void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector
     tensor_info<long> audio_2_tensor{.data = audio_2, .shape = {1, (long)audio_2.size()}};
     std::vector<tensor_info<long>> data{audio_0_tensor, audio_1_tensor, audio_2_tensor};
 
-    auto part_autio_data = generate_audio(snac, data, player);
-    std::cout << part_autio_data.data.size() << std::endl;
-    audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end() - pad_size * 2048);
+    auto d = generate_audio(snac, data);
+    std::vector<float>part_autio_data(d.data.begin(), d.data.end() - pad_size * 2048);
+
+    part_autio_data = timeStretchPitchMaintain(part_autio_data, 1.5);
+    auto begin = part_autio_data.begin();
+    int part_size = 1200; //50ms
+    while (1) {
+        auto end = begin + part_size;
+        if (end >= part_autio_data.end())
+            end = part_autio_data.end();
+
+        std::vector<float> tmp_data(begin, end);
+        while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        // std::cout << "Wrote chunk, available space: "
+        //           << player.available() << std::endl;
+        begin = end;
+        if (end == part_autio_data.end())
+            break;
+    }
+
+    // std::cout << part_autio_data.size() << std::endl;
+    audio_data_all.insert(audio_data_all.end(), part_autio_data.begin(), part_autio_data.end());
     audio_0.clear();
     audio_1.clear();
     audio_2.clear();
