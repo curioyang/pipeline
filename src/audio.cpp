@@ -212,9 +212,9 @@ std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr)
 // }
 // #endif
 
-void save_audio(const std::string &path, const std::vector<float> &audio, int sr)
+void save_audio(const std::string &path, const std::vector<int16_t> &audio, int sr)
 {
-    wav::WavWriter WW(audio.data(), audio.size(), 1, sr, 32);
+    wav::WavWriter WW(audio.data(), audio.size(), 1, sr, 16);
     WW.Write(path);
 }
 

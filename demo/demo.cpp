@@ -8,12 +8,18 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <thread>
 
 #ifdef ONNX
 #include "ONNXWrapper.h"
 using namespace omni_onnx;
 #else
 #include "NNCASEWrapper.h"
+#if __riscv
+#include "get_pcm.h"
+#include "play_pcm.h"
+#endif
+
 using namespace nncase::runtime;
 void __attribute__((destructor)) cleanup()
 {
@@ -28,6 +34,96 @@ void signal_handler(int signum)
     exit(signum);
 }
 
+#if __riscv
+std::atomic<bool> audio_stop(false);
+
+void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEModel &adapter, NNCASEModel &lit_gpt, NNCASEModel &snac, \
+     std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer &player)
+{
+    unsigned int sample_rate=16000;
+    int num_channels=1;
+    std::vector<float> wav;
+    std::vector<float> audio;
+    // initPcm(sample_rate, num_channels);
+    // sleep(1);
+    // deinitPcm();
+    // std::vector<float> tmp;
+    size_t idx = 0;
+    vad->reset_states();
+    bool triggering = false;
+    bool pcm_running = false;
+    std::cout << "please enter any string to start" << std::endl;
+    std::string str;
+    std::cin >> str;
+    while (!audio_stop)
+    {
+        if (!pcm_running) {
+            std::cout << "initPcm" << std::endl;
+            initPcm(sample_rate, num_channels);
+            pcm_running = true;
+        }
+
+        wav.clear();
+        // std::cout << "getPcm" << std::endl;
+        getPcm(wav);
+        // process wav with fp32
+        for (size_t i = 0; i < wav.size(); i++)
+            wav[i] = wav[i] / 32768;
+
+        // debug wav
+        // tmp.insert(tmp.end(), wav.begin(), wav.end());
+        // if (tmp.size() > 51200) {
+        //     char name[64];
+        //     wav::WavWriter WW(tmp.data(), tmp.size(), 1, sample_rate, 16);
+        //     snprintf(name, 64, "mic_input_%lu.wav", idx);
+        //     idx++;
+        //     WW.Write(name);
+        //     tmp.clear();
+        // }
+
+        // std::cout << "vad predict" << std::endl;
+        vad->predict(wav);
+        // std::cout << "vad->is_triggered() = " << vad->is_triggered() << ", triggering = " << triggering << std::endl;
+        if (!vad->is_triggered() && !triggering)
+            continue;
+
+
+        if (vad->is_triggered())
+        {
+            audio.insert(audio.end(), wav.begin(), wav.end());
+            triggering = true;
+            std::cout << "vad is triggering" << std::endl;
+            continue;
+        }
+        else
+        {
+            std::cout << "vad is not triggering: triggering = " << triggering << std::endl;
+            audio.insert(audio.end(), wav.begin(), wav.end());
+            triggering = false;
+            deinitPcm();
+            pcm_running = false;
+            // char name[64];
+            // snprintf(name, 64, "mic_input_%lu.wav", idx++);
+            // wav::WavWriter WW(audio.data(), audio.size(), 1, sample_rate, 16);
+            // WW.Write(name);
+        }
+
+        // std::vector<float> audio(wav.begin() + stamps.front().start, wav.begin() + stamps.back().end);
+        auto [mel, length] = load_audio(audio);
+        auto [audio_feature, input_ids] = generate_input_ids<NNCASEModel>(whisper, mel, length);
+
+        // 执行生成
+        auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, player);
+        std::cout << "Generated text: " << text << std::endl;
+        audio.clear();
+        std::cout << "please enter any string to start" << std::endl;
+        std::cin >> str;
+    }
+    // deinitPcm();
+}
+#endif
+
+
 int main(int argc, const char* argv[])
 {
     struct sigaction sa;
@@ -40,8 +136,8 @@ int main(int argc, const char* argv[])
     sigaction(SIGTERM, &sa, nullptr); // 终止信号
     sigaction(SIGSEGV, &sa, nullptr); // 段错误
     sigaction(SIGALRM, &sa, nullptr); // 定时器信号
-    if (argc < 3) {
-        std::cout << "Usage: " << argv[0] << " model_dir wav_file" << std::endl;
+    if (argc < 2) {
+        std::cout << "Usage: " << argv[0] << " model_dir [wav_file]" << std::endl;
         return 0;
     }
 
@@ -81,8 +177,32 @@ int main(int argc, const char* argv[])
     NNCASEModel snac(snac_model,"snac");
 #endif
 
+    std::unique_ptr<VadIterator> vad;
+#if defined(ONNX)
+    vad.reset(new OnnxVadIterator(vad_model));
+#else
+    vad.reset(new NncaseVadIterator(vad_model));
+#endif
+
+    // init audio Player
+    int buffer_size = 960 * 1024;
+    StreamingAudioPlayer audioplayer(24000, buffer_size); // 24kHz, 4KB buffer
+    audioplayer.start();
+
     // 处理音频输入
-#if VAD_ENABLE
+#if __riscv
+// #if 0
+    // std::thread thread_mic(mic_proc, vad, whisper, adapter, lit_gpt, snac, tokenizer);
+    // while (getchar() != 'q')
+    // {
+    //     usleep(10000);
+    // }
+    // audio_stop = true;
+    // thread_mic.join();
+    // initPlayer(24000, 1, 960, 16);
+    mic_proc(vad, whisper, adapter, lit_gpt, snac, tokenizer, audioplayer);
+    // deinitPlayer();
+#else
     wav::WavReader wav_reader(argv[2]);
     std::vector<float> input_wav(wav_reader.num_samples());
     for (int i = 0; i < wav_reader.num_samples(); i++)
@@ -90,12 +210,6 @@ int main(int argc, const char* argv[])
         input_wav[i] = static_cast<float>(*(wav_reader.data() + i));
     }
 
-    std::unique_ptr<VadIterator> vad;
-#if defined(ONNX)
-    vad.reset(new OnnxVadIterator(vad_model));
-#else
-    vad.reset(new NncaseVadIterator(vad_model));
-#endif
     vad->process(input_wav);
 
     // get_speech_timestamps
@@ -105,40 +219,31 @@ int main(int argc, const char* argv[])
     {
         std::cout << stamps[i].c_str() << std::endl;
     }
-    // vad = nullptr;
 
     std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
-    // write_binary_file("vad_output.bin", reinterpret_cast<char *>(audio.data()), audio.size() * sizeof(float));
     auto [mel, length] = load_audio(audio);
-#else
-    auto [mel, length] = load_audio(argv[2]);
-#endif
 
 #if defined(ONNX)
     auto [audio_feature, input_ids] = generate_input_ids<ONNXModel>(whisper, mel, length);
 #else
     auto [audio_feature, input_ids] = generate_input_ids<NNCASEModel>(whisper, mel, length);
 #endif
-    // // init audio Player
-    // int buffer_size = 4096;
-    // StreamingAudioPlayer audioplayer(24000, buffer_size); // 24kHz, 4KB buffer
-    // audioplayer.start();
 
-    // write_binary_file("whisper_output.bin", reinterpret_cast<char *>(audio_feature.data.data()), audio_feature.data.size() * sizeof(float));
+
 
     // 执行生成
 #if defined(ONNX)
-    auto text = A1_A2<ONNXModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer);
+    auto text = A1_A2<ONNXModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
 #else
-    auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer);
+    auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
+#endif
+    std::cout << "Generated text: " << text << std::endl;
 #endif
 
+    while (audioplayer.available() < buffer_size) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
 
-    std::cout << "Generated text: " << text << std::endl;
-    // while (audioplayer.available() < buffer_size) {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    // }
-
-    // audioplayer.stop();
+    audioplayer.stop();
     return 0;
 }

@@ -169,7 +169,7 @@ class WavReader {
 
 class WavWriter {
  public:
-  WavWriter(const float* data, int num_samples, int num_channel,
+  WavWriter(const int16_t* data, int num_samples, int num_channel,
             int sample_rate, int bits_per_sample)
       : data_(data),
         num_samples_(num_samples),
@@ -188,7 +188,7 @@ class WavWriter {
                            0x00, 0x00, 0x00, 0x00, 0x64, 0x61, 0x74, 0x61,
                            0x00, 0x00, 0x00, 0x00};
     memcpy(&header, wav_header, sizeof(header));
-    header.format = 3;
+    header.format = 1;
     header.channels = num_channel_;
     header.bit = bits_per_sample_;
     header.sample_rate = sample_rate_;
@@ -209,7 +209,7 @@ class WavWriter {
             break;
           }
           case 16: {
-            int16_t sample = static_cast<int16_t>(data_[i * num_channel_ + j]);
+            int16_t sample = data_[i * num_channel_ + j];
             fwrite(&sample, 1, sizeof(sample), fp);
             break;
           }
@@ -226,7 +226,7 @@ class WavWriter {
   }
 
  private:
-  const float* data_;
+  const int16_t* data_;
   int num_samples_;  // total float points in data_
   int num_channel_;
   int sample_rate_;

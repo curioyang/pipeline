@@ -13,7 +13,7 @@ template std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids<omn
 
 template std::string A1_A2<omni_onnx::ONNXModel>(
     tensor_info<float> &, tensor_info<long> &, int, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &,
-    std::unique_ptr<tokenizers::Tokenizer> & /*, StreamingAudioPlayer &*/);
+    std::unique_ptr<tokenizers::Tokenizer> & , StreamingAudioPlayer &);
 
 #else
 #include "NNCASEWrapper.h"
@@ -31,7 +31,7 @@ template std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids<NNC
 
 template std::string A1_A2<NNCASEModel>(
     tensor_info<float> &, tensor_info<long> &, int, NNCASEModel &, NNCASEModel &, NNCASEModel &,
-    std::unique_ptr<tokenizers::Tokenizer> & /*, StreamingAudioPlayer &*/);
+    std::unique_ptr<tokenizers::Tokenizer> & , StreamingAudioPlayer &);
 
 #endif
 
@@ -134,40 +134,41 @@ next_token_A1T2(M &gpt, tensor_info<float> &input_embs_concat, tensor_info<long>
 }
 
 template <class M>
-tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audios /*, StreamingAudioPlayer &player*/)
+tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audios, StreamingAudioPlayer &player)
 {
-
     for(int i = 0; i < audios.size(); i++)
         snac.template set_input_tensor(audios[i], i);
 
     snac.template onForward();
     auto audio_hat = snac.template get_result_vector<float>(0);
+    std::cout << "               audio_hat size: " << audio_hat.data.size()<<std::endl;  // 2048 length.
+    auto begin = audio_hat.data.begin();
+    int part_size = 1200; //50ms
+    while (1) {
+        auto end = begin + part_size;
+        if (end >= audio_hat.data.end())
+            end = audio_hat.data.end();
+
+        std::vector<float> tmp_data(begin, end);
+        while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        std::cout << "Wrote chunk, available space: "
+                  << player.available() << std::endl;
+        begin = end;
+        if (end == audio_hat.data.end())
+            break;
+    }
+
+    // std::string save_path = "../data/output.wav";
+    // save_audio(save_path, audio_hat.data, 24000);
+
     return audio_hat;
-    // std::cout << "               audio_hat size: " << audio_hat.data.size()<<std::endl;  // 2048 length.
-    // auto begin = audio_hat.data.begin();
-    // int part_size = 1200; //50ms
-    // while (1) {
-    //     auto end = begin + part_size;
-    //     if (end >= audio_hat.data.end())
-    //         end = audio_hat.data.end();
-
-    //     std::vector<float> tmp_data(begin, end);
-    //     while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
-    //         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //     }
-
-    //     std::cout << "Wrote chunk, available space: "
-    //               << player.available() << std::endl;
-    //     begin = end;
-    //     if (end == audio_hat.data.end())
-    //         break;
-    // }
-//    std::string save_path = "../data/output.wav";
-//    save_audio(save_path, audio_hat.data, 24000);
 }
 
 template <class M>
-void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector<long> &audio_0, std::vector<long> &audio_1, std::vector<long> &audio_2, bool end_now, int count)
+void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector<long> &audio_0, std::vector<long> &audio_1, std::vector<long> &audio_2, bool end_now, int count, StreamingAudioPlayer &player)
 {
     // count used to dump data
 
@@ -184,7 +185,7 @@ void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector
     tensor_info<long> audio_2_tensor{.data = audio_2, .shape = {1, (long)audio_2.size()}};
     std::vector<tensor_info<long>> data{audio_0_tensor, audio_1_tensor, audio_2_tensor};
 
-    auto part_autio_data = generate_audio(snac, data);
+    auto part_autio_data = generate_audio(snac, data, player);
     std::cout << part_autio_data.data.size() << std::endl;
     audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end() - pad_size * 2048);
     audio_0.clear();
@@ -196,7 +197,7 @@ void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector
 template <class M>
 std::vector<std::vector<int>>
 generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
-            M &adapter, M &gpt, M &snac, std::unique_ptr<tokenizers::Tokenizer> &tokenizer, /* StreamingAudioPlayer &player,*/
+            M &adapter, M &gpt, M &snac, std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer &player,
             int max_returned_tokens = 2048,
             float temperature = 0.9,
             int top_k = 1,
@@ -283,15 +284,15 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         token_T = _token_T;
         past_ks_ = _past_ks_;
         past_vs_ = _past_vs_;
-        
+
         if (text_end)
             token_T = pad_id_t;
         if ((int)tokens_A.back() == eos_id_a)
         {
             end_now = true;
-            tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count);
-            std::string save_path = "output.wav";
-            save_audio(save_path, audio_data_all, 24000);
+            tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count, player);
+            // std::string save_path = "output.wav";
+            // save_audio(save_path, audio_data_all, 24000);
             break;
         }
         if (token_T == eos_id_t)
@@ -309,14 +310,14 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
             std::vector<long> audio_0_{outputs[0][sub_step-7]};
             std::vector<long> audio_1_{outputs[1][sub_step-6], outputs[4][sub_step-3]};
             std::vector<long> audio_2_{outputs[2][sub_step-5],outputs[3][sub_step-4], outputs[5][sub_step-2], outputs[6][sub_step-1]};
-            
+
             audio_0.insert(audio_0.end(), audio_0_.begin(), audio_0_.end());
             audio_1.insert(audio_1.end(), audio_1_.begin(), audio_1_.end());
             audio_2.insert(audio_2.end(), audio_2_.begin(), audio_2_.end());
 
             if (audio_0.size() == 8)
             {
-                tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count);
+                tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count, player);
             }
         }
     }
@@ -405,12 +406,12 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   M &adapter,
                   M &gpt,
                   M &snac,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer
-                //   StreamingAudioPlayer &player
-                ) 
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
+                  StreamingAudioPlayer &player
+                )
 {
 
-    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt, snac, tokenizer, /* player,*/
+    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt, snac, tokenizer, player,
                                       2048,
                                       0.9,
                                       1,
@@ -475,8 +476,8 @@ std::string A1_A2(tensor_info<float> &audio_feature,
     snac.template onForward();
     auto audio_hat = snac.template get_result_vector<float>(0);
 
-    std::string save_path = "output.wav";
-    save_audio(save_path, audio_hat.data, 24000);
+    // std::string save_path = "output.wav";
+    // save_audio(save_path, audio_hat.data, 24000);
 #endif
 
     // auto begin = audio_hat.data.begin();

@@ -69,7 +69,7 @@ std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr 
 std::pair<tensor_info<float>, int> load_audio(const std::string &path, int sr = SAMPLE_RATE);
 
 
-void save_audio(const std::string &path, const std::vector<float> &audio, int sr = SAMPLE_RATE);
+void save_audio(const std::string &path, const std::vector<int16_t> &audio, int sr = SAMPLE_RATE);
 
 // #include <portaudio.h>
 

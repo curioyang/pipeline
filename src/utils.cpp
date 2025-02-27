@@ -9,6 +9,7 @@
 #include <memory>
 #include <queue>
 #include <utility> // for std::pair
+#include <cmath>      // for std::round
 
 void write_binary_file(const char *file_name, const char *buf, size_t size)
 {
@@ -134,6 +135,15 @@ float bf16_to_fp32(uint16_t bf16)
     return result;
 }
 
+int16_t float_to_int16(float value) {
+    // 先将 float 归一化到 [-1.0, 1.0]
+    float normalized_value = std::clamp(value, -1.0f, 1.0f);
+    // 反归一化并四舍五入
+    int32_t temp = static_cast<int32_t>(std::round(normalized_value * 32768.0f));
+    // 确保值在 int16 范围内
+    return static_cast<int16_t>(std::clamp(temp, INT16_MIN, INT16_MAX));
+}
+
 tensor_info<float> wte_get_data(tensor_info<long> &input_ids)
 {
     std::vector<float> wte_data(input_ids.data.size() * 896);
@@ -149,7 +159,7 @@ tensor_info<float> wte_get_data(tensor_info<long> &input_ids)
         weights_path = "../data/wte_weights.bin";
         size = 896 * sizeof(float);
     }
-    
+
     FILE *file = fopen(weights_path.c_str(), "rb");
 
     if (WTE_F16)

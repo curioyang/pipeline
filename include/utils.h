@@ -78,4 +78,5 @@ std::vector<T> softmax(std::vector<T>& x);
 
 tensor_info<float> wte_get_data(tensor_info<long> &input_ids);
 
-#endif //WAV2WAV_UTILS_H
+int16_t float_to_int16(float value);
+#endif // WAV2WAV_UTILS_H

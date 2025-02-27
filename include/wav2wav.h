@@ -93,7 +93,12 @@ private:
 
 
 class VadIterator {
+
 private:
+
+
+
+public:
     virtual void predict(const std::vector<float> &data) {}
 
     void reset_states() {
@@ -109,7 +114,6 @@ private:
         current_speech = timestamp_t();
     };
 
-public:
     void process(const std::vector<float> &input_wav) {
         reset_states();
 
@@ -168,6 +172,10 @@ public:
         std::vector<float> slice(&input_wav[current_start], &input_wav[input_wav.size()]);
         output_wav.insert(output_wav.end(), slice.begin(), slice.end());
     };
+
+    bool is_triggered() {
+        return triggered;
+    }
 
 protected:
     // model config
@@ -266,6 +274,7 @@ private:
         session = std::make_shared<Ort::Session>(env, model_path.c_str(), session_options);
     };
 
+public:
     void predict(const std::vector<float> &data) {
         // Infer
         // Create ort tensors
@@ -434,6 +443,7 @@ private:
         entry_function_ = interpreter_.entry_function().unwrap_or_throw();
     };
 
+public:
     void predict(const std::vector<float> &data)
     {
         // Infer
@@ -678,8 +688,8 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   M &adapter,
                   M &gpt,
                   M &snac,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer /*,
-                   StreamingAudioPlayer &player*/
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
+                   StreamingAudioPlayer &player
 );
 
 template <class M>
