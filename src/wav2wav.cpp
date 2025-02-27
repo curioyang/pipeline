@@ -1,7 +1,6 @@
 #include "wav2wav.h"
 #include "audio.h"
 #include "audio_stretch.h"
-#include "audio_stretch_opt.h"
 #include "utils.h"
 
 #include <thread>
@@ -145,12 +144,13 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
     snac.template onForward();
     auto audio_hat = snac.template get_result_vector<float>(0);
     std::cout << "               audio_hat size: " << audio_hat.data.size()<<std::endl;  // 2048 length.
-    auto begin = audio_hat.data.begin();
+    auto part_autio_data = timeStretchPitchMaintain(audio_hat.data, 1.5);
+    auto begin = part_autio_data.begin();
     int part_size = 1200; //50ms
     while (1) {
         auto end = begin + part_size;
-        if (end >= audio_hat.data.end())
-            end = audio_hat.data.end();
+        if (end >= part_autio_data.end())
+            end = part_autio_data.end();
 
         std::vector<float> tmp_data(begin, end);
         while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
@@ -160,7 +160,7 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
         std::cout << "Wrote chunk, available space: "
                   << player.available() << std::endl;
         begin = end;
-        if (end == audio_hat.data.end())
+        if (end == part_autio_data.end())
             break;
     }
 
@@ -190,7 +190,6 @@ void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector
 
     auto part_autio_data = generate_audio(snac, data, player);
     std::cout << part_autio_data.data.size() << std::endl;
-    part_autio_data = timeStretchPitchMaintain(part_autio_data, 1.5);
     audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end() - pad_size * 2048);
     audio_0.clear();
     audio_1.clear();

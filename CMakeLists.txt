@@ -70,6 +70,8 @@ endif()
 
 add_library(wav2wav STATIC ${SRCS})
 
+target_link_libraries(wav2wav rubberband)
+
 if (BUILD_ONNX)
     target_link_libraries(wav2wav onnxruntime tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
 else()
@@ -80,22 +82,5 @@ else()
     endif()
 endif()
 
-<<<<<<< HEAD
-=======
-# if (BUILD_ONNX)
-# target_link_libraries(wav2wav onnxruntime SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
-target_link_libraries(wav2wav onnxruntime rubberband SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
-# else()
-# if(CMAKE_CROSSCOMPILING)
-# # target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz portaudio)
-# target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz)
-# else()
-# target_link_libraries(wav2wav Nncase.Runtime.Native SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
-# target_link_libraries(wav2wav Nncase.Runtime.Native SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
-target_link_libraries(wav2wav Nncase.Runtime.Native SndFile::sndfile)
-# endif()
-# endif()
-add_compile_options(-w)
->>>>>>> 903a4ce... add audio stretch
 add_executable(demo ${CMAKE_SOURCE_DIR}/demo/demo.cpp)
 target_link_libraries(demo wav2wav)
