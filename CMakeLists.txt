@@ -39,7 +39,6 @@ endif()
 # TODO:  split x86 && riscv
 set(RUBBERBAND_PATH ${CMAKE_SOURCE_DIR}/3rd_party/librubberband)
 include_directories(${RUBBERBAND_PATH}/include)
-link_directories(${RUBBERBAND_PATH}/lib)
 
 # librosa
 set(ROSA_PATH ${CMAKE_SOURCE_DIR}/3rd_party/librosa)
@@ -47,14 +46,14 @@ set(ROSA_PATH ${CMAKE_SOURCE_DIR}/3rd_party/librosa)
 set(TOKENIZER_PATH ${CMAKE_SOURCE_DIR}/3rd_party/tokenizers-cpp)
 
 if (CMAKE_CROSSCOMPILING)
-    link_directories(${TOKENIZER_PATH}/lib/riscv64)
+    link_directories(${TOKENIZER_PATH}/lib/riscv64 ${RUBBERBAND_PATH}/lib/riscv64)
 else()
     # list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/sndfile/lib/cmake)
     # set(CMAKE_PREFIX_PATH ${CMAKE_MODULE_PATH})
     # find_package(SndFile REQUIRED)
 
     # tokenizers-cpp
-    link_directories(${TOKENIZER_PATH}/lib/x86_64)
+    link_directories(${TOKENIZER_PATH}/lib/x86_64 ${RUBBERBAND_PATH}/lib/x86_64)
 
     include_directories(${ONNXRUNTIME_PATH}/include)
 endif()
@@ -70,15 +69,15 @@ endif()
 
 add_library(wav2wav STATIC ${SRCS})
 
-target_link_libraries(wav2wav rubberband)
+target_link_libraries(wav2wav tokenizers_cpp tokenizers_c sentencepiece dl m pthread rubberband)
 
 if (BUILD_ONNX)
-    target_link_libraries(wav2wav onnxruntime tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
+    target_link_libraries(wav2wav onnxruntime portaudio)
 else()
     if(CMAKE_CROSSCOMPILING)
-        target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz asound)
+        target_link_libraries(wav2wav nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz asound)
     else()
-        target_link_libraries(wav2wav Nncase.Runtime.Native tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
+        target_link_libraries(wav2wav Nncase.Runtime.Native)
     endif()
 endif()
 

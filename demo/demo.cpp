@@ -35,7 +35,7 @@ void signal_handler(int signum)
 }
 
 #if __riscv
-std::atomic<bool> audio_stop(false);
+std::atomic<bool> mic_stop(false);
 
 void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEModel &adapter, NNCASEModel &lit_gpt, NNCASEModel &snac, \
      std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer &player)
@@ -44,18 +44,13 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
     int num_channels=1;
     std::vector<float> wav;
     std::vector<float> audio;
-    // initPcm(sample_rate, num_channels);
-    // sleep(1);
-    // deinitPcm();
-    // std::vector<float> tmp;
-    size_t idx = 0;
     vad->reset_states();
     bool triggering = false;
     bool pcm_running = false;
-    std::cout << "please enter any string to start" << std::endl;
-    std::string str;
-    std::cin >> str;
-    while (!audio_stop)
+    std::cout << "please enter any string to start, \"bye\" to exit" << std::endl;
+    std::string input;
+    std::cin >> input;
+    while (!mic_stop)
     {
         if (!pcm_running) {
             std::cout << "initPcm" << std::endl;
@@ -64,26 +59,12 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
         }
 
         wav.clear();
-        // std::cout << "getPcm" << std::endl;
         getPcm(wav);
         // process wav with fp32
         for (size_t i = 0; i < wav.size(); i++)
             wav[i] = wav[i] / 32768;
 
-        // debug wav
-        // tmp.insert(tmp.end(), wav.begin(), wav.end());
-        // if (tmp.size() > 51200) {
-        //     char name[64];
-        //     wav::WavWriter WW(tmp.data(), tmp.size(), 1, sample_rate, 16);
-        //     snprintf(name, 64, "mic_input_%lu.wav", idx);
-        //     idx++;
-        //     WW.Write(name);
-        //     tmp.clear();
-        // }
-
-        // std::cout << "vad predict" << std::endl;
         vad->predict(wav);
-        // std::cout << "vad->is_triggered() = " << vad->is_triggered() << ", triggering = " << triggering << std::endl;
         if (!vad->is_triggered() && !triggering)
             continue;
 
@@ -102,13 +83,8 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
             triggering = false;
             deinitPcm();
             pcm_running = false;
-            // char name[64];
-            // snprintf(name, 64, "mic_input_%lu.wav", idx++);
-            // wav::WavWriter WW(audio.data(), audio.size(), 1, sample_rate, 16);
-            // WW.Write(name);
         }
 
-        // std::vector<float> audio(wav.begin() + stamps.front().start, wav.begin() + stamps.back().end);
         auto [mel, length] = load_audio(audio);
         auto [audio_feature, input_ids] = generate_input_ids<NNCASEModel>(whisper, mel, length);
 
@@ -116,10 +92,9 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
         auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, player);
         std::cout << "Generated text: " << text << std::endl;
         audio.clear();
-        std::cout << "please enter any string to start" << std::endl;
-        std::cin >> str;
+        std::cout << "please enter any string to start, \"bye\" to exit" << std::endl;
+        std::cin >> input;
     }
-    // deinitPcm();
 }
 #endif
 
@@ -197,7 +172,7 @@ int main(int argc, const char* argv[])
     // {
     //     usleep(10000);
     // }
-    // audio_stop = true;
+    // mic_stop = true;
     // thread_mic.join();
     // initPlayer(24000, 1, 960, 16);
     mic_proc(vad, whisper, adapter, lit_gpt, snac, tokenizer, audioplayer);
@@ -228,8 +203,6 @@ int main(int argc, const char* argv[])
 #else
     auto [audio_feature, input_ids] = generate_input_ids<NNCASEModel>(whisper, mel, length);
 #endif
-
-
 
     // 执行生成
 #if defined(ONNX)

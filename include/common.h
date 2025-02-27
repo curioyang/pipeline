@@ -34,7 +34,7 @@ constexpr int WHISPER_SAMPLE_RATE = 16000;
 constexpr int WHISPER_N_FFT = 400;
 constexpr int WHISPER_HOP_LENGTH = 160;
 
-constexpr int WHISPER_SEQ_LENGTH = 3000;
+constexpr int WHISPER_SEQ_LENGTH = 1500;
 
 constexpr int WTE_F16 = 1;
 

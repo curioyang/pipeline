@@ -143,7 +143,7 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
 
     snac.template onForward();
     auto audio_hat = snac.template get_result_vector<float>(0);
-    std::cout << "               audio_hat size: " << audio_hat.data.size()<<std::endl;  // 2048 length.
+    // std::cout << "               audio_hat size: " << audio_hat.data.size()<<std::endl;  // 2048 length.
     auto part_autio_data = timeStretchPitchMaintain(audio_hat.data, 1.5);
     auto begin = part_autio_data.begin();
     int part_size = 1200; //50ms
@@ -157,8 +157,8 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
-        std::cout << "Wrote chunk, available space: "
-                  << player.available() << std::endl;
+        // std::cout << "Wrote chunk, available space: "
+        //           << player.available() << std::endl;
         begin = end;
         if (end == part_autio_data.end())
             break;
