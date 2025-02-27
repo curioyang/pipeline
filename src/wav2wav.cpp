@@ -1,8 +1,11 @@
-#include<vector>
 #include "wav2wav.h"
 #include "audio.h"
+#include "audio_stretch.h"
+#include "audio_stretch_opt.h"
 #include "utils.h"
+
 #include <thread>
+#include <vector>
 
 #if defined(ONNX)
 #include "ONNXWrapper.h"
@@ -187,6 +190,7 @@ void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector
 
     auto part_autio_data = generate_audio(snac, data, player);
     std::cout << part_autio_data.data.size() << std::endl;
+    part_autio_data = timeStretchPitchMaintain(part_autio_data, 1.5);
     audio_data_all.insert(audio_data_all.end(), part_autio_data.data.begin(), part_autio_data.data.end() - pad_size * 2048);
     audio_0.clear();
     audio_1.clear();

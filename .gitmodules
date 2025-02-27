@@ -1,0 +1,3 @@
+[submodule "3rd_party/rubberband_cmake"]
+	path = 3rd_party/rubberband_cmake
+	url = https://github.com/curioyang/rubberband.git
