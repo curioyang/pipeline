@@ -17,6 +17,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif()
 
+# rubberband
+set(RUBBERBAND_PATH ${CMAKE_SOURCE_DIR}/3rd_party/librubberband)
+include_directories(${RUBBERBAND_PATH}/include)
+link_directories(${RUBBERBAND_PATH}/lib)
+
 # audiofile
 include_directories(${CMAKE_SOURCE_DIR}/3rd_party/AudioFile)
 
@@ -58,7 +63,7 @@ add_library(wav2wav STATIC ${SRCS}
 
 # if (BUILD_ONNX)
 # target_link_libraries(wav2wav onnxruntime SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread portaudio)
-target_link_libraries(wav2wav onnxruntime SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
+target_link_libraries(wav2wav onnxruntime rubberband SndFile::sndfile tokenizers_cpp tokenizers_c sentencepiece dl m pthread)
 # else()
 # if(CMAKE_CROSSCOMPILING)
 # # target_link_libraries(wav2wav PUBLIC tokenizers_cpp tokenizers_c sentencepiece dl m pthread nncase.rt_modules.k230 Nncase.Runtime.Native functional_k230 mmz portaudio)

@@ -1,8 +1,11 @@
-#include<vector>
 #include "wav2wav.h"
 #include "audio.h"
+#include "audio_stretch.h"
+#include "audio_stretch_opt.h"
 #include "utils.h"
+
 #include <thread>
+#include <vector>
 
 // #if defined(ONNX)
 #include "ONNXWrapper.h"
@@ -302,7 +305,11 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
             end_now = true;
             tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count);
             std::string save_path = "output.wav";
-            save_audio(save_path, audio_data_all, 24000);
+            save_audio(save_path, audio_data_all, 22000);
+
+            auto audio_stretch_data = timeStretchPitchMaintain(audio_data_all, 1.5);
+            std::string save_path_low = "output_stretch.wav";
+            save_audio(save_path_low, audio_stretch_data, 22000);
             break;
         }
         if (token_T == eos_id_t)
