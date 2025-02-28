@@ -119,8 +119,8 @@ next_token_A1T2(M &gpt, tensor_info<float> &input_embs_concat, tensor_info<long>
     // logits_a.shape = {7, logits_a.shape[0], logits_a.shape[1], logits_a.shape[2] / 7};
 
     // lit_gpt_v6: remove batch size
-     logits_a.shape = {7, 1, logits_a.shape[0], logits_a.shape[1]/ 7};
-     logit_t.shape = {1, logit_t.shape[0], logit_t.shape[1]};
+    //  logits_a.shape = {7, 1, logits_a.shape[0], logits_a.shape[1]/ 7};
+    //  logit_t.shape = {1, logit_t.shape[0], logit_t.shape[1]};
 
      std::vector<int> next_audio_tokens;
      for (int i = 0; i < logits_a.shape[0]; i++)
