@@ -253,7 +253,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     for (int i = 0; i < 7; i++)
         outputs[i].emplace_back(tokens_A[i]);
     outputs[7].emplace_back(token_T);
-    std::cout << tokenizer->Decode(outputs[7]) << std::endl;
+    // std::cout << tokenizer->Decode(outputs[7]) << std::endl;
     input_pos.resize(1);
     input_pos[0] = (long)T;
 
@@ -310,7 +310,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
             outputs[i].emplace_back(tokens_A[i]);
         }
         outputs[7].emplace_back(token_T);
-        std::cout << tokenizer->Decode(outputs[7]) << std::endl;
+        // std::cout << tokenizer->Decode(outputs[7]) << std::endl;
         input_pos[0] += 1;
 
         if(sub_step>=8) {

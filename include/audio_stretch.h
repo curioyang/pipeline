@@ -1,11 +1,13 @@
 #include <rubberband/RubberBandStretcher.h>
 #include <vector>
+#include "utils.h"
 
 std::vector<float> timeStretchPitchMaintain(const std::vector<float> &input,
                                             double time_ratio,
                                             int sample_rate = 24000,
                                             int channels = 1)
 {
+    ScopedTiming st("timeStretchPitchMaintain");
     // 参数校验
     if (input.empty() || time_ratio <= 0.01 || time_ratio > 10.0)
     {

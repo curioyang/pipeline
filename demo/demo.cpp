@@ -173,57 +173,47 @@ int main(int argc, const char* argv[])
     audioplayer.start();
 
     // 处理音频输入
-#if __riscv
-// #if 0
-    // std::thread thread_mic(mic_proc, vad, whisper, adapter, lit_gpt, snac, tokenizer);
-    // while (getchar() != 'q')
-    // {
-    //     usleep(10000);
-    // }
-    // mic_stop = true;
-    // thread_mic.join();
-    // initPlayer(24000, 1, 960, 16);
-    mic_proc(vad, whisper, adapter, lit_gpt, snac, tokenizer, audioplayer);
-    // deinitPlayer();
-#else
-    wav::WavReader wav_reader(argv[2]);
-    std::vector<float> input_wav(wav_reader.num_samples());
-    for (int i = 0; i < wav_reader.num_samples(); i++)
+    if (argc == 2)
     {
-        input_wav[i] = static_cast<float>(*(wav_reader.data() + i));
-    }
+        mic_proc(vad, whisper, adapter, lit_gpt, snac, tokenizer, audioplayer);
+    } else {
+        wav::WavReader wav_reader(argv[2]);
+        std::vector<float> input_wav(wav_reader.num_samples());
+        for (int i = 0; i < wav_reader.num_samples(); i++)
+        {
+            input_wav[i] = static_cast<float>(*(wav_reader.data() + i));
+        }
 
-    vad->process(input_wav);
+        vad->process(input_wav);
 
-    // get_speech_timestamps
-    auto stamps = vad->get_speech_timestamps();
-    assert(!stamps.empty());
-    for (int i = 0; i < stamps.size(); i++)
-    {
-        std::cout << stamps[i].c_str() << std::endl;
-    }
+        // get_speech_timestamps
+        auto stamps = vad->get_speech_timestamps();
+        assert(!stamps.empty());
+        for (int i = 0; i < stamps.size(); i++)
+        {
+            std::cout << stamps[i].c_str() << std::endl;
+        }
 
-    std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
-    auto [mel, length] = load_audio(audio);
+        std::vector<float> audio(input_wav.begin() + stamps.front().start, input_wav.begin() + stamps.back().end);
+        auto [mel, length] = load_audio(audio);
 
 #if defined(ONNX)
-    auto [audio_feature, input_ids] = generate_input_ids<ONNXModel>(whisper, mel, length);
+        auto [audio_feature, input_ids] = generate_input_ids<ONNXModel>(whisper, mel, length);
 #else
-    auto [audio_feature, input_ids] = generate_input_ids<NNCASEModel>(whisper, mel, length);
+        auto [audio_feature, input_ids] = generate_input_ids<NNCASEModel>(whisper, mel, length);
 #endif
 
-    // 执行生成
+        // 执行生成
 #if defined(ONNX)
-    auto text = A1_A2<ONNXModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
+        auto text = A1_A2<ONNXModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
 #else
-    auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
+        auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
 #endif
-    std::cout << "Generated text: " << text << std::endl;
-#endif
-
-    // while (audioplayer.available() < buffer_size) {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    // }
+        std::cout << "Generated text: " << text << std::endl;
+        while (audioplayer.available() < buffer_size) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+    }
 
     audioplayer.stop();
     return 0;

@@ -162,37 +162,37 @@ private:
 #if __riscv
 void playbackThread() {
     constexpr int frames = 960;
-    constexpr int samplesRequested = frames * 6;
+    constexpr int samplesRequested = frames * 2;
     std::vector<float> f32_pcm(samplesRequested, 0.f);
     std::vector<int16_t> i16_pcm(samplesRequested, 0);
+    size_t samplesRead = 0;
 
-    while (m_isRunning)
+    while (true)
     {
         // while (!m_buffer.isEmpty())
-        while (m_buffer.availableRead() > samplesRequested)
+        // while (m_buffer.availableRead() > samplesRequested)
+        samplesRead = m_buffer.read(f32_pcm.data(), samplesRequested);
+        if (samplesRead == 0)
+            break;
+        // std::cout << "samplesRequested = " << samplesRequested << ", samplesRead = " << samplesRead << std::endl;
+        if (samplesRead < samplesRequested)
+            std::memset(f32_pcm.data() + samplesRead, 0, (samplesRequested - samplesRead) * sizeof(float));
+
         {
-            size_t samplesRead = m_buffer.read(f32_pcm.data(), samplesRequested);
-            // std::cout << "samplesRequested = " << samplesRequested << ", samplesRead = " << samplesRead << std::endl;
-            if (samplesRead < samplesRequested)
-                std::memset(f32_pcm.data() + samplesRead, 0, (samplesRequested - samplesRead) * sizeof(float));
-
+            // ScopedTiming st("float_to_int16");
+            for (size_t i = 0; i < samplesRequested; i++)
             {
-                // ScopedTiming st("float_to_int16");
-                for (size_t i = 0; i < samplesRequested; i++)
-                {
-                    i16_pcm[i] = float_to_int16(f32_pcm[i]);
-                }
-            }
-
-            char *ptr = reinterpret_cast<char *>(i16_pcm.data());
-            size_t n = frames * sizeof(int16_t);
-            size_t count = samplesRequested / frames;
-            for (size_t i = 0; i < count; i++)
-            {
-                playPcm(ptr + i * n);
+                i16_pcm[i] = float_to_int16(f32_pcm[i]);
             }
         }
-        usleep(10000);
+
+        char *ptr = reinterpret_cast<char *>(i16_pcm.data());
+        size_t n = frames * sizeof(int16_t);
+        size_t count = samplesRequested / frames;
+        for (size_t i = 0; i < count; i++)
+        {
+            playPcm(ptr + i * n);
+        }
     }
 }
 #else
