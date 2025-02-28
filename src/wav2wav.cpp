@@ -274,7 +274,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         }
         model_input_ids.emplace_back((long)token_T);
 
-        tensor_info<long> input_ids_tensor{.data = model_input_ids, .shape = {(long)model_input_ids.size(), 1}};
+        tensor_info<long> input_ids_tensor{.data = model_input_ids, .shape = {(long)model_input_ids.size(), 1, 1}};
 
         auto input_embs_loop_tensor = wte_get_data(input_ids_tensor);
 
