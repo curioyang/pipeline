@@ -136,9 +136,9 @@ int main(int argc, const char* argv[])
     std::string vad_model = models_dir + "/vad/silero_vad.onnx";
     // whisper.onnx is 3000 whisper_v2.onnx is 1500
     // if change model, modify common.h:37L
-    std::string whisper_model = models_dir + "/whisper/whisper.onnx";
+    std::string whisper_model = models_dir + "/whisper/whisper_v2.onnx";
     std::string adapter_model = models_dir + "/adapter/adapter.onnx";
-    std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt_v6.onnx";
+    std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.onnx";
     std::string snac_model = models_dir + "/snac/snac.onnx";
 
     ONNXModel whisper(std::make_unique<RuntimeManager>("whisper"), whisper_model);

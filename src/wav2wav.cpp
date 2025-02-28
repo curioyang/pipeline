@@ -233,7 +233,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
 
     auto input_embs_concat = concat_feat(audio_embs, input_embs);
     // gpt_v6 : remove batch
-    input_embs_concat.shape = {input_embs_concat.shape[0], input_embs_concat.shape[2], input_embs_concat.shape[3]};
+    // input_embs_concat.shape = {input_embs_concat.shape[0], input_embs_concat.shape[2], input_embs_concat.shape[3]};
 
     std::vector<float> past_ks(0, 0);
     std::vector<float> past_vs(0, 0);
@@ -241,8 +241,10 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     for (int i = 0; i < T; i++)
         input_pos.emplace_back(i);
 
-    tensor_info<float> past_ks_tensor{.data = past_ks, .shape = {24, 2, 1, 0, 64}};
-    tensor_info<float> past_vs_tensor{.data = past_ks, .shape = {24, 2, 1, 0, 64}};
+    // tensor_info<float> past_ks_tensor{.data = past_ks, .shape = {24, 2, 1, 0, 64}};
+    // tensor_info<float> past_vs_tensor{.data = past_ks, .shape = {24, 2, 1, 0, 64}};
+    tensor_info<float> past_ks_tensor{.data = past_ks, .shape = {24, 1, 14, 0, 64}};
+    tensor_info<float> past_vs_tensor{.data = past_ks, .shape = {24, 1, 14, 0, 64}};
     tensor_info<long> input_pos_tensor{.data = input_pos, .shape = {(long)input_pos.size()}};
 
     auto [tokens_A, token_T, past_ks_, past_vs_] = next_token_A1T2(gpt, input_embs_concat, input_pos_tensor,
