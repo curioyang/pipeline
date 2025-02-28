@@ -5,7 +5,7 @@
 
 // #ifdef BUILD_ONNX
 #include "common.h"
-#include "timer.h"
+#include "utils.h"
 #include <numeric>
 #include <onnxruntime_cxx_api.h>
 
@@ -78,7 +78,7 @@ namespace omni_onnx
 
         void onForward()
         {
-            Timer timer(runtime_manager_->name());
+            ScopedTiming st(runtime_manager_->name() + " onForward");
             this->results_ = session_->Run(Ort::RunOptions{nullptr},
                                            input_names_.data(), inputs_.data(), inputs_.size(),
                                            output_names_.data(), output_names_.size());

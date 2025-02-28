@@ -17,6 +17,10 @@ if (BUILD_ONNX)
     add_definitions(-DONNX)
 endif()
 
+if (BUILD_PROFILING)
+    add_definitions(-DPROFILING)
+endif()
+
 if (BUILD_ONNX)
     set(ONNXRUNTIME_PATH ${CMAKE_SOURCE_DIR}/3rd_party/onnxruntime)
     include_directories(${ONNXRUNTIME_PATH}/include)

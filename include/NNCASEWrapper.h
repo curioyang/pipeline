@@ -6,7 +6,6 @@
 #pragma once
 
 #include "common.h"
-#include "timer.h"
 #include <fstream>
 #include <nncase/runtime/interpreter.h>
 #include <nncase/runtime/runtime_tensor.h>
@@ -34,6 +33,7 @@ public:
     template <class T>
     void set_input_tensor(tensor_info<T> &tensor, size_t idx)
     {
+        // ScopedTiming st(name_ + " set_input_tensor");
         auto type = entry_function_->parameter_type(idx).expect("parameter type out of index");
         auto ts_type = type.as<tensor_type>().expect("input is not a tensor type");
         dims_t shape{tensor.shape.begin(), tensor.shape.end()};
@@ -51,7 +51,7 @@ public:
 
     void onForward()
     {
-        Timer timer(name_);
+        ScopedTiming st(name_ + " onForward");
         if (num_outputs_ > 1)
             outputs_ = entry_function_->invoke(inputs_)
                         .unwrap_or_throw()
@@ -68,6 +68,7 @@ public:
     template <class T>
     tensor_info<T> get_result_vector(int idx)
     {
+        // ScopedTiming st(name_ + " get_result_vector");
         nncase::tensor tensor;
         if (num_outputs_ > 1)
             tensor = outputs_->fields()[idx].as<nncase::tensor>().unwrap_or_throw();

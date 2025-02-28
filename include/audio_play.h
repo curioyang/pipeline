@@ -162,7 +162,7 @@ private:
 #if __riscv
 void playbackThread() {
     constexpr int frames = 960;
-    constexpr int samplesRequested = frames * 12;
+    constexpr int samplesRequested = frames * 6;
     std::vector<float> f32_pcm(samplesRequested, 0.f);
     std::vector<int16_t> i16_pcm(samplesRequested, 0);
 
@@ -172,18 +172,21 @@ void playbackThread() {
         while (m_buffer.availableRead() > samplesRequested)
         {
             size_t samplesRead = m_buffer.read(f32_pcm.data(), samplesRequested);
-            std::cout << "samplesRequested = " << samplesRequested << ", samplesRead = " << samplesRead << std::endl;
+            // std::cout << "samplesRequested = " << samplesRequested << ", samplesRead = " << samplesRead << std::endl;
             if (samplesRead < samplesRequested)
                 std::memset(f32_pcm.data() + samplesRead, 0, (samplesRequested - samplesRead) * sizeof(float));
 
-            for (size_t i = 0; i < samplesRequested; i++) {
-                i16_pcm[i] = float_to_int16(f32_pcm[i]);
+            {
+                // ScopedTiming st("float_to_int16");
+                for (size_t i = 0; i < samplesRequested; i++)
+                {
+                    i16_pcm[i] = float_to_int16(f32_pcm[i]);
+                }
             }
 
             char *ptr = reinterpret_cast<char *>(i16_pcm.data());
             size_t n = frames * sizeof(int16_t);
             size_t count = samplesRequested / frames;
-            // std::cout << "play count = " << count << std::endl;
             for (size_t i = 0; i < count; i++)
             {
                 playPcm(ptr + i * n);

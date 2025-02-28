@@ -146,6 +146,7 @@ int16_t float_to_int16(float value) {
 
 tensor_info<float> wte_get_data(tensor_info<long> &input_ids)
 {
+    // ScopedTiming st("wte_get_data");
     std::vector<float> wte_data(input_ids.data.size() * 896);
     std::string weights_path;
     size_t size = 0;

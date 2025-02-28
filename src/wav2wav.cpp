@@ -39,6 +39,7 @@ template std::string A1_A2<NNCASEModel>(
 
 
 tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs) {
+    ScopedTiming st(__FUNCTION__);
     auto audio_embs_shape = audio_embs.shape;
     auto input_embs_shape = input_embs.shape;
     auto audio_embs_data = audio_embs.data;
@@ -55,6 +56,7 @@ tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float
 }
 
 int sample(tensor_info<float> &logits, float temperature, int top_k, float top_p) {
+    // ScopedTiming st(__FUNCTION__);
 
     std::vector<float> logits_(logits.data.begin(), logits.data.end());
 

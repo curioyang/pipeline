@@ -6,7 +6,6 @@
 #include <tokenizers_cpp.h>
 #include "audio_play.h"
 #include "common.h"
-#include "timer.h"
 
 #if defined(ONNX)
 #include "ONNXWrapper.h"
@@ -20,7 +19,7 @@ using namespace omni_onnx;
 #endif
 
 #include "utils.h"
-#define DUMP_WAV 1
+#define DUMP_WAV 0
 
 #define VAD_ENABLE 1
 

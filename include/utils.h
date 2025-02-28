@@ -34,13 +34,17 @@
 class ScopedTiming {
 public:
     ScopedTiming(std::string info = "ScopedTiming") : m_info(info) {
+#ifdef PROFILING
         m_start = std::chrono::steady_clock::now();
+#endif
     }
 
     ~ScopedTiming() {
+#ifdef PROFILING
         m_stop = std::chrono::steady_clock::now();
         double elapsed_ms = std::chrono::duration<double,std::milli>(m_stop - m_start).count();
         std::cout << m_info << " took " << elapsed_ms << " ms" << std::endl;
+#endif
     }
 
 private:
