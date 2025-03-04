@@ -7,7 +7,7 @@ std::vector<float> timeStretchPitchMaintain(const std::vector<float> &input,
                                             int sample_rate = 24000,
                                             int channels = 1)
 {
-    ScopedTiming st("timeStretchPitchMaintain");
+    // ScopedTiming st("timeStretchPitchMaintain");
     // 参数校验
     if (input.empty() || time_ratio <= 0.01 || time_ratio > 10.0)
     {

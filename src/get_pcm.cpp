@@ -9,7 +9,7 @@
 static snd_pcm_t *pcm_handle;
 static snd_pcm_hw_params_t *params;
 static int bits_per_sample = 16;
-static snd_pcm_uframes_t frames=512;
+static constexpr snd_pcm_uframes_t frames=512;
 
 int initPcm(unsigned int sample_rate, int num_channels) {
     int rc;
@@ -35,7 +35,7 @@ int initPcm(unsigned int sample_rate, int num_channels) {
     snd_pcm_hw_params_set_channels(pcm_handle, params, num_channels);
     snd_pcm_hw_params_set_rate_near(pcm_handle, params, &sample_rate, &dir);
     snd_pcm_hw_params_set_period_size(pcm_handle, params, frames, dir);
-    snd_pcm_uframes_t frame_size = ((int)frames)*6;
+    snd_pcm_uframes_t frame_size = ((int)frames)*10;
     snd_pcm_hw_params_set_buffer_size_near(pcm_handle, params, &frame_size);
 
     // Write the parameters to the driver
@@ -46,21 +46,26 @@ int initPcm(unsigned int sample_rate, int num_channels) {
         return -1;
     }
     // Use a buffer large enough to hold one period
-    snd_pcm_hw_params_get_period_size(params, &frames, &dir);
-    printf("capture %d,rc = %d,frames:%ld dir:%d.\n",__LINE__,rc,frames,dir);
+    // snd_pcm_hw_params_get_period_size(params, &frames, &dir);
+    // printf("capture %d,rc = %d,frames:%ld dir:%d.\n",__LINE__,rc,frames,dir);
 
     // 获取实际设置的缓冲队列大小
-    snd_pcm_uframes_t buffer_size;
-    snd_pcm_hw_params_get_buffer_size(params, &buffer_size);
-    printf("capture get_buffer_size: %u\n", buffer_size);
+    // snd_pcm_uframes_t buffer_size;
+    // snd_pcm_hw_params_get_buffer_size(params, &buffer_size);
+    // printf("capture get_buffer_size: %u\n", buffer_size);
 
     return 0;
 }
 
 void getPcm(std::vector<float> &wav) {
     int rc;
-    auto size = frames * 1 * 16 / 8; // 2 bytes/sample, 2 channels
+    // constexpr size_t size = frames * 1 * 16 / 8; // 2 bytes/sample, 2 channels
+#if 0
     char* pcm_buffer = (char *) malloc(size);
+#else
+    // static char pcm_buffer[size] = {0};
+    static int16_t pcm_buffer[frames] = {0};
+#endif
     rc = snd_pcm_readi(pcm_handle, pcm_buffer, frames);
     if (rc == -EPIPE) {
         // EPIPE means overrun
@@ -71,11 +76,11 @@ void getPcm(std::vector<float> &wav) {
     } else if (rc != (int)frames) {
         fprintf(stderr, "short read, read %d frames\n", rc);
     }
-    for (int i = 0; i < (int)frames; i++){
-        int16_t sample= (pcm_buffer[2*i] & 0xff) | ((pcm_buffer[2*i + 1] & 0xff) << 8);
-        wav.push_back(static_cast<float>(sample));
+    for (size_t i = 0; i < frames; i++){
+        // int16_t sample= (pcm_buffer[2*i] & 0xff) | ((pcm_buffer[2*i + 1] & 0xff) << 8);
+        wav[i] = static_cast<float>(pcm_buffer[i]) / 32768;
     }
-    free(pcm_buffer);
+    // free(pcm_buffer);
 }
 
 int deinitPcm(){

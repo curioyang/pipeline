@@ -42,14 +42,13 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
 {
     unsigned int sample_rate=16000;
     int num_channels=1;
-    std::vector<float> wav;
+    std::vector<float> wav(512, 0.f);
     std::vector<float> audio;
     vad->reset_states();
     bool triggering = false;
     bool pcm_running = false;
     std::cout << "please enter any string to start, \"/bye\" to exit" << std::endl;
     std::string input;
-    // std::cin >> input;
     std::getline(std::cin, input);
     if (input == "/bye") {
         mic_stop = true;
@@ -62,11 +61,10 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
             pcm_running = true;
         }
 
-        wav.clear();
-        getPcm(wav);
-        // process wav with fp32
-        for (size_t i = 0; i < wav.size(); i++)
-            wav[i] = wav[i] / 32768;
+        {
+            ScopedTiming st("getPcm");
+            getPcm(wav);
+        }
 
         vad->predict(wav);
         if (!vad->is_triggered() && !triggering)
@@ -77,12 +75,10 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
         {
             audio.insert(audio.end(), wav.begin(), wav.end());
             triggering = true;
-            // std::cout << "vad is triggering" << std::endl;
             continue;
         }
         else
         {
-            // std::cout << "vad is not triggering: triggering = " << triggering << std::endl;
             audio.insert(audio.end(), wav.begin(), wav.end());
             triggering = false;
             deinitPcm();
@@ -97,7 +93,6 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
         std::cout << "Generated text: " << text << std::endl;
         audio.clear();
         std::cout << "please enter any string to start, \"/bye\" to exit" << std::endl;
-        // std::cin >> input;
         std::getline(std::cin, input);
         if (input == "/bye") {
             mic_stop = true;
@@ -136,7 +131,7 @@ int main(int argc, const char* argv[])
     std::string vad_model = models_dir + "/vad/silero_vad.onnx";
     // whisper.onnx is 3000 whisper_v2.onnx is 1500
     // if change model, modify common.h:37L
-    std::string whisper_model = models_dir + "/whisper/whisper.onnx";
+    std::string whisper_model = models_dir + "/whisper/whisper_v2.onnx";
     std::string adapter_model = models_dir + "/adapter/adapter.onnx";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt_v6.onnx";
     std::string snac_model = models_dir + "/snac/snac.onnx";
@@ -147,12 +142,10 @@ int main(int argc, const char* argv[])
     ONNXModel lit_gpt(std::make_unique<RuntimeManager>("lit_gpt"), lit_gpt_model);
     ONNXModel snac(std::make_unique<RuntimeManager>("snac"), snac_model);
 #else
-    // nncase::runtime::shrink_memory_pool();
     std::string vad_model = models_dir + "/vad/vad.kmodel";
     std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
-    // TODO: change snac to audio_0 length is 8
     std::string snac_model = models_dir + "/snac/snac.kmodel";
     NNCASEModel whisper(whisper_model, "whisper");
     NNCASEModel adapter(adapter_model, "adapter");
