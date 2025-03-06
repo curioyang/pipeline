@@ -202,7 +202,7 @@ void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector
 }
 
 template <class M>
-std::vector<std::vector<int>>
+std::vector<int>
 generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
             M &adapter, M &gpt, M &snac, std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer &player,
             int max_returned_tokens = 2048,
@@ -218,7 +218,8 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
 {
     std::vector<float> audio_data_all;
     auto T = input_ids.shape[1];
-    std::vector<std::vector<int>> outputs(8);
+    std::vector<int> outputs;
+    std::vector<int> tokens;
 
     // adapter
     audio_feature.shape = {1, audio_feature.shape[0], audio_feature.shape[1]};
@@ -250,18 +251,19 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
                                                                    top_k,
                                                                    top_p);
 
-    for (int i = 0; i < 7; i++)
-        outputs[i].emplace_back(tokens_A[i]);
-    outputs[7].emplace_back(token_T);
+    // for (int i = 0; i < 7; i++)
+    //     outputs[i].emplace_back(tokens_A[i]);
+    outputs.emplace_back(token_T);
+    tokens.emplace_back(token_T);
     // std::cout << tokenizer->Decode(outputs[7]) << std::endl;
     input_pos.resize(1);
     input_pos[0] = (long)T;
 
     bool text_end = false;
     bool end_now = false;
-    std::vector<long> audio_0;
-    std::vector<long> audio_1;
-    std::vector<long> audio_2;
+    // std::vector<long> audio_0;
+    // std::vector<long> audio_1;
+    // std::vector<long> audio_2;
     int count = 0;
     for (int sub_step = 2; sub_step < max_returned_tokens - T + 1; sub_step++)
     {
@@ -294,39 +296,46 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
 
         if (text_end)
             token_T = pad_id_t;
-        if ((int)tokens_A.back() == eos_id_a)
-        {
-            end_now = true;
-            tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count, player);
-            // std::string save_path = "output.wav";
-            // save_audio(save_path, audio_data_all, 24000);
+        // if ((int)tokens_A.back() == eos_id_a)
+        // {
+        //     end_now = true;
+        //     tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count, player);
+        //     // std::string save_path = "output.wav";
+        //     // save_audio(save_path, audio_data_all, 24000);
+        //     break;
+        // }
+
+        outputs.emplace_back(token_T);
+        tokens.emplace_back(token_T);
+        if (token_T == eos_id_t) {
+            text_end = true;
             break;
         }
-        if (token_T == eos_id_t)
-            text_end = true;
-
-        for (int i = 0; i < 7; i++)
-        {
-            outputs[i].emplace_back(tokens_A[i]);
-        }
-        outputs[7].emplace_back(token_T);
+        // for (int i = 0; i < 7; i++)
+        // {
+        //     outputs[i].emplace_back(tokens_A[i]);
+        // }
         // std::cout << tokenizer->Decode(outputs[7]) << std::endl;
         input_pos[0] += 1;
 
-        if(sub_step>=8) {
-            std::vector<long> audio_0_{outputs[0][sub_step-7]};
-            std::vector<long> audio_1_{outputs[1][sub_step-6], outputs[4][sub_step-3]};
-            std::vector<long> audio_2_{outputs[2][sub_step-5],outputs[3][sub_step-4], outputs[5][sub_step-2], outputs[6][sub_step-1]};
+        // if(sub_step>=8) {
+        //     std::vector<long> audio_0_{outputs[0][sub_step-7]};
+        //     std::vector<long> audio_1_{outputs[1][sub_step-6], outputs[4][sub_step-3]};
+        //     std::vector<long> audio_2_{outputs[2][sub_step-5],outputs[3][sub_step-4], outputs[5][sub_step-2], outputs[6][sub_step-1]};
 
-            audio_0.insert(audio_0.end(), audio_0_.begin(), audio_0_.end());
-            audio_1.insert(audio_1.end(), audio_1_.begin(), audio_1_.end());
-            audio_2.insert(audio_2.end(), audio_2_.begin(), audio_2_.end());
+        //     audio_0.insert(audio_0.end(), audio_0_.begin(), audio_0_.end());
+        //     audio_1.insert(audio_1.end(), audio_1_.begin(), audio_1_.end());
+        //     audio_2.insert(audio_2.end(), audio_2_.begin(), audio_2_.end());
 
-            if (audio_0.size() == 8)
-            {
-                tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count, player);
-            }
-        }
+        //     if (audio_0.size() == 8)
+        //     {
+        //         tokenizer_to_audio(snac, audio_data_all, audio_0, audio_1, audio_2, end_now, count, player);
+        //     }
+        // }
+
+        auto text = tokenizer->Decode(tokens);
+        std::cout << "text = " << text << std::endl;
+        tokens.clear();
     }
 
     return outputs;
@@ -418,7 +427,7 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                 )
 {
 
-    auto tokenizer_list = generate_AA(audio_feature, input_ids, adapter, gpt, snac, tokenizer, player,
+    auto vec = generate_AA(audio_feature, input_ids, adapter, gpt, snac, tokenizer, player,
                                       2048,
                                       0.9,
                                       1,
@@ -441,7 +450,7 @@ std::string A1_A2(tensor_info<float> &audio_feature,
 //     {40, 1513, 944, 614, 264, 829, 11, 714, 358, 2776, 1588, 311, 1492, 498, 448, 894, 4755, 476, 4755, 498, 614, 0, 151936, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937, 151937}};
 
 
-    auto vec = tokenizer_list.back();
+    // auto vec = tokenizer_list.back();
     size_t size = vec.size();
     auto it = std::find(vec.begin(), vec.end(), text_vocabsize);
     if (it != vec.end()) {
@@ -449,65 +458,6 @@ std::string A1_A2(tensor_info<float> &audio_feature,
     }
     vec.resize(size);
     auto text = tokenizer->Decode(vec);
-
-#if DUMP_WAV
-    auto audio_list = reconscruct_snac(tokenizer_list);
-    auto audio = reconstruct_tensors(audio_list);
-
-#if 0
-    // snac一个输入
-    std::vector<long> audio_(audio[0].begin(), audio[0].end());
-    audio_.insert(audio_.end(), audio[1].begin(), audio[1].end());
-    audio_.insert(audio_.end(), audio[2].begin(), audio[2].end());
-    tensor_info<long> snac_input_tensor{.data = audio_, .shape = {1, (int)audio_.size()}};
-
-    auto audio_hat = model_run<long, float>(snac,snac_input_tensor);
-
-    snac.set_input_tensor(snac_input_tensor, 0);
-    snac.onForward();
-    auto audio_hat = snac.get_result_vector<float>(0);
-#elif 0
-    // snac 3个 输入但是是动态输入才可以
-    std::vector<long> v_audio_0(audio[0].begin(), audio[0].end());
-    tensor_info<long> t_autio_0{.data = v_audio_0, .shape = {1, v_audio_0.size()}};
-
-    std::vector<long> v_audio_1(audio[1].begin(), audio[1].end());
-    tensor_info<long> t_autio_1{.data = v_audio_1, .shape = {1, v_audio_1.size()}};
-
-    std::vector<long> v_audio_2(audio[2].begin(), audio[2].end());
-    tensor_info<long> t_autio_2{.data = v_audio_2, .shape = {1, v_audio_2.size()}};
-
-    snac.template set_input_tensor(t_autio_0, 0);
-    snac.template set_input_tensor(t_autio_1, 0);
-    snac.template set_input_tensor(t_autio_2, 0);
-    snac.template onForward();
-    auto audio_hat = snac.template get_result_vector<float>(0);
-
-    // std::string save_path = "output.wav";
-    // save_audio(save_path, audio_hat.data, 24000);
-#endif
-
-    // auto begin = audio_hat.data.begin();
-    // int part_size = 1200; //50ms
-    // while(1)
-    // {
-    //     auto end = begin + part_size;
-    //     if(end >= audio_hat.data.end())
-    //         end = audio_hat.data.end();
-
-    //     std::vector<float> tmp_data(begin, end);
-    //     while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
-    //         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //     }
-
-    //     std::cout << "Wrote chunk, available space: "
-    //               << player.available() << std::endl;
-    //     begin = end;
-    //     if(end == audio_hat.data.end())
-    //         break;
-    // }
-
-#endif
 
     return strip(text);
 }
