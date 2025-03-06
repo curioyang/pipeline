@@ -39,8 +39,8 @@ void signal_handler(int signum)
 #if __riscv
 std::atomic<bool> mic_stop(false);
 
-void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEModel &adapter, NNCASEModel &lit_gpt, NNCASEModel &snac,
-     std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer<short> &player)
+void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEModel &adapter, NNCASEModel &lit_gpt,
+     std::unique_ptr<tokenizers::Tokenizer> &tokenizer)
 {
     unsigned int sample_rate=16000;
     int num_channels=1;
@@ -91,7 +91,7 @@ void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEMod
         auto [audio_feature, input_ids] = generate_input_ids<NNCASEModel>(whisper, mel, length);
 
         // 执行生成
-        auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, player);
+        auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, tokenizer);
         std::cout << "Generated text: " << text << std::endl;
         audio.clear();
         std::cout << "please enter any string to start, \"/bye\" to exit" << std::endl;
@@ -136,23 +136,19 @@ int main(int argc, const char* argv[])
     std::string whisper_model = models_dir + "/whisper/whisper_v2.onnx";
     std::string adapter_model = models_dir + "/adapter/adapter.onnx";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt_v6.onnx";
-    std::string snac_model = models_dir + "/snac/snac.onnx";
 
     ONNXModel whisper(std::make_unique<RuntimeManager>("whisper"), whisper_model);
 
     ONNXModel adapter(std::make_unique<RuntimeManager>("adapter"), adapter_model);
     ONNXModel lit_gpt(std::make_unique<RuntimeManager>("lit_gpt"), lit_gpt_model);
-    ONNXModel snac(std::make_unique<RuntimeManager>("snac"), snac_model);
 #else
     std::string vad_model = models_dir + "/vad/vad.kmodel";
     std::string whisper_model = models_dir + "/whisper/whisper.kmodel";
     std::string adapter_model = models_dir + "/adapter/adapter.kmodel";
     std::string lit_gpt_model = models_dir + "/lit_gpt/lit_gpt.kmodel";
-    std::string snac_model = models_dir + "/snac/snac.kmodel";
     NNCASEModel whisper(whisper_model, "whisper");
     NNCASEModel adapter(adapter_model, "adapter");
     NNCASEModel lit_gpt(lit_gpt_model, "lit_gpt");
-    NNCASEModel snac(snac_model,"snac");
 #endif
 
     std::string espeak_ng_data = models_dir + "/espeak-ng-data";
@@ -176,16 +172,10 @@ int main(int argc, const char* argv[])
     vad.reset(new NncaseVadIterator(vad_model));
 #endif
 
-    // init audio Player
-    size_t buffer_size = 960 * 1024;
-    StreamingAudioPlayer<short> audioplayer(24000, buffer_size);
-    audioplayer.start();
-    // espeak_SetSynthCallback(StreamingAudioPlayer::SynthCallback);
-
     // 处理音频输入
     if (argc == 2)
     {
-        mic_proc(vad, whisper, adapter, lit_gpt, snac, tokenizer, audioplayer);
+        mic_proc(vad, whisper, adapter, lit_gpt, tokenizer);
     } else {
         wav::WavReader wav_reader(argv[2]);
         std::vector<float> input_wav(wav_reader.num_samples());
@@ -215,16 +205,12 @@ int main(int argc, const char* argv[])
 
         // 执行生成
 #if defined(ONNX)
-        auto text = A1_A2<ONNXModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
+        auto text = A1_A2<ONNXModel>(audio_feature, input_ids, length, adapter, lit_gpt, tokenizer);
 #else
-        auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, snac, tokenizer, audioplayer);
+        auto text = A1_A2<NNCASEModel>(audio_feature, input_ids, length, adapter, lit_gpt, tokenizer);
 #endif
         std::cout << "Generated text: " << text << std::endl;
-        while (audioplayer.available() < buffer_size) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
     }
 
-    audioplayer.stop();
     return 0;
 }

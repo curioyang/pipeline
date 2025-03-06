@@ -689,9 +689,7 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   int length,
                   M &adapter,
                   M &gpt,
-                  M &snac,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
-                   StreamingAudioPlayer<short> &player
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer
 );
 
 template <class M>

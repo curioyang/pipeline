@@ -14,8 +14,8 @@ template std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids<omn
     omni_onnx::ONNXModel &, tensor_info<float> &, int, int, int, int);
 
 template std::string A1_A2<omni_onnx::ONNXModel>(
-    tensor_info<float> &, tensor_info<long> &, int, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &,
-    std::unique_ptr<tokenizers::Tokenizer> & , StreamingAudioPlayer<short> &);
+    tensor_info<float> &, tensor_info<long> &, int, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &,
+    std::unique_ptr<tokenizers::Tokenizer> &);
 
 #else
 #include "NNCASEWrapper.h"
@@ -32,8 +32,8 @@ template std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids<NNC
     NNCASEModel &, tensor_info<float> &, int, int, int, int);
 
 template std::string A1_A2<NNCASEModel>(
-    tensor_info<float> &, tensor_info<long> &, int, NNCASEModel &, NNCASEModel &, NNCASEModel &,
-    std::unique_ptr<tokenizers::Tokenizer> & , StreamingAudioPlayer<short> &);
+    tensor_info<float> &, tensor_info<long> &, int, NNCASEModel &, NNCASEModel &,
+    std::unique_ptr<tokenizers::Tokenizer> &);
 
 #endif
 
@@ -249,7 +249,7 @@ int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
 template <class M>
 std::vector<int>
 generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
-            M &adapter, M &gpt, M &snac, std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer<short> &player,
+            M &adapter, M &gpt, std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
             int max_returned_tokens = 2048,
             float temperature = 0.9,
             int top_k = 1,
@@ -265,6 +265,11 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     auto T = input_ids.shape[1];
     std::vector<int> outputs;
     std::vector<int> tokens;
+
+    // init audio Player
+    size_t buffer_size = 960 * 1024;
+    StreamingAudioPlayer<short> player(24000, buffer_size);
+    player.start();
     set_player(&player);
 
     // adapter
@@ -382,10 +387,13 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         // }
 
         auto text = tokenizer->Decode(tokens);
-        std::cout << "text = " << text << std::endl;
+        // std::cout << "text = " << text << std::endl;
         espeak_Synth(text.c_str(), text.size(), 0, POS_CHARACTER, 0, synth_flags, NULL, NULL);
         tokens.clear();
-    }
+   }
+
+    // stop player
+    player.stop();
 
     return outputs;
 }
@@ -470,13 +478,11 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   int length,
                   M &adapter,
                   M &gpt,
-                  M &snac,
-                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
-                  StreamingAudioPlayer<short> &player
+                  std::unique_ptr<tokenizers::Tokenizer> &tokenizer
                 )
 {
 
-    auto vec = generate_AA(audio_feature, input_ids, adapter, gpt, snac, tokenizer, player,
+    auto vec = generate_AA(audio_feature, input_ids, adapter, gpt, tokenizer,
                                       2048,
                                       0.9,
                                       1,

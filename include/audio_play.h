@@ -61,9 +61,9 @@ public:
                 return m_count >= maxSamples || !isRunning;
         });
 
-        if(!isRunning){
-            return 0;
-        }
+        // if(!isRunning){
+        //     return 0;
+        // }
 
         size_t samplesToRead = std::min(maxSamples, m_count);
         for (size_t i = 0; i < samplesToRead; ++i) {
