@@ -20,6 +20,9 @@
 #include <portaudio.h>
 #endif
 
+#include <espeak-ng/espeak_ng.h>
+#include <espeak-ng/speak_lib.h>
+
 // 线程安全的环形缓冲区
 template <typename T>
 class RingBuffer {
@@ -54,8 +57,8 @@ public:
         std::unique_lock<std::mutex> lock(m_mutex);
 
         // 等待条件：数据可用或线程停止
-        m_cv.wait(lock, [this]() {
-                return m_count > 0 || !isRunning;
+        m_cv.wait(lock, [this, maxSamples]() {
+                return m_count >= maxSamples || !isRunning;
         });
 
         if(!isRunning){
@@ -98,6 +101,7 @@ private:
     std::atomic<bool> isRunning = true;
 };
 
+template <typename T>
 class StreamingAudioPlayer {
 public:
     StreamingAudioPlayer(int sampleRate = 44100,
@@ -123,7 +127,6 @@ public:
 #endif
     }
 
-
     void start() {
         if (!m_isRunning) {
             m_isRunning = true;
@@ -141,7 +144,7 @@ public:
         }
     }
 
-    bool writeAudio(const float* data, size_t samples) {
+    bool writeAudio(const T* data, size_t samples) {
         return m_buffer.write(data, samples);
     }
 
@@ -154,7 +157,7 @@ public:
     }
 
 private:
-    RingBuffer<float> m_buffer;
+    RingBuffer<T> m_buffer;
     int m_sampleRate;
     std::atomic<bool> m_isRunning;
     std::thread m_playThread;
@@ -163,31 +166,20 @@ private:
 void playbackThread() {
     constexpr int frames = 960;
     constexpr int samplesRequested = frames * 2;
-    std::vector<float> f32_pcm(samplesRequested, 0.f);
-    std::vector<int16_t> i16_pcm(samplesRequested, 0);
+    std::vector<short> pcm(samplesRequested, 0);
     size_t samplesRead = 0;
 
     while (true)
     {
-        // while (!m_buffer.isEmpty())
-        // while (m_buffer.availableRead() > samplesRequested)
-        samplesRead = m_buffer.read(f32_pcm.data(), samplesRequested);
+        samplesRead = m_buffer.read(pcm.data(), samplesRequested);
         if (samplesRead == 0)
             break;
         // std::cout << "samplesRequested = " << samplesRequested << ", samplesRead = " << samplesRead << std::endl;
         if (samplesRead < samplesRequested)
-            std::memset(f32_pcm.data() + samplesRead, 0, (samplesRequested - samplesRead) * sizeof(float));
+            std::memset(pcm.data() + samplesRead, 0, (samplesRequested - samplesRead) * sizeof(short));
 
-        {
-            // ScopedTiming st("float_to_int16");
-            for (size_t i = 0; i < samplesRequested; i++)
-            {
-                i16_pcm[i] = float_to_int16(f32_pcm[i]);
-            }
-        }
-
-        char *ptr = reinterpret_cast<char *>(i16_pcm.data());
-        size_t n = frames * sizeof(int16_t);
+        char *ptr = reinterpret_cast<char *>(pcm.data());
+        size_t n = frames * sizeof(short);
         size_t count = samplesRequested / frames;
         for (size_t i = 0; i < count; i++)
         {
@@ -237,13 +229,13 @@ void playbackThread() {
     }
 
     int audioCallback(void* outputBuffer, unsigned long framesRequested) {
-        float* out = static_cast<float*>(outputBuffer);
+        T* out = static_cast<T*>(outputBuffer);
         const size_t samplesRequested = framesRequested; // 单声道
         size_t samplesRead = m_buffer.read(out, samplesRequested);
 
         // 数据不足时填充静音
         if (samplesRead < samplesRequested) {
-            std::memset(out + samplesRead, 0, (samplesRequested - samplesRead) * sizeof(float));
+            std::memset(out + samplesRead, 0, (samplesRequested - samplesRead) * sizeof(T));
             // 可选：触发下溢事件
         }
 

@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string>
 #include <thread>
+#include <espeak-ng/espeak_ng.h>
+#include <espeak-ng/speak_lib.h>
 
 #ifdef ONNX
 #include "ONNXWrapper.h"
@@ -38,7 +40,7 @@ void signal_handler(int signum)
 std::atomic<bool> mic_stop(false);
 
 void mic_proc(std::unique_ptr<VadIterator> &vad, NNCASEModel &whisper, NNCASEModel &adapter, NNCASEModel &lit_gpt, NNCASEModel &snac,
-     std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer &player)
+     std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer<short> &player)
 {
     unsigned int sample_rate=16000;
     int num_channels=1;
@@ -153,6 +155,20 @@ int main(int argc, const char* argv[])
     NNCASEModel snac(snac_model,"snac");
 #endif
 
+    std::string espeak_ng_data = models_dir + "/espeak-ng-data";
+    espeak_ng_InitializePath(espeak_ng_data.c_str());
+    espeak_ng_ERROR_CONTEXT context = NULL;
+    espeak_ng_STATUS result = espeak_ng_Initialize(&context);
+    if (result != ENS_OK) {
+        espeak_ng_PrintStatusCodeMessage(result, stderr, context);
+        espeak_ng_ClearErrorContext(&context);
+        exit(1);
+    }
+
+    result = espeak_ng_InitializeOutput(ENOUTPUT_MODE_SYNCHRONOUS, 0, NULL);
+    // samplerate = espeak_ng_GetSampleRate();
+    espeak_SetSynthCallback(SynthCallback);
+
     std::unique_ptr<VadIterator> vad;
 #if defined(ONNX)
     vad.reset(new OnnxVadIterator(vad_model));
@@ -162,8 +178,9 @@ int main(int argc, const char* argv[])
 
     // init audio Player
     size_t buffer_size = 960 * 1024;
-    StreamingAudioPlayer audioplayer(24000, buffer_size);
+    StreamingAudioPlayer<short> audioplayer(24000, buffer_size);
     audioplayer.start();
+    // espeak_SetSynthCallback(StreamingAudioPlayer::SynthCallback);
 
     // 处理音频输入
     if (argc == 2)

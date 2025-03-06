@@ -15,7 +15,7 @@ template std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids<omn
 
 template std::string A1_A2<omni_onnx::ONNXModel>(
     tensor_info<float> &, tensor_info<long> &, int, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &, omni_onnx::ONNXModel &,
-    std::unique_ptr<tokenizers::Tokenizer> & , StreamingAudioPlayer &);
+    std::unique_ptr<tokenizers::Tokenizer> & , StreamingAudioPlayer<short> &);
 
 #else
 #include "NNCASEWrapper.h"
@@ -33,9 +33,21 @@ template std::pair<tensor_info<float>, tensor_info<long>> generate_input_ids<NNC
 
 template std::string A1_A2<NNCASEModel>(
     tensor_info<float> &, tensor_info<long> &, int, NNCASEModel &, NNCASEModel &, NNCASEModel &,
-    std::unique_ptr<tokenizers::Tokenizer> & , StreamingAudioPlayer &);
+    std::unique_ptr<tokenizers::Tokenizer> & , StreamingAudioPlayer<short> &);
 
 #endif
+
+static StreamingAudioPlayer<short> *s_player = NULL;
+
+StreamingAudioPlayer<short> *get_player()
+{
+    return s_player;
+}
+
+void set_player(StreamingAudioPlayer<short> * player)
+{
+    s_player = player;
+}
 
 
 tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float> &input_embs) {
@@ -152,59 +164,92 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
     return audio_hat;
 }
 
-template <class M>
-void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector<long> &audio_0, std::vector<long> &audio_1, std::vector<long> &audio_2, bool end_now, int count, StreamingAudioPlayer &player)
-{
-    // count used to dump data
+// template <class M>
+// void tokenizer_to_audio(M &snac, std::vector<float> &audio_data_all, std::vector<long> &audio_0, std::vector<long> &audio_1, std::vector<long> &audio_2, bool end_now, int count, StreamingAudioPlayer<short> &player)
+// {
+//     // count used to dump data
 
-    size_t pad_size = 8 - audio_0.size();
-    if (end_now)
+//     size_t pad_size = 8 - audio_0.size();
+//     if (end_now)
+//     {
+//         audio_0.resize(8);
+//         audio_1.resize(16);
+//         audio_2.resize(32);
+//     }
+
+//     tensor_info<long> audio_0_tensor{.data = audio_0, .shape = {1, (long)audio_0.size()}};
+//     tensor_info<long> audio_1_tensor{.data = audio_1, .shape = {1, (long)audio_1.size()}};
+//     tensor_info<long> audio_2_tensor{.data = audio_2, .shape = {1, (long)audio_2.size()}};
+//     std::vector<tensor_info<long>> data{audio_0_tensor, audio_1_tensor, audio_2_tensor};
+
+//     auto d = generate_audio(snac, data);
+//     std::vector<float>part_autio_data(d.data.begin(), d.data.end() - pad_size * 2048);
+
+//     // part_autio_data = timeStretchPitchMaintain(part_autio_data, 1.5);
+//     auto begin = part_autio_data.begin();
+//     int part_size = 1200; //50ms
+//     while (1) {
+//         auto end = begin + part_size;
+//         if (end >= part_autio_data.end())
+//             end = part_autio_data.end();
+
+//         std::vector<float> tmp_data(begin, end);
+//         while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
+//             std::this_thread::sleep_for(std::chrono::milliseconds(100));
+//         }
+
+//         // std::cout << "Wrote chunk, available space: "
+//         //           << player.available() << std::endl;
+//         begin = end;
+//         if (end == part_autio_data.end())
+//             break;
+//     }
+
+//     // std::cout << part_autio_data.size() << std::endl;
+//     audio_data_all.insert(audio_data_all.end(), part_autio_data.begin(), part_autio_data.end());
+//     audio_0.clear();
+//     audio_1.clear();
+//     audio_2.clear();
+//     count++;
+// }
+
+int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
+{
+    int samplerate = 16000;
+    auto player = get_player();
+    while (events->type != 0)
     {
-        audio_0.resize(8);
-        audio_1.resize(16);
-        audio_2.resize(32);
+        if (events->type == espeakEVENT_SAMPLERATE) {
+            samplerate = events->id.number;
+            std::cout << "SynthCallback: samplerate = " << SynthCallback << std::endl;
+            // samples_split = samples_split_seconds * samplerate;
+        } else if (events->type == espeakEVENT_SENTENCE) {
+            // start a new WAV file when the limit is reached, at this sentence boundary
+            // if ((samples_split > 0) && (samples_total > samples_split)) {
+            // 	CloseWavFile();
+            // 	samples_total = 0;
+            // 	wavefile_count++;
+            // }
+        }
+        events++;
     }
 
-    tensor_info<long> audio_0_tensor{.data = audio_0, .shape = {1, (long)audio_0.size()}};
-    tensor_info<long> audio_1_tensor{.data = audio_1, .shape = {1, (long)audio_1.size()}};
-    tensor_info<long> audio_2_tensor{.data = audio_2, .shape = {1, (long)audio_2.size()}};
-    std::vector<tensor_info<long>> data{audio_0_tensor, audio_1_tensor, audio_2_tensor};
-
-    auto d = generate_audio(snac, data);
-    std::vector<float>part_autio_data(d.data.begin(), d.data.end() - pad_size * 2048);
-
-    part_autio_data = timeStretchPitchMaintain(part_autio_data, 1.5);
-    auto begin = part_autio_data.begin();
-    int part_size = 1200; //50ms
-    while (1) {
-        auto end = begin + part_size;
-        if (end >= part_autio_data.end())
-            end = part_autio_data.end();
-
-        std::vector<float> tmp_data(begin, end);
-        while (!player.writeAudio(tmp_data.data(), tmp_data.size())) {
+    if (numsamples > 0) {
+        // samples_total += numsamples;
+        // fwrite(wav, numsamples*2, 1, f_wavfile);
+        // std::vector<float> tmp_data(begin, end);
+        while (!player->writeAudio(wav, numsamples)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
-
-        // std::cout << "Wrote chunk, available space: "
-        //           << player.available() << std::endl;
-        begin = end;
-        if (end == part_autio_data.end())
-            break;
     }
-
-    // std::cout << part_autio_data.size() << std::endl;
-    audio_data_all.insert(audio_data_all.end(), part_autio_data.begin(), part_autio_data.end());
-    audio_0.clear();
-    audio_1.clear();
-    audio_2.clear();
-    count++;
+    return 0;
 }
+
 
 template <class M>
 std::vector<int>
 generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
-            M &adapter, M &gpt, M &snac, std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer &player,
+            M &adapter, M &gpt, M &snac, std::unique_ptr<tokenizers::Tokenizer> &tokenizer, StreamingAudioPlayer<short> &player,
             int max_returned_tokens = 2048,
             float temperature = 0.9,
             int top_k = 1,
@@ -220,6 +265,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     auto T = input_ids.shape[1];
     std::vector<int> outputs;
     std::vector<int> tokens;
+    set_player(&player);
 
     // adapter
     audio_feature.shape = {1, audio_feature.shape[0], audio_feature.shape[1]};
@@ -265,6 +311,8 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     // std::vector<long> audio_1;
     // std::vector<long> audio_2;
     int count = 0;
+	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
+
     for (int sub_step = 2; sub_step < max_returned_tokens - T + 1; sub_step++)
     {
         std::vector<long> model_input_ids;
@@ -335,6 +383,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
 
         auto text = tokenizer->Decode(tokens);
         std::cout << "text = " << text << std::endl;
+        espeak_Synth(text.c_str(), text.size(), 0, POS_CHARACTER, 0, synth_flags, NULL, NULL);
         tokens.clear();
     }
 
@@ -423,7 +472,7 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   M &gpt,
                   M &snac,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
-                  StreamingAudioPlayer &player
+                  StreamingAudioPlayer<short> &player
                 )
 {
 

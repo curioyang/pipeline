@@ -49,20 +49,24 @@ set(ROSA_PATH ${CMAKE_SOURCE_DIR}/3rd_party/librosa)
 
 set(TOKENIZER_PATH ${CMAKE_SOURCE_DIR}/3rd_party/tokenizers-cpp)
 
+# espeak-ng
+set(ESPEAK_NG_PATH ${CMAKE_SOURCE_DIR}/3rd_party/espeak-ng)
+
 if (CMAKE_CROSSCOMPILING)
-    link_directories(${TOKENIZER_PATH}/lib/riscv64 ${RUBBERBAND_PATH}/lib/riscv64)
+    link_directories(${TOKENIZER_PATH}/lib/riscv64 ${RUBBERBAND_PATH}/lib/riscv64 ${ESPEAK_NG_PATH}/lib/riscv64)
 else()
     # list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/sndfile/lib/cmake)
     # set(CMAKE_PREFIX_PATH ${CMAKE_MODULE_PATH})
     # find_package(SndFile REQUIRED)
 
     # tokenizers-cpp
-    link_directories(${TOKENIZER_PATH}/lib/x86_64 ${RUBBERBAND_PATH}/lib/x86_64)
+    link_directories(${TOKENIZER_PATH}/lib/x86_64 ${RUBBERBAND_PATH}/lib/x86_64 ${ESPEAK_NG_PATH}/lib/x86_64)
 
     include_directories(${ONNXRUNTIME_PATH}/include)
 endif()
 
-include_directories(${ROSA_PATH} ${TOKENIZER_PATH}/include ${CMAKE_SOURCE_DIR}/include)
+include_directories(${ROSA_PATH} ${TOKENIZER_PATH}/include ${ESPEAK_NG_PATH}/include ${CMAKE_SOURCE_DIR}/include)
+
 # FILE(GLOB SRCS ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 set(SRCS src/wav2wav.cpp src/audio.cpp src/utils.cpp)
 if (CMAKE_CROSSCOMPILING)
@@ -73,7 +77,7 @@ endif()
 
 add_library(wav2wav STATIC ${SRCS})
 
-target_link_libraries(wav2wav tokenizers_cpp tokenizers_c sentencepiece dl m pthread rubberband)
+target_link_libraries(wav2wav tokenizers_cpp tokenizers_c sentencepiece dl m pthread rubberband espeak-ng ucd speechPlayer)
 
 if (BUILD_ONNX)
     target_link_libraries(wav2wav onnxruntime portaudio)

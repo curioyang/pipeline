@@ -19,6 +19,9 @@ using namespace omni_onnx;
 #endif
 
 #include "utils.h"
+#include <espeak-ng/espeak_ng.h>
+#include <espeak-ng/speak_lib.h>
+
 #define DUMP_WAV 0
 
 #define VAD_ENABLE 1
@@ -688,7 +691,7 @@ std::string A1_A2(tensor_info<float> &audio_feature,
                   M &gpt,
                   M &snac,
                   std::unique_ptr<tokenizers::Tokenizer> &tokenizer,
-                   StreamingAudioPlayer &player
+                   StreamingAudioPlayer<short> &player
 );
 
 template <class M>
@@ -709,3 +712,4 @@ tensor_info<float> concat_feat(tensor_info<float> &audio_embs, tensor_info<float
 int sample(tensor_info<float> &logits, float temperature, int top_k, float top_p);
 std::string load_bytes_from_file(const std::string &path);
 std::string strip(const std::string &str, const std::string &chars = " \t\n\v\f\r");
+int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);
