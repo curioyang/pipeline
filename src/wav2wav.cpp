@@ -316,7 +316,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     // std::vector<long> audio_1;
     // std::vector<long> audio_2;
     int count = 0;
-	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
+	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES;
 
     for (int sub_step = 2; sub_step < max_returned_tokens - T + 1; sub_step++)
     {

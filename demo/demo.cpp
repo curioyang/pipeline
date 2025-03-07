@@ -49,7 +49,7 @@ void init_espeaker_ng(const char *path)
 
     result = espeak_ng_InitializeOutput(ENOUTPUT_MODE_SYNCHRONOUS, 0, NULL);
     espeak_SetSynthCallback(SynthCallback);
-    espeak_SetParameter(espeakRATE, 150, 0);
+    // espeak_SetParameter(espeakRATE, 150, 0);
     espeak_SetParameter(espeakVOLUME, 180, 0);
     int samplerate = espeak_ng_GetSampleRate();
     std::cout << "espeak samplerate = " << samplerate << std::endl;

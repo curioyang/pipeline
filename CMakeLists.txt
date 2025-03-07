@@ -40,7 +40,6 @@ else()
 endif()
 
 # rubberband
-# TODO:  split x86 && riscv
 set(RUBBERBAND_PATH ${CMAKE_SOURCE_DIR}/3rd_party/librubberband)
 include_directories(${RUBBERBAND_PATH}/include)
 
