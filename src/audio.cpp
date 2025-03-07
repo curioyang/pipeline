@@ -191,7 +191,7 @@ std::pair<tensor_info<float>, int> load_audio(std::vector<float> &audio, int sr)
 {
     size_t frame_count = audio.size();
     auto duration_ms = (float)frame_count / sr * 1000.0f;
-    // pad_or_trim(audio);
+    pad_or_trim(audio);
     auto mel = log_mel_spectrogram(audio);
     return {mel, duration_ms / 20 + 1};
 }

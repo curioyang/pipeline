@@ -44,7 +44,7 @@ static int exact_div(int x, int y) {
 constexpr int SAMPLE_RATE = 16000;
 constexpr int N_FFT = 400;
 constexpr int HOP_LENGTH = 160;
-constexpr int CHUNK_LENGTH = 30;
+constexpr int CHUNK_LENGTH = 30 / 2;
 constexpr int N_SAMPLES = CHUNK_LENGTH * SAMPLE_RATE;  //# 480000 samples in a 30-second chunk;
 //constexpr  int N_FRAMES = exact_div(N_SAMPLES, HOP_LENGTH);  //# 3000 frames in a mel spectrogram input;
 constexpr int N_SAMPLES_PER_TOKEN = HOP_LENGTH * 2; // # the initial convolutions has stride 2;

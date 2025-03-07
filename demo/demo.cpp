@@ -36,6 +36,37 @@ void signal_handler(int signum)
     exit(signum);
 }
 
+void init_espeaker_ng(const char *path)
+{
+    espeak_ng_InitializePath(path);
+    espeak_ng_ERROR_CONTEXT context = NULL;
+    espeak_ng_STATUS result = espeak_ng_Initialize(&context);
+    if (result != ENS_OK) {
+        espeak_ng_PrintStatusCodeMessage(result, stderr, context);
+        espeak_ng_ClearErrorContext(&context);
+        exit(1);
+    }
+
+    result = espeak_ng_InitializeOutput(ENOUTPUT_MODE_SYNCHRONOUS, 0, NULL);
+    espeak_SetSynthCallback(SynthCallback);
+    espeak_SetParameter(espeakRATE, 150, 0);
+    espeak_SetParameter(espeakVOLUME, 180, 0);
+    int samplerate = espeak_ng_GetSampleRate();
+    std::cout << "espeak samplerate = " << samplerate << std::endl;
+    espeak_VOICE voice_select;
+    char voicename[40] = "en-us";
+    result = espeak_ng_SetVoiceByName(voicename);
+    if (result != ENS_OK) {
+        memset(&voice_select, 0, sizeof(voice_select));
+        voice_select.languages = voicename;
+        result = espeak_ng_SetVoiceByProperties(&voice_select);
+        if (result != ENS_OK) {
+            espeak_ng_PrintStatusCodeMessage(result, stderr, NULL);
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+
 #if __riscv
 std::atomic<bool> mic_stop(false);
 
@@ -152,18 +183,7 @@ int main(int argc, const char* argv[])
 #endif
 
     std::string espeak_ng_data = models_dir + "/espeak-ng-data";
-    espeak_ng_InitializePath(espeak_ng_data.c_str());
-    espeak_ng_ERROR_CONTEXT context = NULL;
-    espeak_ng_STATUS result = espeak_ng_Initialize(&context);
-    if (result != ENS_OK) {
-        espeak_ng_PrintStatusCodeMessage(result, stderr, context);
-        espeak_ng_ClearErrorContext(&context);
-        exit(1);
-    }
-
-    result = espeak_ng_InitializeOutput(ENOUTPUT_MODE_SYNCHRONOUS, 0, NULL);
-    // samplerate = espeak_ng_GetSampleRate();
-    espeak_SetSynthCallback(SynthCallback);
+    init_espeaker_ng(espeak_ng_data.c_str());
 
     std::unique_ptr<VadIterator> vad;
 #if defined(ONNX)

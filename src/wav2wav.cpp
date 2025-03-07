@@ -387,6 +387,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
         // }
 
         auto text = tokenizer->Decode(tokens);
+        std::replace(text.begin(), text.end(), '!', '.');
         // std::cout << "text = " << text << std::endl;
         espeak_Synth(text.c_str(), text.size(), 0, POS_CHARACTER, 0, synth_flags, NULL, NULL);
         tokens.clear();
