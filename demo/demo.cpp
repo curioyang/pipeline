@@ -52,7 +52,7 @@ void init_espeaker_ng(const char *path)
     // espeak_SetParameter(espeakRATE, 150, 0);
     espeak_SetParameter(espeakVOLUME, 180, 0);
     int samplerate = espeak_ng_GetSampleRate();
-    std::cout << "espeak samplerate = " << samplerate << std::endl;
+    // std::cout << "espeak samplerate = " << samplerate << std::endl;
     espeak_VOICE voice_select;
     char voicename[40] = "en-us";
     result = espeak_ng_SetVoiceByName(voicename);
@@ -156,7 +156,7 @@ int main(int argc, const char* argv[])
     std::cout << "models dir is: " << models_dir << std::endl;
 
     // Tokenizer
-    std::string tokenizer_file = models_dir + "/../checkpoint/tokenizer.json";
+    std::string tokenizer_file = "data/tokenizer.json";
     auto blob = load_bytes_from_file(tokenizer_file);
     auto tokenizer = tokenizers::Tokenizer::FromBlobJSON(blob);
 
@@ -182,7 +182,7 @@ int main(int argc, const char* argv[])
     NNCASEModel lit_gpt(lit_gpt_model, "lit_gpt");
 #endif
 
-    std::string espeak_ng_data = models_dir + "/espeak-ng-data";
+    std::string espeak_ng_data = "data/espeak-ng-data";
     init_espeaker_ng(espeak_ng_data.c_str());
 
     std::unique_ptr<VadIterator> vad;

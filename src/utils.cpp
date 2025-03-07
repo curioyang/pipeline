@@ -152,12 +152,12 @@ tensor_info<float> wte_get_data(tensor_info<long> &input_ids)
     size_t size = 0;
     if (WTE_F16)
     {
-        weights_path = "../data/wte_weights_bf16.bin";
+        weights_path = "data/wte_weights_bf16.bin";
         size = 896 * sizeof(float)/2;
     }
     else
     {
-        weights_path = "../data/wte_weights.bin";
+        weights_path = "data/wte_weights.bin";
         size = 896 * sizeof(float);
     }
 

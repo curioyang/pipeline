@@ -215,24 +215,24 @@ tensor_info<float> generate_audio(M &snac, std::vector<tensor_info<long>> &audio
 
 int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
 {
-    int samplerate = 16000;
+    // int samplerate = 16000;
     auto player = get_player();
-    while (events->type != 0)
-    {
-        if (events->type == espeakEVENT_SAMPLERATE) {
-            samplerate = events->id.number;
-            std::cout << "SynthCallback: samplerate = " << SynthCallback << std::endl;
-            // samples_split = samples_split_seconds * samplerate;
-        } else if (events->type == espeakEVENT_SENTENCE) {
-            // start a new WAV file when the limit is reached, at this sentence boundary
-            // if ((samples_split > 0) && (samples_total > samples_split)) {
-            // 	CloseWavFile();
-            // 	samples_total = 0;
-            // 	wavefile_count++;
-            // }
-        }
-        events++;
-    }
+    // while (events->type != 0)
+    // {
+    //     if (events->type == espeakEVENT_SAMPLERATE) {
+    //         samplerate = events->id.number;
+    //         // std::cout << "SynthCallback: samplerate = " << SynthCallback << std::endl;
+    //         // samples_split = samples_split_seconds * samplerate;
+    //     } else if (events->type == espeakEVENT_SENTENCE) {
+    //         // start a new WAV file when the limit is reached, at this sentence boundary
+    //         // if ((samples_split > 0) && (samples_total > samples_split)) {
+    //         // 	CloseWavFile();
+    //         // 	samples_total = 0;
+    //         // 	wavefile_count++;
+    //         // }
+    //     }
+    //     events++;
+    // }
 
     if (numsamples > 0) {
         // samples_total += numsamples;

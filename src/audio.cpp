@@ -7,6 +7,8 @@
 
 void pad_or_trim(std::vector<float>& audio, int length, int axis)
 {
+    ScopedTiming st("pad_or_trim");
+
     // cpp中默认是vector, axis在这里没有作用
     if (audio.size() > length)
     {
