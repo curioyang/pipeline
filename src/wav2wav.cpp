@@ -234,7 +234,9 @@ int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
     //     events++;
     // }
 
-    if (numsamples > 0) {
+    // std::cout << "numsamples = " << numsamples << std::endl;
+    if (numsamples > 0)
+    {
         // samples_total += numsamples;
         // fwrite(wav, numsamples*2, 1, f_wavfile);
         // std::vector<float> tmp_data(begin, end);
@@ -265,6 +267,7 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
     auto T = input_ids.shape[1];
     std::vector<int> outputs;
     std::vector<int> tokens;
+    std::string texts;
 
     // init audio Player
     size_t buffer_size = 960 * 1024;
@@ -388,8 +391,17 @@ generate_AA(tensor_info<float> &audio_feature, tensor_info<long> &input_ids,
 
         auto text = tokenizer->Decode(tokens);
         std::replace(text.begin(), text.end(), '!', '.');
-        // std::cout << "text = " << text << std::endl;
-        espeak_Synth(text.c_str(), text.size(), 0, POS_CHARACTER, 0, synth_flags, NULL, NULL);
+        // std::cout << "text = " << text << ", text size = " << text.size() << std::endl;
+        texts += text;
+        // std::cout << "texts1 = " << texts << ", texts size = " << texts.size() << std::endl;
+        auto ch = texts.back();
+        if (ch == ',' || ch == '.' || ch == '?')
+        {
+            espeak_Synth(texts.c_str(), texts.size(), 0, POS_CHARACTER, 0, synth_flags, NULL, NULL);
+            texts.clear();
+        }
+        // std::cout << "texts2 = " << texts << ", texts size = " << texts.size() << std::endl;
+
         tokens.clear();
    }
 
